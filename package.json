@@ -1,0 +1,21 @@
+{
+  "name": "android-controller-pad-gui",
+  "version": "1.0.0",
+  "description": "ProAV style controller system management interface built with Node.js and Express.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": [
+    "express",
+    "control-system",
+    "proav",
+    "gui"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}
