@@ -164,8 +164,11 @@
                 <span class="nav__caret"></span>
               </button>
               <div class="nav__children is-hidden">
-                <a class="nav__child" href="#" data-section="Setting" data-title="Pad Display">
-                  Pad Display
+                <a class="nav__child" href="#" data-section="Setting" data-title="Pad Display Setting">
+                  Pad Display Setting
+                </a>
+                <a class="nav__child" href="#" data-section="Setting" data-title="Network">
+                  Network
                 </a>
                 <a class="nav__child" href="#" data-section="Setting" data-title="Admin">
                   Admin
@@ -416,200 +419,320 @@
                 </section>
               </div>
 
-              <div class="display-settings is-hidden" id="displaySettings">
-                <section class="panel-card display-settings__panel" aria-labelledby="displaySettingsTitle">
-                  <div class="panel-card__header">
-                    <div>
-                      <span class="panel-card__eyebrow">Display Configuration</span>
-                      <h2 id="displaySettingsTitle">Pad Display Settings</h2>
-                    </div>
-                    <span class="device-status">Draft</span>
-                  </div>
-
-                  <div class="display-settings__layout">
-                    <div class="display-settings__main">
-                      <section class="display-card" aria-labelledby="timeSettingsTitle">
-                        <div class="display-card__header">
-                          <div>
-                            <span class="display-card__eyebrow">Time & Date</span>
-                            <h3 id="timeSettingsTitle">Clock Settings</h3>
-                          </div>
-                        </div>
-
-                        <div class="display-form-grid">
-                          <label class="display-toggle display-toggle--compact" for="timeModeToggle">
-                            <div>
-                              <span class="display-field__label">Time Mode</span>
-                              <p><span id="timeModeStateLabel">Automatic</span> time and date source.</p>
-                            </div>
-                            <input id="timeModeToggle" type="checkbox" />
-                            <span class="display-toggle__track"></span>
-                          </label>
-
-                          <label class="display-field">
-                            <span class="display-field__label">Time Format</span>
-                            <select id="timeFormatSelect">
-                              <option value="24" selected>24-hour</option>
-                              <option value="12">12-hour</option>
-                            </select>
-                          </label>
-
-                          <label class="display-field display-field--wide is-hidden" id="manualTimeField">
-                            <span class="display-field__label">Current Time</span>
-                            <input id="manualTimeInput" type="time" value="09:45" />
-                          </label>
-
-                          <label class="display-field display-field--wide is-hidden" id="manualDateField">
-                            <span class="display-field__label">Current Date</span>
-                            <input id="manualDateInput" type="date" value="2026-03-30" />
-                          </label>
-                        </div>
-                      </section>
-
-                      <section class="display-card" aria-labelledby="themeSettingsTitle">
-                        <div class="display-card__header">
-                          <div>
-                            <span class="display-card__eyebrow">Appearance</span>
-                            <h3 id="themeSettingsTitle">Display Theme</h3>
-                          </div>
-                        </div>
-
-                        <div class="display-form-grid">
-                          <div class="display-field display-field--wide">
-                            <span class="display-field__label">Display Mode</span>
-                            <div class="theme-options" id="displayThemeOptions">
-                              <label class="theme-option is-active">
-                                <input type="radio" name="displayTheme" value="light" checked />
-                                <span class="theme-option__swatch theme-option__swatch--light"></span>
-                                <span class="theme-option__title">Light</span>
-                                <span class="theme-option__desc">Bright interface for daytime use.</span>
-                              </label>
-
-                              <label class="theme-option">
-                                <input type="radio" name="displayTheme" value="dark" />
-                                <span class="theme-option__swatch theme-option__swatch--dark"></span>
-                                <span class="theme-option__title">Dark</span>
-                                <span class="theme-option__desc">Lower-glare interface for darker rooms.</span>
-                              </label>
-                            </div>
-                          </div>
-                        </div>
-                      </section>
-
-                      <section class="display-card" aria-labelledby="screenBehaviorTitle">
-                        <div class="display-card__header">
-                          <div>
-                            <span class="display-card__eyebrow">Screen Behavior</span>
-                            <h3 id="screenBehaviorTitle">Brightness & Lock</h3>
-                          </div>
-                        </div>
-
-                        <div class="display-form-grid">
-                          <label class="display-field display-field--wide">
-                            <span class="display-field__label">Pad Brightness</span>
-                            <div class="display-slider">
-                              <input
-                                id="displayBrightnessSlider"
-                                class="display-slider__input"
-                                type="range"
-                                min="0"
-                                max="100"
-                                value="72"
-                              />
-                              <strong class="display-slider__value" id="displayBrightnessValue">72%</strong>
-                            </div>
-                          </label>
-
-                          <label class="display-toggle" for="screenLockToggle">
-                            <div>
-                              <span class="display-field__label">Screen Lock</span>
-                              <p>Require unlock before control resumes.</p>
-                            </div>
-                            <input id="screenLockToggle" type="checkbox" checked />
-                            <span class="display-toggle__track"></span>
-                          </label>
-
-                          <label class="display-field">
-                            <span class="display-field__label">Idle Timeout (minutes)</span>
-                            <input id="idleTimeoutInput" type="number" min="1" max="120" value="10" />
-                          </label>
-                        </div>
-                      </section>
-
-                      <section class="display-card" aria-labelledby="screensaverTitle">
-                        <div class="display-card__header">
-                          <div>
-                            <span class="display-card__eyebrow">Screen Saver</span>
-                            <h3 id="screensaverTitle">Idle Content</h3>
-                          </div>
-                        </div>
-
-                        <div class="screensaver-options" id="screensaverOptions">
-                          <label class="screensaver-option is-active">
-                            <input type="radio" name="screensaverContent" value="clock" checked />
-                            <span class="screensaver-option__title">Clock</span>
-                            <span class="screensaver-option__desc">Large digital clock display.</span>
-                          </label>
-
-                          <label class="screensaver-option">
-                            <input type="radio" name="screensaverContent" value="brand" />
-                            <span class="screensaver-option__title">Brand Info</span>
-                            <span class="screensaver-option__desc">Company logo and room identity.</span>
-                          </label>
-
-                          <label class="screensaver-option">
-                            <input type="radio" name="screensaverContent" value="image" />
-                            <span class="screensaver-option__title">Custom Image</span>
-                            <span class="screensaver-option__desc">Upload a branded or decorative image.</span>
-                          </label>
-                        </div>
-
-                        <label class="display-field display-field--wide is-hidden" id="customImageField">
-                          <span class="display-field__label">Custom Image</span>
-                          <input id="customImageInput" type="file" accept="image/*" />
-                          <span class="display-field__hint" id="customImageHint">No image selected.</span>
-                        </label>
-                      </section>
-
-                      <section class="display-card" aria-labelledby="languageSettingsTitle">
-                        <div class="display-card__header">
-                          <div>
-                            <span class="display-card__eyebrow">Language</span>
-                            <h3 id="languageSettingsTitle">Display Language</h3>
-                          </div>
-                        </div>
-
-                        <div class="display-form-grid">
-                          <label class="display-field">
-                            <span class="display-field__label">Pad Language</span>
-                            <select id="displayLanguageSelect">
-                              <option value="en" selected>English</option>
-                              <option value="zh-TW">繁體中文</option>
-                              <option value="ja">日本語</option>
-                            </select>
-                          </label>
-                        </div>
-                      </section>
-                    </div>
-
-                    <div class="display-actions">
-                      <button class="modal-btn modal-btn--ghost" type="button" id="displayResetButton">
-                        Reset
-                      </button>
-                      <button class="modal-btn modal-btn--primary" type="button" id="displaySaveButton">
-                        Apply Display Settings
-                      </button>
-                    </div>
-                  </div>
-                </section>
-              </div>
-
               <div class="content-canvas__empty is-hidden" id="contentPlaceholder">
                 <div class="empty-panel">
                   <span class="empty-panel__line"></span>
                   <p id="placeholderText">Main content area reserved for future modules.</p>
                 </div>
               </div>
+
+              <section class="display-panel is-hidden" id="displayPanel" aria-labelledby="displayPanelTitle">
+                <div class="display-hero">
+                  <div class="display-hero__copy">
+                    <span class="panel-card__eyebrow">Common System Function</span>
+                    <h2 id="displayPanelTitle">Pad Display Setting</h2>
+                    <p>
+                      Configure pad time and date, display mode, brightness, screen lock, screen
+                      saver content, and on-device language.
+                    </p>
+                  </div>
+                  <div class="display-hero__status" id="displayThemeBadge">Light Mode</div>
+                </div>
+
+                <div class="display-layout">
+                  <section class="panel-card display-card" aria-labelledby="displayConfigTitle">
+                    <div class="panel-card__header">
+                      <div>
+                        <span class="panel-card__eyebrow">Panel Configuration</span>
+                        <h3 id="displayConfigTitle">Display Controls</h3>
+                      </div>
+                    </div>
+
+                    <form class="display-form" id="displayForm">
+                      <div class="display-section">
+                        <div class="display-section__header">
+                          <strong>Time and Date</strong>
+                          <p>Use automatic network time or enter the current time manually.</p>
+                        </div>
+
+                        <div class="display-toggle-row">
+                          <span class="display-toggle-row__label">Time Sync</span>
+                          <div class="network-mode-toggle" role="radiogroup" aria-label="Time sync mode">
+                            <label class="network-mode-option">
+                              <input type="radio" name="timeMode" value="auto" checked />
+                              <span>Auto</span>
+                            </label>
+                            <label class="network-mode-option">
+                              <input type="radio" name="timeMode" value="manual" />
+                              <span>Manual</span>
+                            </label>
+                          </div>
+                        </div>
+
+                        <div class="display-form-grid">
+                          <label class="form-field">
+                            <span>Time Format</span>
+                            <select id="timeFormatSelect" name="timeFormat">
+                              <option value="12" selected>12-hour</option>
+                              <option value="24">24-hour</option>
+                            </select>
+                          </label>
+                          <label class="form-field">
+                            <span>Current Time</span>
+                            <input id="manualTimeInput" name="manualTime" type="time" value="15:30" disabled />
+                          </label>
+                          <label class="form-field">
+                            <span>Date</span>
+                            <input id="dateInput" name="date" type="date" value="2026-03-30" />
+                          </label>
+                        </div>
+                      </div>
+
+                      <div class="display-section">
+                        <div class="display-section__header">
+                          <strong>Pad Display</strong>
+                          <p>Adjust viewing style, brightness, and the on-device display language.</p>
+                        </div>
+
+                        <div class="display-form-grid">
+                          <label class="form-field">
+                            <span>Display Mode</span>
+                            <select id="themeModeSelect" name="themeMode">
+                              <option value="light" selected>Light</option>
+                              <option value="dark">Dark</option>
+                            </select>
+                          </label>
+                          <label class="form-field">
+                            <span>Pad Language</span>
+                            <select id="padLanguageSelect" name="padLanguage">
+                              <option value="English" selected>English</option>
+                              <option value="繁體中文">繁體中文</option>
+                              <option value="日本語">日本語</option>
+                            </select>
+                          </label>
+                        </div>
+
+                        <div class="display-brightness-card">
+                          <div class="display-brightness-card__header">
+                            <strong>Brightness</strong>
+                            <span id="displayBrightnessBadge">78%</span>
+                          </div>
+                          <label class="pad-slider" for="displayBrightnessSlider">
+                            <input
+                              id="displayBrightnessSlider"
+                              class="pad-slider__input"
+                              name="displayBrightness"
+                              type="range"
+                              min="10"
+                              max="100"
+                              value="78"
+                            />
+                          </label>
+                        </div>
+                      </div>
+
+                      <div class="display-section">
+                        <div class="display-section__header">
+                          <strong>Screen Lock and Saver</strong>
+                          <p>Set lock timeout in minutes and choose what the screen saver shows.</p>
+                        </div>
+
+                        <div class="display-switch-grid">
+                          <div class="display-switch-card">
+                            <div>
+                              <strong>Screen Lock</strong>
+                              <p>Enable screen lock when the pad has been idle.</p>
+                            </div>
+                            <label class="switch" for="screenLockToggle">
+                              <input id="screenLockToggle" name="screenLock" type="checkbox" checked />
+                              <span class="switch__track">
+                                <span class="switch__thumb"></span>
+                              </span>
+                            </label>
+                          </div>
+                          <label class="form-field">
+                            <span>Idle Time (minutes)</span>
+                            <input id="idleMinutesInput" name="idleMinutes" type="number" min="1" value="10" />
+                          </label>
+                          <label class="form-field">
+                            <span>Screen Saver Content</span>
+                            <select id="screenSaverContentSelect" name="screenSaverContent">
+                              <option value="Clock" selected>Clock</option>
+                              <option value="Brand Information">Brand Information</option>
+                              <option value="Custom Image">Custom Image</option>
+                            </select>
+                          </label>
+                          <label class="form-field is-hidden" id="customImageField">
+                            <span>Browse Local Image</span>
+                            <input
+                              id="customImageInput"
+                              name="customImage"
+                              type="file"
+                              accept="image/*"
+                            />
+                          </label>
+                        </div>
+                      </div>
+
+                      <div class="display-actions">
+                        <p class="network-note">Date uses the built-in calendar picker when you open the field.</p>
+                        <button class="modal-btn modal-btn--primary" type="submit">Apply Display Setting</button>
+                      </div>
+                    </form>
+                  </section>
+                </div>
+              </section>
+
+              <section class="network-panel is-hidden" id="networkPanel" aria-labelledby="networkPanelTitle">
+                <div class="network-layout">
+                  <section class="panel-card network-card network-card--overview" aria-labelledby="networkStatusTitle">
+                    <div class="panel-card__header">
+                      <div>
+                        <span class="panel-card__eyebrow">Common System Function</span>
+                        <h3 id="networkStatusTitle">Network Configuration</h3>
+                      </div>
+                      <div class="network-priority-badge">Ethernet Priority Enabled</div>
+                    </div>
+
+                    <div class="network-overview-copy">
+                      <p>
+                        Wired Ethernet has priority for runtime control. Wi-Fi stays available for
+                        commissioning, backup access, and flexible deployment.
+                      </p>
+                    </div>
+
+                    <div class="network-status-card network-status-card--integrated">
+                      <div class="network-status-card__header">
+                        <div>
+                          <span class="panel-card__eyebrow">Current Status</span>
+                          <strong class="network-status-card__title">Active Network</strong>
+                        </div>
+                        <span class="device-status is-online" id="networkStatusBadge">Ethernet Active</span>
+                      </div>
+
+                      <div class="network-status-card__main">
+                        <div class="network-connection-pill" id="networkConnectionPill">
+                          <span class="network-connection-pill__icon" id="networkConnectionIcon">
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                              <path d="M7 5h10v4H7zM5 11h14v8H5zM9 15h2M13 15h2" />
+                            </svg>
+                          </span>
+                          <div>
+                            <strong id="networkConnectionLabel">Ethernet</strong>
+                            <span id="networkConnectionMeta">RJ45 connected / DHCP</span>
+                          </div>
+                        </div>
+                        <p class="network-status-card__hint" id="networkStatusHint">
+                          Wired connection is online and currently used for system traffic.
+                        </p>
+                      </div>
+
+                      <div class="network-info-grid">
+                        <article class="info-item">
+                          <span class="info-item__label">IP Address</span>
+                          <strong class="info-item__value" id="networkInfoIp">192.168.10.88</strong>
+                        </article>
+                        <article class="info-item">
+                          <span class="info-item__label">Mask</span>
+                          <strong class="info-item__value" id="networkInfoMask">255.255.255.0</strong>
+                        </article>
+                        <article class="info-item">
+                          <span class="info-item__label">Gateway</span>
+                          <strong class="info-item__value" id="networkInfoGateway">192.168.10.1</strong>
+                        </article>
+                        <article class="info-item">
+                          <span class="info-item__label">DNS</span>
+                          <strong class="info-item__value" id="networkInfoDns">8.8.8.8 / 1.1.1.1</strong>
+                        </article>
+                      </div>
+                    </div>
+                  </section>
+
+                  <section class="panel-card network-card" aria-labelledby="ethernetSettingsTitle">
+                    <div class="panel-card__header">
+                      <div>
+                        <span class="panel-card__eyebrow">Ethernet</span>
+                        <h3 id="ethernetSettingsTitle">Wired Network</h3>
+                      </div>
+                    </div>
+
+                    <form class="network-form" id="ethernetForm">
+                      <div class="network-mode-toggle" role="radiogroup" aria-label="Ethernet mode">
+                        <label class="network-mode-option">
+                          <input type="radio" name="ethernetMode" value="dhcp" checked />
+                          <span>DHCP</span>
+                        </label>
+                        <label class="network-mode-option">
+                          <input type="radio" name="ethernetMode" value="static" />
+                          <span>Static</span>
+                        </label>
+                      </div>
+
+                      <div class="network-form-grid">
+                        <label class="form-field">
+                          <span>IP Address</span>
+                          <input id="ethernetIpInput" name="ethernetIp" type="text" value="192.168.10.88" disabled />
+                        </label>
+                        <label class="form-field">
+                          <span>Mask</span>
+                          <input id="ethernetMaskInput" name="ethernetMask" type="text" value="255.255.255.0" disabled />
+                        </label>
+                        <label class="form-field">
+                          <span>Gateway</span>
+                          <input id="ethernetGatewayInput" name="ethernetGateway" type="text" value="192.168.10.1" disabled />
+                        </label>
+                        <label class="form-field">
+                          <span>DNS</span>
+                          <input id="ethernetDnsInput" name="ethernetDns" type="text" value="8.8.8.8, 1.1.1.1" disabled />
+                        </label>
+                      </div>
+
+                      <div class="network-actions">
+                        <p class="network-note">Use static IP when the installation requires fixed addressing.</p>
+                        <button class="modal-btn modal-btn--primary" type="submit">Apply Ethernet</button>
+                      </div>
+                    </form>
+                  </section>
+
+                  <section class="panel-card network-card" aria-labelledby="wifiSettingsTitle">
+                    <div class="panel-card__header">
+                      <div>
+                        <span class="panel-card__eyebrow">Wi-Fi</span>
+                        <h3 id="wifiSettingsTitle">Wireless Network</h3>
+                      </div>
+                    </div>
+
+                    <div class="wifi-toolbar">
+                      <div class="wifi-toggle">
+                        <div>
+                          <strong>Wi-Fi</strong>
+                          <p>Turn wireless on to scan and join available networks.</p>
+                        </div>
+                        <label class="switch" for="wifiToggle">
+                          <input id="wifiToggle" type="checkbox" checked />
+                          <span class="switch__track">
+                            <span class="switch__thumb"></span>
+                          </span>
+                        </label>
+                      </div>
+
+                      <div class="wifi-current">
+                        <span class="wifi-current__label">Current SSID</span>
+                        <strong id="wifiCurrentSsid">Cypress_Setup_5G</strong>
+                        <span class="wifi-current__hint" id="wifiCurrentMeta">Standby because Ethernet is active</span>
+                      </div>
+                    </div>
+
+                    <div class="wifi-list-card">
+                      <div class="wifi-list-card__header">
+                        <strong>Available Networks</strong>
+                        <span id="wifiAvailabilityMeta">Tap a secured network to enter password.</span>
+                      </div>
+                      <div class="wifi-list" id="wifiList" role="list"></div>
+                    </div>
+                  </section>
+                </div>
+              </section>
             </div>
           </section>
         </main>
@@ -678,6 +801,29 @@
               Cancel
             </button>
             <button class="modal-btn modal-btn--primary" type="submit">Save</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="modal-backdrop is-hidden" id="wifiPasswordModal" aria-hidden="true">
+      <div class="modal-window" role="dialog" aria-modal="true" aria-labelledby="wifiPasswordTitle">
+        <div class="modal-window__header">
+          <h2 id="wifiPasswordTitle">Join Wi-Fi</h2>
+        </div>
+        <form class="modal-form" id="wifiPasswordForm">
+          <div class="settings-section">
+            <h3 id="wifiPasswordNetworkName">SSID</h3>
+            <label class="form-field">
+              <span>Password</span>
+              <input id="wifiPasswordInput" name="wifiPassword" type="password" autocomplete="current-password" />
+            </label>
+          </div>
+          <div class="modal-window__actions">
+            <button class="modal-btn modal-btn--ghost" type="button" data-close-modal="wifiPasswordModal">
+              Cancel
+            </button>
+            <button class="modal-btn modal-btn--primary" type="submit">Connect</button>
           </div>
         </form>
       </div>
