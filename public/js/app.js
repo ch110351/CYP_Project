@@ -16,6 +16,11 @@ const statusToast = document.getElementById("statusToast");
 const homeDashboard = document.getElementById("homeDashboard");
 const contentPlaceholder = document.getElementById("contentPlaceholder");
 const placeholderText = document.getElementById("placeholderText");
+const commandPanel = document.getElementById("commandPanel");
+const createCommandButton = document.getElementById("createCommandButton");
+const commandTableBody = document.getElementById("commandTableBody");
+const commandSummary = document.getElementById("commandSummary");
+const commandPagination = document.getElementById("commandPagination");
 const displayPanel = document.getElementById("displayPanel");
 const networkPanel = document.getElementById("networkPanel");
 const padButtons = document.querySelectorAll(".pad-button");
@@ -48,6 +53,18 @@ const wifiPasswordModal = document.getElementById("wifiPasswordModal");
 const wifiPasswordForm = document.getElementById("wifiPasswordForm");
 const wifiPasswordInput = document.getElementById("wifiPasswordInput");
 const wifiPasswordNetworkName = document.getElementById("wifiPasswordNetworkName");
+const commandEditorModal = document.getElementById("commandEditorModal");
+const commandEditorForm = document.getElementById("commandEditorForm");
+const commandEditorTitle = document.getElementById("commandEditorTitle");
+const commandEditIndex = document.getElementById("commandEditIndex");
+const commandNameInput = document.getElementById("commandNameInput");
+const commandInterfaceSelect = document.getElementById("commandInterfaceSelect");
+const commandDeviceSelect = document.getElementById("commandDeviceSelect");
+const commandTelnetIpField = document.getElementById("commandTelnetIpField");
+const commandTelnetPortField = document.getElementById("commandTelnetPortField");
+const commandTelnetIpInput = document.getElementById("commandTelnetIpInput");
+const commandTelnetPortInput = document.getElementById("commandTelnetPortInput");
+const commandDataInput = document.getElementById("commandDataInput");
 const displayForm = document.getElementById("displayForm");
 const timeModeInputs = document.querySelectorAll('input[name="timeMode"]');
 const timeFormatSelect = document.getElementById("timeFormatSelect");
@@ -72,6 +89,7 @@ const state = {
   padDragStartX: 0,
   padDragDeltaX: 0,
   isPadDragging: false,
+  commandPage: 1,
   ethernet: {
     connected: true,
     mode: "dhcp",
@@ -99,6 +117,188 @@ const state = {
     ],
   },
   pendingWifiSSID: null,
+  commands: [
+    {
+      id: "CMD-001",
+      name: "Display Power On",
+      interface: "System",
+      data: "display.power=on",
+      device: "Main Display",
+      telnetIp: "",
+      telnetPort: "",
+    },
+    {
+      id: "CMD-002",
+      name: "Switcher Input 1",
+      interface: "RS232",
+      data: "VIDEO IN1 OUT1\\r",
+      device: "Matrix Switcher",
+      telnetIp: "",
+      telnetPort: "",
+    },
+    {
+      id: "CMD-003",
+      name: "Camera Preset Recall",
+      interface: "Telnet",
+      data: "camera preset recall 1",
+      device: "PTZ Camera",
+      telnetIp: "192.168.10.150",
+      telnetPort: "23",
+    },
+    {
+      id: "CMD-004",
+      name: "Display Power Off",
+      interface: "System",
+      data: "display.power=off",
+      device: "Main Display",
+      telnetIp: "",
+      telnetPort: "",
+    },
+    {
+      id: "CMD-005",
+      name: "Display HDMI 1",
+      interface: "RS232",
+      data: "SOURCE HDMI1\\r",
+      device: "Main Display",
+      telnetIp: "",
+      telnetPort: "",
+    },
+    {
+      id: "CMD-006",
+      name: "Display HDMI 2",
+      interface: "RS232",
+      data: "SOURCE HDMI2\\r",
+      device: "Main Display",
+      telnetIp: "",
+      telnetPort: "",
+    },
+    {
+      id: "CMD-007",
+      name: "Audio Volume Up",
+      interface: "System",
+      data: "audio.volume=up",
+      device: "Audio DSP",
+      telnetIp: "",
+      telnetPort: "",
+    },
+    {
+      id: "CMD-008",
+      name: "Audio Volume Down",
+      interface: "System",
+      data: "audio.volume=down",
+      device: "Audio DSP",
+      telnetIp: "",
+      telnetPort: "",
+    },
+    {
+      id: "CMD-009",
+      name: "Audio Mute On",
+      interface: "Telnet",
+      data: "mute on",
+      device: "Audio DSP",
+      telnetIp: "192.168.10.161",
+      telnetPort: "23",
+    },
+    {
+      id: "CMD-010",
+      name: "Audio Mute Off",
+      interface: "Telnet",
+      data: "mute off",
+      device: "Audio DSP",
+      telnetIp: "192.168.10.161",
+      telnetPort: "23",
+    },
+    {
+      id: "CMD-011",
+      name: "Matrix Route Laptop",
+      interface: "RS232",
+      data: "ROUTE IN2 OUT1\\r",
+      device: "Matrix Switcher",
+      telnetIp: "",
+      telnetPort: "",
+    },
+    {
+      id: "CMD-012",
+      name: "Matrix Route Camera",
+      interface: "RS232",
+      data: "ROUTE IN3 OUT1\\r",
+      device: "Matrix Switcher",
+      telnetIp: "",
+      telnetPort: "",
+    },
+    {
+      id: "CMD-013",
+      name: "Camera Preset 2",
+      interface: "Telnet",
+      data: "camera preset recall 2",
+      device: "PTZ Camera",
+      telnetIp: "192.168.10.150",
+      telnetPort: "23",
+    },
+    {
+      id: "CMD-014",
+      name: "Camera Preset 3",
+      interface: "Telnet",
+      data: "camera preset recall 3",
+      device: "PTZ Camera",
+      telnetIp: "192.168.10.150",
+      telnetPort: "23",
+    },
+    {
+      id: "CMD-015",
+      name: "Camera Home",
+      interface: "Telnet",
+      data: "camera home",
+      device: "PTZ Camera",
+      telnetIp: "192.168.10.150",
+      telnetPort: "23",
+    },
+    {
+      id: "CMD-016",
+      name: "Lights Scene Meeting",
+      interface: "System",
+      data: "lights.scene=meeting",
+      device: "Lighting Controller",
+      telnetIp: "",
+      telnetPort: "",
+    },
+    {
+      id: "CMD-017",
+      name: "Lights Scene Presentation",
+      interface: "System",
+      data: "lights.scene=presentation",
+      device: "Lighting Controller",
+      telnetIp: "",
+      telnetPort: "",
+    },
+    {
+      id: "CMD-018",
+      name: "Lights Brightness 70",
+      interface: "RS232",
+      data: "DIM 70\\r",
+      device: "Lighting Controller",
+      telnetIp: "",
+      telnetPort: "",
+    },
+    {
+      id: "CMD-019",
+      name: "Project Shutdown",
+      interface: "System",
+      data: "system.shutdown=project",
+      device: "Main Display",
+      telnetIp: "",
+      telnetPort: "",
+    },
+    {
+      id: "CMD-020",
+      name: "Wake Room Devices",
+      interface: "System",
+      data: "room.wakeup=all",
+      device: "Main Display",
+      telnetIp: "",
+      telnetPort: "",
+    },
+  ],
   display: {
     timeMode: "auto",
     timeFormat: "12",
@@ -139,6 +339,41 @@ function closeUserMenu() {
   userMenuTrigger.setAttribute("aria-expanded", "false");
 }
 
+function escapeHtml(value) {
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function getCommandPageCount() {
+  return Math.max(1, Math.ceil(state.commands.length / 15));
+}
+
+function normalizeCommandPage() {
+  state.commandPage = Math.max(1, Math.min(state.commandPage, getCommandPageCount()));
+}
+
+function generateCommandId() {
+  const nextNumber =
+    state.commands.reduce((maxValue, command) => {
+      const matched = String(command.id || "").match(/(\d+)$/);
+      const numericId = matched ? Number(matched[1]) : 0;
+      return Math.max(maxValue, numericId);
+    }, 0) + 1;
+
+  return `CMD-${String(nextNumber).padStart(3, "0")}`;
+}
+
+function syncCommandEditorInterfaceFields() {
+  const isTelnet = commandInterfaceSelect?.value === "Telnet";
+
+  commandTelnetIpField?.classList.toggle("is-hidden", !isTelnet);
+  commandTelnetPortField?.classList.toggle("is-hidden", !isTelnet);
+}
+
 function renderUserMenu() {
   if (state.isLoggedIn) {
     userDropdown.innerHTML = `
@@ -177,12 +412,19 @@ function updatePadPage(pageIndex) {
 }
 
 function updateContentStage(sectionTitle, isHome) {
+  const isCommandManagement = sectionTitle === "Command Management";
   const isDisplay = sectionTitle === "Pad Display Setting";
   const isNetwork = sectionTitle === "Network";
   homeDashboard.classList.toggle("is-hidden", !isHome);
-  contentPlaceholder.classList.toggle("is-hidden", isHome || isDisplay || isNetwork);
+  contentPlaceholder.classList.toggle("is-hidden", isHome || isCommandManagement || isDisplay || isNetwork);
+  commandPanel.classList.toggle("is-hidden", !isCommandManagement);
   displayPanel.classList.toggle("is-hidden", !isDisplay);
   networkPanel.classList.toggle("is-hidden", !isNetwork);
+
+  if (isCommandManagement) {
+    renderCommandManagement();
+    return;
+  }
 
   if (isDisplay) {
     renderDisplayPanel();
@@ -197,6 +439,159 @@ function updateContentStage(sectionTitle, isHome) {
   if (!isHome) {
     placeholderText.textContent = `${sectionTitle} content area reserved for future modules.`;
   }
+}
+
+function renderCommandManagement() {
+  if (!commandTableBody || !commandSummary || !commandPagination) {
+    return;
+  }
+
+  normalizeCommandPage();
+  commandSummary.textContent = `${state.commands.length} command${state.commands.length === 1 ? "" : "s"}`;
+
+  if (!state.commands.length) {
+    commandTableBody.innerHTML = `
+      <tr>
+        <td class="command-empty" colspan="6">
+          <p>No commands yet. Use Create to add the first command.</p>
+        </td>
+      </tr>
+    `;
+    commandPagination.innerHTML = "";
+    return;
+  }
+
+  const pageSize = 15;
+  const pageStart = (state.commandPage - 1) * pageSize;
+  const currentPageCommands = state.commands.slice(pageStart, pageStart + pageSize);
+
+  commandTableBody.innerHTML = currentPageCommands
+    .map((command, index) => {
+      const preview = command.data.length > 72 ? `${command.data.slice(0, 72)}...` : command.data;
+      const commandIndex = pageStart + index;
+
+      return `
+        <tr>
+          <td><span class="command-id">${escapeHtml(command.id)}</span></td>
+          <td>
+            <div class="command-name">
+              <strong>${escapeHtml(command.name)}</strong>
+              <span>Command #${commandIndex + 1}</span>
+            </div>
+          </td>
+          <td><span class="command-pill">${escapeHtml(command.interface)}</span></td>
+          <td><div class="command-data">${escapeHtml(preview).replace(/\n/g, "<br />")}</div></td>
+          <td>${escapeHtml(command.device)}</td>
+          <td>
+            <div class="command-actions">
+              <button class="command-action-btn" type="button" data-command-action="edit" data-command-index="${commandIndex}" aria-label="Edit command" title="Edit">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M4 20h4l10-10-4-4L4 16v4Zm13-13 2 2M4 20h16" />
+                </svg>
+              </button>
+              <button class="command-action-btn" type="button" data-command-action="copy" data-command-index="${commandIndex}" aria-label="Copy command" title="Copy">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M9 9h10v11H9zM5 4h10v11" />
+                </svg>
+              </button>
+              <button class="command-action-btn command-action-btn--danger" type="button" data-command-action="delete" data-command-index="${commandIndex}" aria-label="Delete command" title="Delete">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M5 7h14M9 7V4h6v3M8 10v7M12 10v7M16 10v7M7 7l1 13h8l1-13" />
+                </svg>
+              </button>
+              <button class="command-action-btn" type="button" data-command-action="test" data-command-index="${commandIndex}" aria-label="Test run command" title="Test Run">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="m8 6 10 6-10 6zM5 5v14" />
+                </svg>
+              </button>
+            </div>
+          </td>
+        </tr>
+      `;
+    })
+    .join("");
+
+  const pageCount = getCommandPageCount();
+  const pageButtons = Array.from({ length: pageCount }, (_, index) => {
+    const pageNumber = index + 1;
+
+    return `
+      <button
+        class="command-page-btn ${pageNumber === state.commandPage ? "is-active" : ""}"
+        type="button"
+        data-command-page="${pageNumber}"
+      >
+        ${pageNumber}
+      </button>
+    `;
+  }).join("");
+
+  commandPagination.innerHTML = `
+    <button class="command-page-btn" type="button" data-command-page-nav="prev" ${state.commandPage === 1 ? "disabled" : ""}>
+      Prev
+    </button>
+    ${pageButtons}
+    <button class="command-page-btn" type="button" data-command-page-nav="next" ${state.commandPage === pageCount ? "disabled" : ""}>
+      Next
+    </button>
+  `;
+}
+
+function openCommandEditor(mode, commandIndex = null) {
+  const isEditMode = mode === "edit";
+  const command = isEditMode && commandIndex !== null ? state.commands[commandIndex] : null;
+
+  commandEditorTitle.textContent = isEditMode ? "Edit Command" : "Create Command";
+  commandEditIndex.value = commandIndex !== null ? String(commandIndex) : "";
+  commandNameInput.value = command?.name || "";
+  commandInterfaceSelect.value = command?.interface || "System";
+  commandDeviceSelect.value = command?.device || "Main Display";
+  commandTelnetIpInput.value = command?.telnetIp || "";
+  commandTelnetPortInput.value = command?.telnetPort || "";
+  commandDataInput.value = command?.data || "";
+  syncCommandEditorInterfaceFields();
+
+  openModal(commandEditorModal);
+  commandNameInput.focus();
+}
+
+function duplicateCommand(commandIndex) {
+  const command = state.commands[commandIndex];
+
+  if (!command) {
+    return;
+  }
+
+  state.commands.splice(commandIndex + 1, 0, {
+    ...command,
+    id: generateCommandId(),
+    name: `${command.name} Copy`,
+  });
+  renderCommandManagement();
+  showToast(`${command.name} copied.`);
+}
+
+function deleteCommand(commandIndex) {
+  const command = state.commands[commandIndex];
+
+  if (!command) {
+    return;
+  }
+
+  state.commands.splice(commandIndex, 1);
+  normalizeCommandPage();
+  renderCommandManagement();
+  showToast(`${command.name} deleted.`);
+}
+
+function testRunCommand(commandIndex) {
+  const command = state.commands[commandIndex];
+
+  if (!command) {
+    return;
+  }
+
+  showToast(`Test run sent to ${command.device} via ${command.interface}.`);
 }
 
 function renderDisplayPanel() {
@@ -860,6 +1255,150 @@ if (displayForm) {
   });
 }
 
+if (createCommandButton) {
+  createCommandButton.addEventListener("click", () => {
+    openCommandEditor("create");
+  });
+}
+
+if (commandTableBody) {
+  commandTableBody.addEventListener("click", (event) => {
+    const actionButton = event.target.closest("[data-command-action]");
+
+    if (!actionButton) {
+      return;
+    }
+
+    const action = actionButton.getAttribute("data-command-action");
+    const commandIndex = Number(actionButton.getAttribute("data-command-index"));
+
+    if (!Number.isInteger(commandIndex) || commandIndex < 0) {
+      return;
+    }
+
+    if (action === "edit") {
+      openCommandEditor("edit", commandIndex);
+      return;
+    }
+
+    if (action === "copy") {
+      duplicateCommand(commandIndex);
+      return;
+    }
+
+    if (action === "delete") {
+      deleteCommand(commandIndex);
+      return;
+    }
+
+    if (action === "test") {
+      testRunCommand(commandIndex);
+    }
+  });
+}
+
+if (commandPagination) {
+  commandPagination.addEventListener("click", (event) => {
+    const pageButton = event.target.closest("[data-command-page]");
+    const navButton = event.target.closest("[data-command-page-nav]");
+
+    if (pageButton) {
+      state.commandPage = Number(pageButton.getAttribute("data-command-page"));
+      renderCommandManagement();
+      return;
+    }
+
+    if (!navButton) {
+      return;
+    }
+
+    const direction = navButton.getAttribute("data-command-page-nav");
+
+    if (direction === "prev" && state.commandPage > 1) {
+      state.commandPage -= 1;
+    }
+
+    if (direction === "next" && state.commandPage < getCommandPageCount()) {
+      state.commandPage += 1;
+    }
+
+    renderCommandManagement();
+  });
+}
+
+if (commandInterfaceSelect) {
+  commandInterfaceSelect.addEventListener("change", () => {
+    syncCommandEditorInterfaceFields();
+  });
+}
+
+if (commandEditorForm) {
+  commandEditorForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+
+    const name = commandNameInput.value.trim();
+    const commandData = commandDataInput.value.trim();
+    const interfaceType = commandInterfaceSelect.value;
+    const device = commandDeviceSelect.value;
+    const telnetIp = commandTelnetIpInput.value.trim();
+    const telnetPort = commandTelnetPortInput.value.trim();
+    const editIndex = commandEditIndex.value === "" ? -1 : Number(commandEditIndex.value);
+
+    if (!name) {
+      showToast("Please enter a command name.");
+      return;
+    }
+
+    if (!commandData) {
+      showToast("Please enter command data.");
+      return;
+    }
+
+    if (interfaceType === "Telnet") {
+      if (!telnetIp) {
+        showToast("Please enter Telnet IP.");
+        return;
+      }
+
+      if (!telnetPort || Number(telnetPort) < 1 || Number(telnetPort) > 65535) {
+        showToast("Please enter a valid Telnet port.");
+        return;
+      }
+    }
+
+    const nextCommand = {
+      id: Number.isInteger(editIndex) && editIndex >= 0 && state.commands[editIndex]
+        ? state.commands[editIndex].id
+        : generateCommandId(),
+      name,
+      interface: interfaceType,
+      data: commandData,
+      device,
+      telnetIp: interfaceType === "Telnet" ? telnetIp : "",
+      telnetPort: interfaceType === "Telnet" ? telnetPort : "",
+    };
+
+    if (Number.isInteger(editIndex) && editIndex >= 0 && state.commands[editIndex]) {
+      state.commands[editIndex] = nextCommand;
+      showToast(`${name} updated.`);
+    } else {
+      state.commands.unshift(nextCommand);
+      state.commandPage = 1;
+      showToast(`${name} created.`);
+    }
+
+    renderCommandManagement();
+    closeModal(commandEditorModal);
+    commandEditorForm.reset();
+    commandEditIndex.value = "";
+    commandInterfaceSelect.value = "System";
+    commandDeviceSelect.value = "Main Display";
+    commandTelnetIpInput.value = "";
+    commandTelnetPortInput.value = "";
+    syncCommandEditorInterfaceFields();
+  });
+}
+
 if (wifiToggle) {
   wifiToggle.addEventListener("change", () => {
     state.wifi.enabled = wifiToggle.checked;
@@ -947,7 +1486,7 @@ document.querySelectorAll("[data-close-modal]").forEach((button) => {
   });
 });
 
-[signinModal, settingsModal, wifiPasswordModal].forEach((modal) => {
+[signinModal, settingsModal, wifiPasswordModal, commandEditorModal].forEach((modal) => {
   modal.addEventListener("click", (event) => {
     if (event.target === modal) {
       closeModal(modal);
@@ -967,9 +1506,12 @@ document.addEventListener("keydown", (event) => {
     closeModal(signinModal);
     closeModal(settingsModal);
     closeModal(wifiPasswordModal);
+    closeModal(commandEditorModal);
   }
 });
 
 renderUserMenu();
+renderCommandManagement();
+syncCommandEditorInterfaceFields();
 updateContentStage("Home", true);
 updatePadPage(0);

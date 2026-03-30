@@ -426,6 +426,49 @@
                 </div>
               </div>
 
+              <section class="command-panel is-hidden" id="commandPanel" aria-labelledby="commandPanelTitle">
+                <div class="command-hero">
+                  <div class="command-hero__copy">
+                    <span class="panel-card__eyebrow">Control Library</span>
+                    <h2 id="commandPanelTitle">Command Management</h2>
+                    <p>
+                      Maintain reusable device commands with interface type, command data, and quick
+                      actions for editing, duplicating, deleting, and test running.
+                    </p>
+                  </div>
+                  <button class="modal-btn modal-btn--primary" id="createCommandButton" type="button">
+                    Create
+                  </button>
+                </div>
+
+                <section class="panel-card command-card" aria-labelledby="commandTableTitle">
+                  <div class="panel-card__header">
+                    <div>
+                      <span class="panel-card__eyebrow">Command List</span>
+                      <h3 id="commandTableTitle">Device Command Table</h3>
+                    </div>
+                    <div class="command-summary" id="commandSummary">0 commands</div>
+                  </div>
+
+                  <div class="command-table-wrap">
+                    <table class="command-table">
+                      <thead>
+                        <tr>
+                          <th scope="col">Command ID</th>
+                          <th scope="col">Command Name</th>
+                          <th scope="col">Interface</th>
+                          <th scope="col">Command Data</th>
+                          <th scope="col">Device</th>
+                          <th scope="col">Action</th>
+                        </tr>
+                      </thead>
+                      <tbody id="commandTableBody"></tbody>
+                    </table>
+                  </div>
+                  <div class="command-pagination" id="commandPagination"></div>
+                </section>
+              </section>
+
               <section class="display-panel is-hidden" id="displayPanel" aria-labelledby="displayPanelTitle">
                 <div class="display-hero">
                   <div class="display-hero__copy">
@@ -824,6 +867,59 @@
               Cancel
             </button>
             <button class="modal-btn modal-btn--primary" type="submit">Connect</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="modal-backdrop is-hidden" id="commandEditorModal" aria-hidden="true">
+      <div class="modal-window modal-window--wide" role="dialog" aria-modal="true" aria-labelledby="commandEditorTitle">
+        <div class="modal-window__header">
+          <h2 id="commandEditorTitle">Create Command</h2>
+        </div>
+        <form class="modal-form" id="commandEditorForm">
+          <input id="commandEditIndex" name="commandEditIndex" type="hidden" value="" />
+          <div class="command-editor-grid">
+            <label class="form-field">
+              <span>Command Name</span>
+              <input id="commandNameInput" name="commandName" type="text" maxlength="64" />
+            </label>
+            <label class="form-field">
+              <span>Command Interface</span>
+              <select id="commandInterfaceSelect" name="commandInterface">
+                <option value="System">System</option>
+                <option value="RS232">RS232</option>
+                <option value="Telnet">Telnet</option>
+              </select>
+            </label>
+            <label class="form-field">
+              <span>Device</span>
+              <select id="commandDeviceSelect" name="commandDevice">
+                <option value="Main Display">Main Display</option>
+                <option value="Matrix Switcher">Matrix Switcher</option>
+                <option value="Audio DSP">Audio DSP</option>
+                <option value="PTZ Camera">PTZ Camera</option>
+                <option value="Lighting Controller">Lighting Controller</option>
+              </select>
+            </label>
+            <label class="form-field is-hidden" id="commandTelnetIpField">
+              <span>Telnet IP</span>
+              <input id="commandTelnetIpInput" name="commandTelnetIp" type="text" placeholder="192.168.10.50" />
+            </label>
+            <label class="form-field is-hidden" id="commandTelnetPortField">
+              <span>Telnet Port</span>
+              <input id="commandTelnetPortInput" name="commandTelnetPort" type="number" min="1" max="65535" placeholder="23" />
+            </label>
+            <label class="form-field form-field--full">
+              <span>Command Data</span>
+              <textarea id="commandDataInput" name="commandData" rows="5"></textarea>
+            </label>
+          </div>
+          <div class="modal-window__actions">
+            <button class="modal-btn modal-btn--ghost" type="button" data-close-modal="commandEditorModal">
+              Cancel
+            </button>
+            <button class="modal-btn modal-btn--primary" type="submit">Save Command</button>
           </div>
         </form>
       </div>
