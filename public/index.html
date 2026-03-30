@@ -469,6 +469,189 @@
                 </section>
               </section>
 
+              <section class="macro-panel is-hidden" id="macroPanel" aria-labelledby="macroPanelTitle">
+                <div class="macro-list-view" id="macroListView">
+                  <div class="macro-hero">
+                    <div class="macro-hero__copy">
+                      <span class="panel-card__eyebrow">Control Automation</span>
+                      <h2 id="macroPanelTitle">Macro Management</h2>
+                      <p>
+                        Organize reusable control workflows for room startup, shutdown, occupancy
+                        response, and device sequencing.
+                      </p>
+                    </div>
+                    <button class="modal-btn modal-btn--primary" id="newMacroButton" type="button">
+                      + New Macro
+                    </button>
+                  </div>
+
+                  <section class="panel-card macro-card" aria-labelledby="macroTableTitle">
+                    <div class="panel-card__header">
+                      <div>
+                        <span class="panel-card__eyebrow">Macro Library</span>
+                        <h3 id="macroTableTitle">Macro List</h3>
+                      </div>
+                      <div class="macro-summary" id="macroSummary">0 macros</div>
+                    </div>
+
+                    <div class="macro-toolbar">
+                      <label class="form-field macro-search-field">
+                        <span>Search</span>
+                        <input
+                          id="macroSearchInput"
+                          name="macroSearch"
+                          type="search"
+                          placeholder="Search macro name or description"
+                        />
+                      </label>
+                    </div>
+
+                    <div class="macro-table-wrap">
+                      <table class="macro-table">
+                        <thead>
+                          <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Description</th>
+                            <th scope="col">Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody id="macroTableBody"></tbody>
+                      </table>
+                    </div>
+                    <div class="command-pagination" id="macroPagination"></div>
+
+                    <div class="macro-empty-state is-hidden" id="macroEmptyState">
+                      <div class="empty-panel empty-panel--compact">
+                        <span class="empty-panel__line"></span>
+                        <p>No macros yet</p>
+                        <button class="modal-btn modal-btn--primary" id="createFirstMacroButton" type="button">
+                          + Create Your First Macro
+                        </button>
+                      </div>
+                    </div>
+                  </section>
+                </div>
+
+                <section class="macro-editor-view is-hidden" id="macroEditorView" aria-labelledby="macroEditorTitle">
+                  <div class="macro-editor-topbar">
+                    <button class="modal-btn modal-btn--ghost" id="macroEditorBackButton" type="button">
+                      Back
+                    </button>
+                    <div class="macro-editor-topbar__copy">
+                      <span class="panel-card__eyebrow">Macro Builder</span>
+                      <h2 id="macroEditorTitle">Macro Editor</h2>
+                    </div>
+                    <div class="macro-editor-topbar__actions">
+                      <button class="modal-btn modal-btn--ghost" id="macroEditorTestButton" type="button">
+                        Test Run
+                      </button>
+                      <button class="modal-btn modal-btn--primary" id="macroEditorSaveButton" type="button">
+                        Save
+                      </button>
+                    </div>
+                  </div>
+
+                  <section class="panel-card macro-editor-card" aria-labelledby="macroBasicInfoTitle">
+                    <div class="panel-card__header">
+                      <div>
+                        <span class="panel-card__eyebrow">Basic Information</span>
+                        <h3 id="macroBasicInfoTitle">Macro Setup</h3>
+                      </div>
+                    </div>
+
+                    <div class="macro-editor-basic">
+                      <label class="form-field">
+                        <span>Macro Name</span>
+                        <input id="macroBasicNameInput" name="macroBasicName" type="text" maxlength="80" />
+                      </label>
+                      <label class="form-field form-field--full">
+                        <span>Description</span>
+                        <textarea id="macroBasicDescriptionInput" name="macroBasicDescription" rows="3"></textarea>
+                      </label>
+                    </div>
+                  </section>
+
+                  <div class="macro-builder-layout">
+                    <aside class="panel-card macro-builder-panel macro-library-panel" aria-labelledby="macroLibraryTitle">
+                      <div class="panel-card__header">
+                        <div>
+                          <span class="panel-card__eyebrow">Action Library</span>
+                          <h3 id="macroLibraryTitle">Insert Actions</h3>
+                        </div>
+                      </div>
+
+                      <div class="macro-library-grid" id="macroActionLibrary">
+                        <button class="macro-library-action" type="button" data-macro-insert-type="command">
+                          <strong>Execute Command</strong>
+                          <span>Insert a command execution step</span>
+                        </button>
+                        <button class="macro-library-action" type="button" data-macro-insert-type="delay">
+                          <strong>Delay</strong>
+                          <span>Add a timed wait step</span>
+                        </button>
+                        <button class="macro-library-action" type="button" data-macro-insert-type="ifElse">
+                          <strong>IF / ELSE</strong>
+                          <span>Create a conditional branch</span>
+                        </button>
+                        <button class="macro-library-action" type="button" data-macro-insert-type="polling">
+                          <strong>Start Polling</strong>
+                          <span>Wait on device feedback rules</span>
+                        </button>
+                        <button class="macro-library-action" type="button" data-macro-insert-type="variable">
+                          <strong>Update Variable</strong>
+                          <span>Set or override a runtime value</span>
+                        </button>
+                        <button class="macro-library-action" type="button" data-macro-insert-type="runMacro">
+                          <strong>Run Macro</strong>
+                          <span>Call another macro from this flow</span>
+                        </button>
+                      </div>
+
+                      <div class="macro-library-meta">
+                        <section class="macro-library-card" aria-labelledby="macroVariablesTitle">
+                          <div class="macro-library-card__header">
+                            <span class="panel-card__eyebrow">Variables</span>
+                            <h4 id="macroVariablesTitle">Runtime Values</h4>
+                          </div>
+                          <div class="macro-meta-list" id="macroVariableList"></div>
+                        </section>
+
+                        <section class="macro-library-card" aria-labelledby="macroPollingTitle">
+                          <div class="macro-library-card__header">
+                            <span class="panel-card__eyebrow">Polling Rules</span>
+                            <h4 id="macroPollingTitle">Monitoring</h4>
+                          </div>
+                          <div class="macro-meta-list" id="macroPollingRuleList"></div>
+                        </section>
+                      </div>
+                    </aside>
+
+                    <section class="panel-card macro-builder-panel macro-flow-panel" aria-labelledby="macroFlowTitle">
+                      <div class="panel-card__header">
+                        <div>
+                          <span class="panel-card__eyebrow">Macro Flow</span>
+                          <h3 id="macroFlowTitle">Flow Editor</h3>
+                        </div>
+                      </div>
+
+                      <div class="macro-flow-canvas" id="macroFlowCanvas"></div>
+                    </section>
+
+                    <aside class="panel-card macro-builder-panel macro-inspector-panel" aria-labelledby="macroInspectorTitle">
+                      <div class="panel-card__header">
+                        <div>
+                          <span class="panel-card__eyebrow">Inspector</span>
+                          <h3 id="macroInspectorTitle">Step Properties</h3>
+                        </div>
+                      </div>
+
+                      <div class="macro-inspector-content" id="macroInspectorPanel"></div>
+                    </aside>
+                  </div>
+                </section>
+              </section>
+
               <section class="display-panel is-hidden" id="displayPanel" aria-labelledby="displayPanelTitle">
                 <div class="display-hero">
                   <div class="display-hero__copy">
@@ -922,6 +1105,28 @@
             <button class="modal-btn modal-btn--primary" type="submit">Save Command</button>
           </div>
         </form>
+      </div>
+    </div>
+
+    <div class="modal-backdrop is-hidden" id="macroDeleteModal" aria-hidden="true">
+      <div class="modal-window" role="dialog" aria-modal="true" aria-labelledby="macroDeleteTitle">
+        <div class="modal-window__header">
+          <h2 id="macroDeleteTitle">Delete Macro</h2>
+        </div>
+        <div class="modal-form">
+          <div class="settings-section">
+            <h3 id="macroDeleteName">Macro Name</h3>
+            <p class="macro-delete-copy">Are you sure you want to delete this macro from the library?</p>
+          </div>
+          <div class="modal-window__actions">
+            <button class="modal-btn modal-btn--ghost" type="button" data-close-modal="macroDeleteModal">
+              Cancel
+            </button>
+            <button class="modal-btn modal-btn--primary" id="confirmMacroDeleteButton" type="button">
+              Delete
+            </button>
+          </div>
+        </div>
       </div>
     </div>
 
