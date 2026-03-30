@@ -41,6 +41,460 @@
               <option value="ja">&#26085;&#26412;&#35486;</option>
             </select>
           </label>
+
+          <button
+            class="settings-btn is-hidden"
+            id="settingsButton"
+            type="button"
+            aria-label="Settings"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                d="M19.14 12.94c.04-.31.06-.63.06-.94s-.02-.63-.06-.94l2.03-1.58a.5.5 0 0 0 .12-.64l-1.92-3.32a.5.5 0 0 0-.6-.22l-2.39.96a7.19 7.19 0 0 0-1.63-.94l-.36-2.54a.49.49 0 0 0-.49-.42h-3.84a.49.49 0 0 0-.49.42l-.36 2.54c-.58.22-1.13.53-1.63.94l-2.39-.96a.5.5 0 0 0-.6.22L2.71 8.84a.5.5 0 0 0 .12.64l2.03 1.58c-.04.31-.06.63-.06.94s.02.63.06.94L2.83 14.52a.5.5 0 0 0-.12.64l1.92 3.32a.5.5 0 0 0 .6.22l2.39-.96c.5.41 1.05.72 1.63.94l.36 2.54a.49.49 0 0 0 .49.42h3.84a.49.49 0 0 0 .49-.42l.36-2.54c.58-.22 1.13-.53 1.63-.94l2.39.96a.5.5 0 0 0 .6-.22l1.92-3.32a.5.5 0 0 0-.12-.64l-2.03-1.58ZM12 15.5A3.5 3.5 0 1 1 12 8.5a3.5 3.5 0 0 1 0 7Z"
+              />
+            </svg>
+          </button>
+
+          <div class="user-menu" id="userMenu">
+            <button
+              class="user-menu__trigger"
+              id="userMenuTrigger"
+              type="button"
+              aria-label="User menu"
+              aria-haspopup="true"
+              aria-expanded="false"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4Zm0 2c-4.42 0-8 2.24-8 5v1h16v-1c0-2.76-3.58-5-8-5Z" />
+              </svg>
+            </button>
+
+            <div class="user-menu__dropdown is-hidden" id="userDropdown" role="menu">
+              <button class="user-menu__item" type="button" data-action="login" role="menuitem">
+                Login
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <div class="workspace">
+        <aside class="sidebar" id="sidebar">
+          <nav class="nav" aria-label="Primary navigation">
+            <a class="nav__item is-active" href="#" data-section="Home" data-title="Home">
+              <span class="nav__icon">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1v-9.5Z" />
+                </svg>
+              </span>
+              <span class="nav__label">Home</span>
+            </a>
+
+            <div class="nav-group" data-group="Control">
+              <button class="nav__parent" type="button" aria-expanded="false" data-parent-title="Control">
+                <span class="nav__icon">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M5 6h14v4H5zM5 14h8v4H5zM16 13l3 3-3 3" />
+                  </svg>
+                </span>
+                <span class="nav__label">Control</span>
+                <span class="nav__caret"></span>
+              </button>
+              <div class="nav__children is-hidden">
+                <a class="nav__child" href="#" data-section="Control" data-title="Command Management">
+                  Command Management
+                </a>
+                <a class="nav__child" href="#" data-section="Control" data-title="Macro Management">
+                  Macro Management
+                </a>
+                <a class="nav__child" href="#" data-section="Control" data-title="Scheduling">
+                  Scheduling
+                </a>
+                <a class="nav__child" href="#" data-section="Control" data-title="Event Trigger">
+                  Event Trigger
+                </a>
+              </div>
+            </div>
+
+            <div class="nav-group" data-group="Device">
+              <button class="nav__parent" type="button" aria-expanded="false" data-parent-title="Device">
+                <span class="nav__icon">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M7 5h10v4H7zM5 11h14v8H5zM9 15h2M13 15h2" />
+                  </svg>
+                </span>
+                <span class="nav__label">Device</span>
+                <span class="nav__caret"></span>
+              </button>
+              <div class="nav__children is-hidden">
+                <a class="nav__child" href="#" data-section="Device" data-title="Device Integration">
+                  Device Integration
+                </a>
+                <a class="nav__child" href="#" data-section="Device" data-title="Driver Library">
+                  Driver Library
+                </a>
+              </div>
+            </div>
+
+            <div class="nav-group" data-group="Scenes">
+              <button class="nav__parent" type="button" aria-expanded="false" data-parent-title="Scenes">
+                <span class="nav__icon">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M6 5h12v14H6zM9 8h6M9 12h6M9 16h4" />
+                  </svg>
+                </span>
+                <span class="nav__label">Scenes</span>
+                <span class="nav__caret"></span>
+              </button>
+              <div class="nav__children is-hidden">
+                <a class="nav__child" href="#" data-section="Scenes" data-title="Scenario Management">
+                  Scenario Management
+                </a>
+              </div>
+            </div>
+
+            <div class="nav-group" data-group="Setting">
+              <button class="nav__parent" type="button" aria-expanded="false" data-parent-title="Setting">
+                <span class="nav__icon">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0-4 1.2 2.43 2.68.39-1.94 1.89.46 2.67L12 9.1l-2.4 1.28.46-2.67-1.94-1.89 2.68-.39L12 3Z" />
+                  </svg>
+                </span>
+                <span class="nav__label">Setting</span>
+                <span class="nav__caret"></span>
+              </button>
+              <div class="nav__children is-hidden">
+                <a class="nav__child" href="#" data-section="Setting" data-title="Display">
+                  Display
+                </a>
+                <a class="nav__child" href="#" data-section="Setting" data-title="Admin">
+                  Admin
+                </a>
+              </div>
+            </div>
+          </nav>
+        </aside>
+
+        <main class="main-content">
+          <section class="content-canvas" aria-label="Main content area">
+            <div class="content-canvas__header">
+              <span class="content-canvas__eyebrow">Controller System</span>
+              <h1 id="pageTitle">Home</h1>
+            </div>
+
+            <div class="content-stage">
+              <div class="home-dashboard" id="homeDashboard">
+                <section class="panel-card info-card" aria-labelledby="deviceInfoTitle">
+                  <div class="panel-card__header">
+                    <div>
+                      <span class="panel-card__eyebrow">Device Overview</span>
+                      <h2 id="deviceInfoTitle">Pad Information</h2>
+                    </div>
+                    <span class="device-status is-online">Online</span>
+                  </div>
+
+                  <div class="info-grid">
+                    <article class="info-item">
+                      <span class="info-item__label">Device Name</span>
+                      <strong class="info-item__value">Android Controller Pad</strong>
+                    </article>
+                    <article class="info-item">
+                      <span class="info-item__label">Model</span>
+                      <strong class="info-item__value">ACP-10 Demo</strong>
+                    </article>
+                    <article class="info-item">
+                      <span class="info-item__label">MAC Address</span>
+                      <strong class="info-item__value">A8:C3:4D:21:9F:7B</strong>
+                    </article>
+                    <article class="info-item">
+                      <span class="info-item__label">IP Address</span>
+                      <strong class="info-item__value">192.168.10.88</strong>
+                    </article>
+                    <article class="info-item">
+                      <span class="info-item__label">Firmware Version</span>
+                      <strong class="info-item__value">v0.2.6</strong>
+                    </article>
+                    <article class="info-item">
+                      <span class="info-item__label">Network</span>
+                      <strong class="info-item__value">Ethernet / DHCP</strong>
+                    </article>
+                  </div>
+                </section>
+
+                <section class="panel-card pad-card" aria-labelledby="padPreviewTitle">
+                  <div class="panel-card__header">
+                    <div>
+                      <span class="panel-card__eyebrow">Pad Preview</span>
+                      <h2 id="padPreviewTitle">Control Pad</h2>
+                    </div>
+                  </div>
+
+                  <div class="pad-preview">
+                    <div class="pad-device">
+                      <div class="pad-device__frame">
+                        <div class="pad-device__bezel">
+                          <div class="pad-device__camera"></div>
+                          <div class="pad-device__speaker"></div>
+
+                          <div class="pad-screen">
+                            <div class="pad-screen__topbar">
+                              <div class="pad-screen__site">
+                                <span class="pad-screen__site-name">Meeting Room A</span>
+                                <span class="pad-screen__site-status">Ready</span>
+                              </div>
+                              <div class="pad-screen__indicators">
+                                <span class="pad-indicator is-online"></span>
+                                <span class="pad-indicator is-sync"></span>
+                                <span class="pad-time">09:45</span>
+                              </div>
+                            </div>
+
+                            <div class="pad-screen__title">
+                              <strong>Main Control</strong>
+                              <span>Touch panel active</span>
+                            </div>
+
+                            <div class="pad-pages">
+                              <div class="pad-pages__viewport" id="padPagesViewport">
+                                <div class="pad-pages__track" id="padPagesTrack">
+                                  <section class="pad-page is-active" data-page-index="0">
+                                    <div class="pad-grid pad-grid--4x2">
+                                      <button
+                                        class="pad-button pad-button--toggle is-selected"
+                                        type="button"
+                                        data-pad-action="Display Power"
+                                        data-toggle-target="display"
+                                        aria-pressed="true"
+                                      >
+                                        <span class="pad-button__status is-on"></span>
+                                        <span class="pad-button__icon">D</span>
+                                        <span class="pad-button__name">Display On</span>
+                                      </button>
+
+                              <div class="pad-slider-card" data-pad-action="Lighting Brightness">
+                                <span class="pad-button__status is-on"></span>
+                                <span class="pad-button__icon pad-button__icon--brightness" aria-hidden="true">
+                                  <svg viewBox="0 0 24 24">
+                                    <path d="M12 4.5v2.2M12 17.3v2.2M4.5 12h2.2M17.3 12h2.2M6.7 6.7l1.6 1.6M15.7 15.7l1.6 1.6M17.3 6.7l-1.6 1.6M8.3 15.7l-1.6 1.6M12 8.2a3.8 3.8 0 1 1 0 7.6 3.8 3.8 0 0 1 0-7.6Z" />
+                                  </svg>
+                                </span>
+                                <label class="pad-slider" for="lightBrightnessSlider">
+                                  <input
+                                    id="lightBrightnessSlider"
+                                    class="pad-slider__input"
+                                    type="range"
+                                            min="0"
+                                    max="100"
+                                    value="72"
+                                  />
+                                </label>
+                              </div>
+
+                                      <button
+                                        class="pad-button is-selected"
+                                        type="button"
+                                        data-pad-action="Source HDMI 1"
+                                        data-selectable="true"
+                                      >
+                                        <span class="pad-button__status is-on"></span>
+                                        <span class="pad-button__icon">S</span>
+                                        <span class="pad-button__name">Source HDMI 1</span>
+                                      </button>
+                                      <button
+                                        class="pad-button"
+                                        type="button"
+                                        data-pad-action="Source HDMI 2"
+                                        data-selectable="true"
+                                      >
+                                        <span class="pad-button__status"></span>
+                                        <span class="pad-button__icon">S</span>
+                                        <span class="pad-button__name">Source HDMI 2</span>
+                                      </button>
+                                      <button class="pad-button" type="button" data-pad-action="Volume Up">
+                                        <span class="pad-button__status"></span>
+                                        <span class="pad-button__icon">V</span>
+                                        <span class="pad-button__name">Volume Up</span>
+                                      </button>
+                                      <button class="pad-button" type="button" data-pad-action="Volume Down">
+                                        <span class="pad-button__status"></span>
+                                        <span class="pad-button__icon">V</span>
+                                        <span class="pad-button__name">Volume Down</span>
+                                      </button>
+                                      <button
+                                        class="pad-button is-selected"
+                                        type="button"
+                                        data-pad-action="Scene Meeting"
+                                        data-selectable="true"
+                                      >
+                                        <span class="pad-button__status is-on"></span>
+                                        <span class="pad-button__icon">M</span>
+                                        <span class="pad-button__name">Scene Meeting</span>
+                                      </button>
+                                      <button class="pad-button" type="button" data-pad-action="System Off">
+                                        <span class="pad-button__status is-alert"></span>
+                                        <span class="pad-button__icon">P</span>
+                                        <span class="pad-button__name">System Off</span>
+                                      </button>
+                                    </div>
+                                  </section>
+
+                                  <section class="pad-page" data-page-index="1">
+                                    <div class="pad-grid pad-grid--3x2">
+                                      <button class="pad-button" type="button" data-pad-action="Curtain Open">
+                                        <span class="pad-button__status"></span>
+                                        <span class="pad-button__icon">C</span>
+                                        <span class="pad-button__name">Curtain Open</span>
+                                      </button>
+                                      <button class="pad-button" type="button" data-pad-action="Curtain Close">
+                                        <span class="pad-button__status"></span>
+                                        <span class="pad-button__icon">C</span>
+                                        <span class="pad-button__name">Curtain Close</span>
+                                      </button>
+                                      <button class="pad-button" type="button" data-pad-action="Mute Audio">
+                                        <span class="pad-button__status"></span>
+                                        <span class="pad-button__icon">A</span>
+                                        <span class="pad-button__name">Mute Audio</span>
+                                      </button>
+                                      <button class="pad-button" type="button" data-pad-action="Mic On">
+                                        <span class="pad-button__status is-on"></span>
+                                        <span class="pad-button__icon">M</span>
+                                        <span class="pad-button__name">Mic On</span>
+                                      </button>
+                                      <button class="pad-button" type="button" data-pad-action="Camera Preset 1">
+                                        <span class="pad-button__status"></span>
+                                        <span class="pad-button__icon">P</span>
+                                        <span class="pad-button__name">Preset 1</span>
+                                      </button>
+                                      <button class="pad-button" type="button" data-pad-action="Camera Preset 2">
+                                        <span class="pad-button__status"></span>
+                                        <span class="pad-button__icon">P</span>
+                                        <span class="pad-button__name">Preset 2</span>
+                                      </button>
+                                    </div>
+                                  </section>
+
+                                  <section class="pad-page" data-page-index="2">
+                                    <div class="pad-grid pad-grid--4x1">
+                                      <button class="pad-button" type="button" data-pad-action="Room Mode Video">
+                                        <span class="pad-button__status"></span>
+                                        <span class="pad-button__icon">R</span>
+                                        <span class="pad-button__name">Room Video</span>
+                                      </button>
+                                      <button class="pad-button" type="button" data-pad-action="Room Mode Hybrid">
+                                        <span class="pad-button__status"></span>
+                                        <span class="pad-button__icon">R</span>
+                                        <span class="pad-button__name">Room Hybrid</span>
+                                      </button>
+                                      <button class="pad-button" type="button" data-pad-action="Privacy Mode">
+                                        <span class="pad-button__status"></span>
+                                        <span class="pad-button__icon">P</span>
+                                        <span class="pad-button__name">Privacy Mode</span>
+                                      </button>
+                                      <button class="pad-button" type="button" data-pad-action="All Standby">
+                                        <span class="pad-button__status is-alert"></span>
+                                        <span class="pad-button__icon">S</span>
+                                        <span class="pad-button__name">All Standby</span>
+                                      </button>
+                                    </div>
+                                  </section>
+                                </div>
+                              </div>
+
+                              <div class="pad-pages__footer">
+                                <div class="pad-pages__dots" id="padPageDots">
+                                  <button class="pad-page-dot is-active" type="button" data-pad-page="0" aria-label="Pad page 1"></button>
+                                  <button class="pad-page-dot" type="button" data-pad-page="1" aria-label="Pad page 2"></button>
+                                  <button class="pad-page-dot" type="button" data-pad-page="2" aria-label="Pad page 3"></button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+              </div>
+
+              <div class="content-canvas__empty is-hidden" id="contentPlaceholder">
+                <div class="empty-panel">
+                  <span class="empty-panel__line"></span>
+                  <p id="placeholderText">Main content area reserved for future modules.</p>
+                </div>
+              </div>
+            </div>
+          </section>
+        </main>
+      </div>
     </div>
+
+    <div class="status-toast" id="statusToast" aria-live="polite"></div>
+
+    <div class="modal-backdrop is-hidden" id="signinModal" aria-hidden="true">
+      <div class="modal-window" role="dialog" aria-modal="true" aria-labelledby="signinTitle">
+        <div class="modal-window__header">
+          <h2 id="signinTitle">Sign In</h2>
+        </div>
+        <form class="modal-form" id="signinForm">
+          <label class="form-field">
+            <span>Username</span>
+            <input id="usernameInput" name="username" type="text" autocomplete="username" />
+          </label>
+          <label class="form-field">
+            <span>Password</span>
+            <input id="passwordInput" name="password" type="password" autocomplete="current-password" />
+          </label>
+          <div class="modal-window__actions">
+            <button class="modal-btn modal-btn--ghost" type="button" data-close-modal="signinModal">
+              Cancel
+            </button>
+            <button class="modal-btn modal-btn--primary" type="submit">Sign In</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="modal-backdrop is-hidden" id="settingsModal" aria-hidden="true">
+      <div class="modal-window" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+        <div class="modal-window__header">
+          <h2 id="settingsTitle">Settings</h2>
+        </div>
+        <form class="modal-form" id="settingsForm">
+          <div class="settings-section">
+            <h3>Reset Password</h3>
+            <label class="form-field">
+              <span>Current Password</span>
+              <input
+                id="currentPasswordInput"
+                name="currentPassword"
+                type="password"
+                autocomplete="current-password"
+              />
+            </label>
+            <label class="form-field">
+              <span>New Password</span>
+              <input id="newPasswordInput" name="newPassword" type="password" autocomplete="new-password" />
+            </label>
+            <label class="form-field">
+              <span>Confirm New Password</span>
+              <input
+                id="confirmPasswordInput"
+                name="confirmPassword"
+                type="password"
+                autocomplete="new-password"
+              />
+            </label>
+          </div>
+          <div class="modal-window__actions">
+            <button class="modal-btn modal-btn--ghost" type="button" data-close-modal="settingsModal">
+              Cancel
+            </button>
+            <button class="modal-btn modal-btn--primary" type="submit">Save</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script src="/js/app.js"></script>
   </body>
 </html>
