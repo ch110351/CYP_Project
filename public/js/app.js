@@ -14,6 +14,7 @@ const signinForm = document.getElementById("signinForm");
 const settingsForm = document.getElementById("settingsForm");
 const statusToast = document.getElementById("statusToast");
 const homeDashboard = document.getElementById("homeDashboard");
+const displaySettings = document.getElementById("displaySettings");
 const contentPlaceholder = document.getElementById("contentPlaceholder");
 const placeholderText = document.getElementById("placeholderText");
 const padButtons = document.querySelectorAll(".pad-button");
@@ -22,6 +23,40 @@ const padPagesViewport = document.getElementById("padPagesViewport");
 const padPagesTrack = document.getElementById("padPagesTrack");
 const padPageDots = document.querySelectorAll(".pad-page-dot");
 const padPages = document.querySelectorAll(".pad-page");
+const timeModeToggle = document.getElementById("timeModeToggle");
+const timeModeStateLabel = document.getElementById("timeModeStateLabel");
+const timeFormatSelect = document.getElementById("timeFormatSelect");
+const manualTimeField = document.getElementById("manualTimeField");
+const manualDateField = document.getElementById("manualDateField");
+const manualTimeInput = document.getElementById("manualTimeInput");
+const manualDateInput = document.getElementById("manualDateInput");
+const displayBrightnessSlider = document.getElementById("displayBrightnessSlider");
+const displayBrightnessValue = document.getElementById("displayBrightnessValue");
+const screenLockToggle = document.getElementById("screenLockToggle");
+const idleTimeoutInput = document.getElementById("idleTimeoutInput");
+const displayThemeOptions = document.querySelectorAll(".theme-option");
+const displayThemeInputs = document.querySelectorAll('input[name="displayTheme"]');
+const screensaverOptions = document.querySelectorAll(".screensaver-option");
+const screensaverContentInputs = document.querySelectorAll('input[name="screensaverContent"]');
+const customImageField = document.getElementById("customImageField");
+const customImageInput = document.getElementById("customImageInput");
+const customImageHint = document.getElementById("customImageHint");
+const displayLanguageSelect = document.getElementById("displayLanguageSelect");
+const displayResetButton = document.getElementById("displayResetButton");
+const displaySaveButton = document.getElementById("displaySaveButton");
+
+const displayDefaults = {
+  timeMode: "auto",
+  timeFormat: "24",
+  manualTime: "09:45",
+  manualDate: "2026-03-30",
+  theme: "light",
+  brightness: "72",
+  screenLock: true,
+  idleTimeout: "10",
+  screensaver: "clock",
+  language: "en",
+};
 
 const state = {
   isLoggedIn: false,
@@ -32,6 +67,32 @@ const state = {
   padDragDeltaX: 0,
   isPadDragging: false,
 };
+
+function syncDisplaySettingsView() {
+  if (!displaySettings) {
+    return;
+  }
+
+  const isManualTime = timeModeToggle.checked;
+  const selectedScreensaver = document.querySelector('input[name="screensaverContent"]:checked')?.value || "clock";
+
+  manualTimeField.classList.toggle("is-hidden", !isManualTime);
+  manualDateField.classList.toggle("is-hidden", !isManualTime);
+  customImageField.classList.toggle("is-hidden", selectedScreensaver !== "image");
+  timeModeStateLabel.textContent = isManualTime ? "Manual" : "Automatic";
+
+  displayThemeOptions.forEach((option) => {
+    const radio = option.querySelector('input[name="displayTheme"]');
+    option.classList.toggle("is-active", radio.checked);
+  });
+
+  screensaverOptions.forEach((option) => {
+    const radio = option.querySelector('input[name="screensaverContent"]');
+    option.classList.toggle("is-active", radio.checked);
+  });
+
+  displayBrightnessValue.textContent = `${displayBrightnessSlider.value}%`;
+}
 
 function showToast(message) {
   window.clearTimeout(state.toastTimer);
@@ -96,10 +157,15 @@ function updatePadPage(pageIndex) {
 }
 
 function updateContentStage(sectionTitle, isHome) {
-  homeDashboard.classList.toggle("is-hidden", !isHome);
-  contentPlaceholder.classList.toggle("is-hidden", isHome);
+  const isDisplay = sectionTitle === "Pad Display" || sectionTitle === "Display";
 
-  if (!isHome) {
+  homeDashboard.classList.toggle("is-hidden", !isHome);
+  displaySettings.classList.toggle("is-hidden", !isDisplay);
+  contentPlaceholder.classList.toggle("is-hidden", isHome || isDisplay);
+
+  if (isDisplay) {
+    syncDisplaySettingsView();
+  } else if (!isHome) {
     placeholderText.textContent = `${sectionTitle} content area reserved for future modules.`;
   }
 }
@@ -268,6 +334,62 @@ if (lightBrightnessSlider) {
 
   lightBrightnessSlider.addEventListener("change", () => {
     showToast(`Lighting brightness set to ${lightBrightnessSlider.value}%.`);
+  });
+}
+
+if (displaySettings) {
+  [
+    timeModeToggle,
+    timeFormatSelect,
+    manualTimeInput,
+    manualDateInput,
+    displayBrightnessSlider,
+    screenLockToggle,
+    idleTimeoutInput,
+    displayLanguageSelect,
+  ].forEach((control) => {
+    control.addEventListener("input", syncDisplaySettingsView);
+    control.addEventListener("change", syncDisplaySettingsView);
+  });
+
+  displayThemeInputs.forEach((input) => {
+    input.addEventListener("change", syncDisplaySettingsView);
+  });
+
+  screensaverContentInputs.forEach((input) => {
+    input.addEventListener("change", syncDisplaySettingsView);
+  });
+
+  customImageInput.addEventListener("change", () => {
+    const selectedFile = customImageInput.files?.[0];
+    customImageHint.textContent = selectedFile ? selectedFile.name : "No image selected.";
+    syncDisplaySettingsView();
+  });
+
+  displayResetButton.addEventListener("click", () => {
+    timeModeToggle.checked = displayDefaults.timeMode === "manual";
+    timeFormatSelect.value = displayDefaults.timeFormat;
+    manualTimeInput.value = displayDefaults.manualTime;
+    manualDateInput.value = displayDefaults.manualDate;
+    displayThemeInputs.forEach((input) => {
+      input.checked = input.value === displayDefaults.theme;
+    });
+    displayBrightnessSlider.value = displayDefaults.brightness;
+    screenLockToggle.checked = displayDefaults.screenLock;
+    idleTimeoutInput.value = displayDefaults.idleTimeout;
+    displayLanguageSelect.value = displayDefaults.language;
+    screensaverContentInputs.forEach((input) => {
+      input.checked = input.value === displayDefaults.screensaver;
+    });
+    customImageInput.value = "";
+    customImageHint.textContent = "No image selected.";
+    syncDisplaySettingsView();
+    showToast("Display settings reset to defaults.");
+  });
+
+  displaySaveButton.addEventListener("click", () => {
+    syncDisplaySettingsView();
+    showToast("Display settings applied.");
   });
 }
 
@@ -447,3 +569,4 @@ document.addEventListener("keydown", (event) => {
 renderUserMenu();
 updateContentStage("Home", true);
 updatePadPage(0);
+syncDisplaySettingsView();

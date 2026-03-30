@@ -164,8 +164,8 @@
                 <span class="nav__caret"></span>
               </button>
               <div class="nav__children is-hidden">
-                <a class="nav__child" href="#" data-section="Setting" data-title="Display">
-                  Display
+                <a class="nav__child" href="#" data-section="Setting" data-title="Pad Display">
+                  Pad Display
                 </a>
                 <a class="nav__child" href="#" data-section="Setting" data-title="Admin">
                   Admin
@@ -411,6 +411,194 @@
                           </div>
                         </div>
                       </div>
+                    </div>
+                  </div>
+                </section>
+              </div>
+
+              <div class="display-settings is-hidden" id="displaySettings">
+                <section class="panel-card display-settings__panel" aria-labelledby="displaySettingsTitle">
+                  <div class="panel-card__header">
+                    <div>
+                      <span class="panel-card__eyebrow">Display Configuration</span>
+                      <h2 id="displaySettingsTitle">Pad Display Settings</h2>
+                    </div>
+                    <span class="device-status">Draft</span>
+                  </div>
+
+                  <div class="display-settings__layout">
+                    <div class="display-settings__main">
+                      <section class="display-card" aria-labelledby="timeSettingsTitle">
+                        <div class="display-card__header">
+                          <div>
+                            <span class="display-card__eyebrow">Time & Date</span>
+                            <h3 id="timeSettingsTitle">Clock Settings</h3>
+                          </div>
+                        </div>
+
+                        <div class="display-form-grid">
+                          <label class="display-toggle display-toggle--compact" for="timeModeToggle">
+                            <div>
+                              <span class="display-field__label">Time Mode</span>
+                              <p><span id="timeModeStateLabel">Automatic</span> time and date source.</p>
+                            </div>
+                            <input id="timeModeToggle" type="checkbox" />
+                            <span class="display-toggle__track"></span>
+                          </label>
+
+                          <label class="display-field">
+                            <span class="display-field__label">Time Format</span>
+                            <select id="timeFormatSelect">
+                              <option value="24" selected>24-hour</option>
+                              <option value="12">12-hour</option>
+                            </select>
+                          </label>
+
+                          <label class="display-field display-field--wide is-hidden" id="manualTimeField">
+                            <span class="display-field__label">Current Time</span>
+                            <input id="manualTimeInput" type="time" value="09:45" />
+                          </label>
+
+                          <label class="display-field display-field--wide is-hidden" id="manualDateField">
+                            <span class="display-field__label">Current Date</span>
+                            <input id="manualDateInput" type="date" value="2026-03-30" />
+                          </label>
+                        </div>
+                      </section>
+
+                      <section class="display-card" aria-labelledby="themeSettingsTitle">
+                        <div class="display-card__header">
+                          <div>
+                            <span class="display-card__eyebrow">Appearance</span>
+                            <h3 id="themeSettingsTitle">Display Theme</h3>
+                          </div>
+                        </div>
+
+                        <div class="display-form-grid">
+                          <div class="display-field display-field--wide">
+                            <span class="display-field__label">Display Mode</span>
+                            <div class="theme-options" id="displayThemeOptions">
+                              <label class="theme-option is-active">
+                                <input type="radio" name="displayTheme" value="light" checked />
+                                <span class="theme-option__swatch theme-option__swatch--light"></span>
+                                <span class="theme-option__title">Light</span>
+                                <span class="theme-option__desc">Bright interface for daytime use.</span>
+                              </label>
+
+                              <label class="theme-option">
+                                <input type="radio" name="displayTheme" value="dark" />
+                                <span class="theme-option__swatch theme-option__swatch--dark"></span>
+                                <span class="theme-option__title">Dark</span>
+                                <span class="theme-option__desc">Lower-glare interface for darker rooms.</span>
+                              </label>
+                            </div>
+                          </div>
+                        </div>
+                      </section>
+
+                      <section class="display-card" aria-labelledby="screenBehaviorTitle">
+                        <div class="display-card__header">
+                          <div>
+                            <span class="display-card__eyebrow">Screen Behavior</span>
+                            <h3 id="screenBehaviorTitle">Brightness & Lock</h3>
+                          </div>
+                        </div>
+
+                        <div class="display-form-grid">
+                          <label class="display-field display-field--wide">
+                            <span class="display-field__label">Pad Brightness</span>
+                            <div class="display-slider">
+                              <input
+                                id="displayBrightnessSlider"
+                                class="display-slider__input"
+                                type="range"
+                                min="0"
+                                max="100"
+                                value="72"
+                              />
+                              <strong class="display-slider__value" id="displayBrightnessValue">72%</strong>
+                            </div>
+                          </label>
+
+                          <label class="display-toggle" for="screenLockToggle">
+                            <div>
+                              <span class="display-field__label">Screen Lock</span>
+                              <p>Require unlock before control resumes.</p>
+                            </div>
+                            <input id="screenLockToggle" type="checkbox" checked />
+                            <span class="display-toggle__track"></span>
+                          </label>
+
+                          <label class="display-field">
+                            <span class="display-field__label">Idle Timeout (minutes)</span>
+                            <input id="idleTimeoutInput" type="number" min="1" max="120" value="10" />
+                          </label>
+                        </div>
+                      </section>
+
+                      <section class="display-card" aria-labelledby="screensaverTitle">
+                        <div class="display-card__header">
+                          <div>
+                            <span class="display-card__eyebrow">Screen Saver</span>
+                            <h3 id="screensaverTitle">Idle Content</h3>
+                          </div>
+                        </div>
+
+                        <div class="screensaver-options" id="screensaverOptions">
+                          <label class="screensaver-option is-active">
+                            <input type="radio" name="screensaverContent" value="clock" checked />
+                            <span class="screensaver-option__title">Clock</span>
+                            <span class="screensaver-option__desc">Large digital clock display.</span>
+                          </label>
+
+                          <label class="screensaver-option">
+                            <input type="radio" name="screensaverContent" value="brand" />
+                            <span class="screensaver-option__title">Brand Info</span>
+                            <span class="screensaver-option__desc">Company logo and room identity.</span>
+                          </label>
+
+                          <label class="screensaver-option">
+                            <input type="radio" name="screensaverContent" value="image" />
+                            <span class="screensaver-option__title">Custom Image</span>
+                            <span class="screensaver-option__desc">Upload a branded or decorative image.</span>
+                          </label>
+                        </div>
+
+                        <label class="display-field display-field--wide is-hidden" id="customImageField">
+                          <span class="display-field__label">Custom Image</span>
+                          <input id="customImageInput" type="file" accept="image/*" />
+                          <span class="display-field__hint" id="customImageHint">No image selected.</span>
+                        </label>
+                      </section>
+
+                      <section class="display-card" aria-labelledby="languageSettingsTitle">
+                        <div class="display-card__header">
+                          <div>
+                            <span class="display-card__eyebrow">Language</span>
+                            <h3 id="languageSettingsTitle">Display Language</h3>
+                          </div>
+                        </div>
+
+                        <div class="display-form-grid">
+                          <label class="display-field">
+                            <span class="display-field__label">Pad Language</span>
+                            <select id="displayLanguageSelect">
+                              <option value="en" selected>English</option>
+                              <option value="zh-TW">繁體中文</option>
+                              <option value="ja">日本語</option>
+                            </select>
+                          </label>
+                        </div>
+                      </section>
+                    </div>
+
+                    <div class="display-actions">
+                      <button class="modal-btn modal-btn--ghost" type="button" id="displayResetButton">
+                        Reset
+                      </button>
+                      <button class="modal-btn modal-btn--primary" type="button" id="displaySaveButton">
+                        Apply Display Settings
+                      </button>
                     </div>
                   </div>
                 </section>
