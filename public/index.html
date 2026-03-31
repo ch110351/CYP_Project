@@ -607,24 +607,6 @@
                           <span>Call another macro from this flow</span>
                         </button>
                       </div>
-
-                      <div class="macro-library-meta">
-                        <section class="macro-library-card" aria-labelledby="macroVariablesTitle">
-                          <div class="macro-library-card__header">
-                            <span class="panel-card__eyebrow">Variables</span>
-                            <h4 id="macroVariablesTitle">Runtime Values</h4>
-                          </div>
-                          <div class="macro-meta-list" id="macroVariableList"></div>
-                        </section>
-
-                        <section class="macro-library-card" aria-labelledby="macroPollingTitle">
-                          <div class="macro-library-card__header">
-                            <span class="panel-card__eyebrow">Polling Rules</span>
-                            <h4 id="macroPollingTitle">Monitoring</h4>
-                          </div>
-                          <div class="macro-meta-list" id="macroPollingRuleList"></div>
-                        </section>
-                      </div>
                     </aside>
 
                     <section class="panel-card macro-builder-panel macro-flow-panel" aria-labelledby="macroFlowTitle">
@@ -1202,47 +1184,129 @@
     </div>
 
     <div class="modal-backdrop is-hidden" id="commandEditorModal" aria-hidden="true">
-      <div class="modal-window modal-window--wide" role="dialog" aria-modal="true" aria-labelledby="commandEditorTitle">
+      <div class="modal-window modal-window--command-editor" role="dialog" aria-modal="true" aria-labelledby="commandEditorTitle">
         <div class="modal-window__header">
           <h2 id="commandEditorTitle">Create Command</h2>
         </div>
         <form class="modal-form" id="commandEditorForm">
           <input id="commandEditIndex" name="commandEditIndex" type="hidden" value="" />
           <div class="command-editor-grid">
-            <label class="form-field">
-              <span>Command Name</span>
-              <input id="commandNameInput" name="commandName" type="text" maxlength="64" />
-            </label>
-            <label class="form-field">
-              <span>Command Interface</span>
-              <select id="commandInterfaceSelect" name="commandInterface">
-                <option value="System">System</option>
-                <option value="RS232">RS232</option>
-                <option value="Telnet">Telnet</option>
-              </select>
-            </label>
-            <label class="form-field">
-              <span>Device</span>
-              <select id="commandDeviceSelect" name="commandDevice">
-                <option value="Main Display">Main Display</option>
-                <option value="Matrix Switcher">Matrix Switcher</option>
-                <option value="Audio DSP">Audio DSP</option>
-                <option value="PTZ Camera">PTZ Camera</option>
-                <option value="Lighting Controller">Lighting Controller</option>
-              </select>
-            </label>
-            <label class="form-field is-hidden" id="commandTelnetIpField">
-              <span>Telnet IP</span>
-              <input id="commandTelnetIpInput" name="commandTelnetIp" type="text" placeholder="192.168.10.50" />
-            </label>
-            <label class="form-field is-hidden" id="commandTelnetPortField">
-              <span>Telnet Port</span>
-              <input id="commandTelnetPortInput" name="commandTelnetPort" type="number" min="1" max="65535" placeholder="23" />
-            </label>
-            <label class="form-field form-field--full">
-              <span>Command Data</span>
-              <textarea id="commandDataInput" name="commandData" rows="5"></textarea>
-            </label>
+            <section class="command-editor-column command-editor-column--base" aria-labelledby="commandBasicSettingsTitle">
+              <div class="command-panel-card">
+                <div class="command-panel-card__header">
+                  <div>
+                    <span class="panel-card__eyebrow">Command</span>
+                    <h3 id="commandBasicSettingsTitle">Basic Settings</h3>
+                  </div>
+                </div>
+
+                <div class="command-basic-grid">
+                  <label class="form-field">
+                    <span>Command Name</span>
+                    <input id="commandNameInput" name="commandName" type="text" maxlength="64" />
+                  </label>
+                  <label class="form-field">
+                    <span>Command Interface</span>
+                    <select id="commandInterfaceSelect" name="commandInterface">
+                      <option value="System">System</option>
+                      <option value="RS232">RS232</option>
+                      <option value="Telnet">Telnet</option>
+                    </select>
+                  </label>
+                  <label class="form-field">
+                    <span>Device</span>
+                    <select id="commandDeviceSelect" name="commandDevice">
+                      <option value="Main Display">Main Display</option>
+                      <option value="Matrix Switcher">Matrix Switcher</option>
+                      <option value="Audio DSP">Audio DSP</option>
+                      <option value="PTZ Camera">PTZ Camera</option>
+                      <option value="Lighting Controller">Lighting Controller</option>
+                    </select>
+                  </label>
+                  <label class="form-field is-hidden" id="commandTelnetIpField">
+                    <span>Telnet IP</span>
+                    <input id="commandTelnetIpInput" name="commandTelnetIp" type="text" placeholder="192.168.10.50" />
+                  </label>
+                  <label class="form-field is-hidden" id="commandTelnetPortField">
+                    <span>Telnet Port</span>
+                    <input id="commandTelnetPortInput" name="commandTelnetPort" type="number" min="1" max="65535" placeholder="23" />
+                  </label>
+                  <label class="form-field form-field--full">
+                    <span>Command Data</span>
+                    <textarea id="commandDataInput" name="commandData" rows="10"></textarea>
+                  </label>
+                </div>
+              </div>
+            </section>
+
+            <section class="command-editor-column command-editor-column--state" aria-labelledby="commandStateUpdateTitle">
+              <div class="form-field command-state-toggle">
+                <label class="checkbox-field" for="commandStateUpdateEnabled">
+                  <input id="commandStateUpdateEnabled" name="commandStateUpdateEnabled" type="checkbox" />
+                  <span>Update parameter after execution</span>
+                </label>
+              </div>
+
+              <section class="command-state-panel" id="commandStateUpdatePanel" aria-labelledby="commandStateUpdateTitle">
+              <div class="command-state-panel__header">
+                <div>
+                  <span class="panel-card__eyebrow">State Update</span>
+                  <h3 id="commandStateUpdateTitle">Update runtime parameter after command execution</h3>
+                </div>
+              </div>
+
+              <div class="command-state-grid">
+                <label class="form-field">
+                  <span>Parameter</span>
+                  <select id="commandStateUpdateParameter" name="commandStateUpdateParameter"></select>
+                </label>
+
+                <fieldset class="form-field command-value-type-group">
+                  <legend>Value Type</legend>
+                  <div class="radio-group" id="commandStateUpdateTypeGroup">
+                    <label class="radio-option" for="commandValueTypeNumber">
+                      <input id="commandValueTypeNumber" name="commandStateUpdateValueType" type="radio" value="number" checked />
+                      <span class="radio-option__control" aria-hidden="true"></span>
+                      <span class="radio-option__label">Number</span>
+                    </label>
+                    <label class="radio-option" for="commandValueTypeString">
+                      <input id="commandValueTypeString" name="commandStateUpdateValueType" type="radio" value="string" />
+                      <span class="radio-option__control" aria-hidden="true"></span>
+                      <span class="radio-option__label">String</span>
+                    </label>
+                    <label class="radio-option" for="commandValueTypeBoolean">
+                      <input id="commandValueTypeBoolean" name="commandStateUpdateValueType" type="radio" value="boolean" />
+                      <span class="radio-option__control" aria-hidden="true"></span>
+                      <span class="radio-option__label">Boolean</span>
+                    </label>
+                  </div>
+                </fieldset>
+
+                <label class="form-field" id="commandStateUpdateValueTextField">
+                  <span>Value</span>
+                  <input id="commandStateUpdateValueText" name="commandStateUpdateValueText" type="text" placeholder="Enter text" />
+                </label>
+
+                <label class="form-field is-hidden" id="commandStateUpdateValueNumberField">
+                  <span>Value</span>
+                  <input id="commandStateUpdateValueNumber" name="commandStateUpdateValueNumber" type="number" step="any" placeholder="Enter number" />
+                </label>
+
+                <label class="form-field is-hidden" id="commandStateUpdateValueBooleanField">
+                  <span>Value</span>
+                  <select id="commandStateUpdateValueBoolean" name="commandStateUpdateValueBoolean">
+                    <option value="true">true</option>
+                    <option value="false">false</option>
+                  </select>
+                </label>
+
+                <div class="command-preview-card form-field--full" id="commandStateUpdatePreview">
+                  <span class="command-preview-card__label">Preview</span>
+                  <div class="command-preview-card__value">No parameter update configured.</div>
+                </div>
+              </div>
+            </section>
+            </section>
           </div>
           <div class="modal-window__actions">
             <button class="modal-btn modal-btn--ghost" type="button" data-close-modal="commandEditorModal">
@@ -1290,6 +1354,64 @@
             </button>
             <button class="modal-btn modal-btn--primary" id="confirmMacroDeleteButton" type="button">
               Delete
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-backdrop is-hidden" id="macroInsertActionModal" aria-hidden="true">
+      <div class="modal-window modal-window--wide" role="dialog" aria-modal="true" aria-labelledby="macroInsertActionTitle">
+        <div class="modal-window__header">
+          <h2 id="macroInsertActionTitle">Insert Action</h2>
+        </div>
+        <div class="modal-form">
+          <div class="macro-insert-action-grid" id="macroInsertActionGrid">
+            <button class="macro-library-action macro-library-action--modal" type="button" data-macro-modal-insert-type="command">
+              <strong>Execute Command</strong>
+              <span>Insert a command execution step</span>
+            </button>
+            <button class="macro-library-action macro-library-action--modal" type="button" data-macro-modal-insert-type="delay">
+              <strong>Delay</strong>
+              <span>Add a timed wait step</span>
+            </button>
+            <button class="macro-library-action macro-library-action--modal" type="button" data-macro-modal-insert-type="ifElse">
+              <strong>IF / ELSE</strong>
+              <span>Create a conditional branch</span>
+            </button>
+            <button class="macro-library-action macro-library-action--modal" type="button" data-macro-modal-insert-type="polling">
+              <strong>Start Polling</strong>
+              <span>Wait on device feedback rules</span>
+            </button>
+            <button class="macro-library-action macro-library-action--modal" type="button" data-macro-modal-insert-type="variable">
+              <strong>Update Variable</strong>
+              <span>Set or override a runtime value</span>
+            </button>
+            <button class="macro-library-action macro-library-action--modal" type="button" data-macro-modal-insert-type="runMacro">
+              <strong>Run Macro</strong>
+              <span>Call another macro from this flow</span>
+            </button>
+          </div>
+          <div class="modal-window__actions">
+            <button class="modal-btn modal-btn--ghost" type="button" data-close-modal="macroInsertActionModal">
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-backdrop is-hidden" id="macroReviewModal" aria-hidden="true">
+      <div class="modal-window modal-window--command-editor" role="dialog" aria-modal="true" aria-labelledby="macroReviewTitle">
+        <div class="modal-window__header">
+          <h2 id="macroReviewTitle">Macro Review</h2>
+        </div>
+        <div class="modal-form">
+          <div class="macro-review-header" id="macroReviewHeader"></div>
+          <div class="macro-review-flow" id="macroReviewFlow"></div>
+          <div class="modal-window__actions">
+            <button class="modal-btn modal-btn--ghost" type="button" data-close-modal="macroReviewModal">
+              Close
             </button>
           </div>
         </div>

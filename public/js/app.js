@@ -37,10 +37,13 @@ const macroEditorTestButton = document.getElementById("macroEditorTestButton");
 const macroBasicNameInput = document.getElementById("macroBasicNameInput");
 const macroBasicDescriptionInput = document.getElementById("macroBasicDescriptionInput");
 const macroActionLibrary = document.getElementById("macroActionLibrary");
-const macroVariableList = document.getElementById("macroVariableList");
-const macroPollingRuleList = document.getElementById("macroPollingRuleList");
 const macroFlowCanvas = document.getElementById("macroFlowCanvas");
 const macroInspectorPanel = document.getElementById("macroInspectorPanel");
+const macroInsertActionModal = document.getElementById("macroInsertActionModal");
+const macroInsertActionGrid = document.getElementById("macroInsertActionGrid");
+const macroReviewModal = document.getElementById("macroReviewModal");
+const macroReviewHeader = document.getElementById("macroReviewHeader");
+const macroReviewFlow = document.getElementById("macroReviewFlow");
 const displayPanel = document.getElementById("displayPanel");
 const networkPanel = document.getElementById("networkPanel");
 const adminPanel = document.getElementById("adminPanel");
@@ -86,6 +89,16 @@ const commandTelnetPortField = document.getElementById("commandTelnetPortField")
 const commandTelnetIpInput = document.getElementById("commandTelnetIpInput");
 const commandTelnetPortInput = document.getElementById("commandTelnetPortInput");
 const commandDataInput = document.getElementById("commandDataInput");
+const commandStateUpdateEnabled = document.getElementById("commandStateUpdateEnabled");
+const commandStateUpdatePanel = document.getElementById("commandStateUpdatePanel");
+const commandStateUpdateParameter = document.getElementById("commandStateUpdateParameter");
+const commandStateUpdateValueTextField = document.getElementById("commandStateUpdateValueTextField");
+const commandStateUpdateValueNumberField = document.getElementById("commandStateUpdateValueNumberField");
+const commandStateUpdateValueBooleanField = document.getElementById("commandStateUpdateValueBooleanField");
+const commandStateUpdateValueText = document.getElementById("commandStateUpdateValueText");
+const commandStateUpdateValueNumber = document.getElementById("commandStateUpdateValueNumber");
+const commandStateUpdateValueBoolean = document.getElementById("commandStateUpdateValueBoolean");
+const commandStateUpdatePreview = document.getElementById("commandStateUpdatePreview");
 const adminConfirmModal = document.getElementById("adminConfirmModal");
 const adminConfirmForm = document.getElementById("adminConfirmForm");
 const adminConfirmActionLabel = document.getElementById("adminConfirmActionLabel");
@@ -124,6 +137,7 @@ const firmwareFileInput = document.getElementById("firmwareFileInput");
 const firmwareSummary = document.getElementById("firmwareSummary");
 const rebootButton = document.getElementById("rebootButton");
 const factoryResetButton = document.getElementById("factoryResetButton");
+const commandParameterOptions = Array.from({ length: 20 }, (_, index) => `Param_${index + 1}`);
 
 const state = {
   isLoggedIn: false,
@@ -142,6 +156,8 @@ const state = {
   selectedMacroStepPath: "",
   lastMacroInsertType: "command",
   dragInsertType: "",
+  dragMacroInsertTarget: null,
+  pendingMacroInsertTarget: null,
   macroDraft: null,
   stepIdCounter: 0,
   ethernet: {
@@ -170,6 +186,10 @@ const state = {
       { ssid: "Installer_Backup", strength: "weak", secure: true, saved: false },
     ],
   },
+  runtimeParameters: commandParameterOptions.reduce((accumulator, key) => {
+    accumulator[key] = "";
+    return accumulator;
+  }, {}),
   pendingWifiSSID: null,
   commands: [
     {
@@ -180,6 +200,7 @@ const state = {
       device: "Main Display",
       telnetIp: "",
       telnetPort: "",
+      stateUpdate: null,
     },
     {
       id: "CMD-002",
@@ -189,6 +210,7 @@ const state = {
       device: "Matrix Switcher",
       telnetIp: "",
       telnetPort: "",
+      stateUpdate: null,
     },
     {
       id: "CMD-003",
@@ -198,6 +220,7 @@ const state = {
       device: "PTZ Camera",
       telnetIp: "192.168.10.150",
       telnetPort: "23",
+      stateUpdate: null,
     },
     {
       id: "CMD-004",
@@ -207,6 +230,7 @@ const state = {
       device: "Main Display",
       telnetIp: "",
       telnetPort: "",
+      stateUpdate: null,
     },
     {
       id: "CMD-005",
@@ -216,6 +240,7 @@ const state = {
       device: "Main Display",
       telnetIp: "",
       telnetPort: "",
+      stateUpdate: null,
     },
     {
       id: "CMD-006",
@@ -225,6 +250,7 @@ const state = {
       device: "Main Display",
       telnetIp: "",
       telnetPort: "",
+      stateUpdate: null,
     },
     {
       id: "CMD-007",
@@ -234,6 +260,7 @@ const state = {
       device: "Audio DSP",
       telnetIp: "",
       telnetPort: "",
+      stateUpdate: null,
     },
     {
       id: "CMD-008",
@@ -243,6 +270,7 @@ const state = {
       device: "Audio DSP",
       telnetIp: "",
       telnetPort: "",
+      stateUpdate: null,
     },
     {
       id: "CMD-009",
@@ -252,6 +280,7 @@ const state = {
       device: "Audio DSP",
       telnetIp: "192.168.10.161",
       telnetPort: "23",
+      stateUpdate: null,
     },
     {
       id: "CMD-010",
@@ -560,8 +589,8 @@ function createMacroStep(type, overrides = {}) {
   if (type === "ifElse") {
     return {
       ...baseStep,
-      conditionSource: "Variable",
-      variable: "projector_status",
+      variable: commandParameterOptions[0],
+      valueType: "number",
       operator: "==",
       compareValue: "1",
       thenSteps: overrides.thenSteps || [],
@@ -585,8 +614,8 @@ function createMacroStep(type, overrides = {}) {
   if (type === "variable") {
     return {
       ...baseStep,
-      variableName: "param_1",
-      valueType: "Text",
+      variableName: commandParameterOptions[0],
+      valueType: "text",
       value: "",
       ...overrides,
     };
@@ -632,7 +661,8 @@ function buildMacroMockFlow(macroId) {
         successOutput: "projector_status = 1",
       }),
       createMacroStep("ifElse", {
-        variable: "projector_status",
+        variable: "Param_1",
+        valueType: "number",
         operator: "==",
         compareValue: "1",
         thenSteps: [
@@ -645,8 +675,8 @@ function buildMacroMockFlow(macroId) {
         ],
       }),
       createMacroStep("variable", {
-        variableName: "param_1",
-        valueType: "Text",
+        variableName: "Param_1",
+        valueType: "text",
         value: "meeting",
       }),
     ];
@@ -732,6 +762,203 @@ function generateCommandId() {
   return `CMD-${String(nextNumber).padStart(3, "0")}`;
 }
 
+function populateCommandParameterOptions() {
+  if (!commandStateUpdateParameter) {
+    return;
+  }
+
+  commandStateUpdateParameter.innerHTML = commandParameterOptions
+    .map((parameter) => `<option value="${parameter}">${parameter}</option>`)
+    .join("");
+}
+
+function getSelectedCommandStateUpdateType() {
+  const checkedInput = document.querySelector('input[name="commandStateUpdateValueType"]:checked');
+  return checkedInput ? checkedInput.value : "number";
+}
+
+function setSelectedCommandStateUpdateType(valueType) {
+  const targetInput = document.querySelector(`input[name="commandStateUpdateValueType"][value="${valueType}"]`);
+
+  if (targetInput) {
+    targetInput.checked = true;
+  }
+}
+
+function getCommandStateUpdateValueByType(valueType) {
+  if (valueType === "number") {
+    return commandStateUpdateValueNumber?.value.trim() || "";
+  }
+
+  if (valueType === "boolean") {
+    return commandStateUpdateValueBoolean?.value === "true";
+  }
+
+  return commandStateUpdateValueText?.value || "";
+}
+
+function getCommandStateUpdatePreviewText(stateUpdate) {
+  if (!stateUpdate?.enabled) {
+    return "No parameter update configured.";
+  }
+
+  const formattedValue =
+    stateUpdate.valueType === "string"
+      ? `"${String(stateUpdate.value)}"`
+      : String(stateUpdate.value);
+
+  return `${stateUpdate.parameter} (${stateUpdate.valueType})\n= ${formattedValue}`;
+}
+
+function updateCommandStateValueField() {
+  const valueType = getSelectedCommandStateUpdateType();
+  const isEnabled = Boolean(commandStateUpdateEnabled?.checked);
+
+  commandStateUpdateValueTextField?.classList.toggle("is-hidden", valueType !== "string");
+  commandStateUpdateValueNumberField?.classList.toggle("is-hidden", valueType !== "number");
+  commandStateUpdateValueBooleanField?.classList.toggle("is-hidden", valueType !== "boolean");
+
+  if (commandStateUpdateValueText) {
+    commandStateUpdateValueText.disabled = !isEnabled || valueType !== "string";
+  }
+
+  if (commandStateUpdateValueNumber) {
+    commandStateUpdateValueNumber.disabled = !isEnabled || valueType !== "number";
+  }
+
+  if (commandStateUpdateValueBoolean) {
+    commandStateUpdateValueBoolean.disabled = !isEnabled || valueType !== "boolean";
+  }
+}
+
+function readCommandStateUpdateFromForm() {
+  const enabled = Boolean(commandStateUpdateEnabled?.checked);
+
+  if (!enabled) {
+    return null;
+  }
+
+  const valueType = getSelectedCommandStateUpdateType();
+
+  return {
+    enabled: true,
+    parameter: commandStateUpdateParameter?.value || commandParameterOptions[0],
+    valueType,
+    value: getCommandStateUpdateValueByType(valueType),
+  };
+}
+
+function updateCommandStateUpdatePreview() {
+  if (!commandStateUpdatePreview) {
+    return;
+  }
+
+  const previewValue = commandStateUpdatePreview.querySelector(".command-preview-card__value");
+
+  if (!previewValue) {
+    return;
+  }
+
+  previewValue.textContent = getCommandStateUpdatePreviewText(readCommandStateUpdateFromForm());
+}
+
+function syncCommandStateUpdatePanel() {
+  const isEnabled = Boolean(commandStateUpdateEnabled?.checked);
+
+  commandStateUpdatePanel?.classList.toggle("is-disabled", !isEnabled);
+
+  if (commandStateUpdateParameter) {
+    commandStateUpdateParameter.disabled = !isEnabled;
+  }
+
+  document.querySelectorAll('input[name="commandStateUpdateValueType"]').forEach((input) => {
+    input.disabled = !isEnabled;
+  });
+
+  updateCommandStateValueField();
+  updateCommandStateUpdatePreview();
+}
+
+function resetCommandEditorStateUpdateFields() {
+  if (commandStateUpdateEnabled) {
+    commandStateUpdateEnabled.checked = false;
+  }
+
+  if (commandStateUpdateParameter) {
+    commandStateUpdateParameter.value = commandParameterOptions[0];
+  }
+
+  setSelectedCommandStateUpdateType("number");
+
+  if (commandStateUpdateValueText) {
+    commandStateUpdateValueText.value = "";
+  }
+
+  if (commandStateUpdateValueNumber) {
+    commandStateUpdateValueNumber.value = "";
+  }
+
+  if (commandStateUpdateValueBoolean) {
+    commandStateUpdateValueBoolean.value = "true";
+  }
+
+  syncCommandStateUpdatePanel();
+}
+
+function applyCommandStateUpdateToForm(stateUpdate) {
+  resetCommandEditorStateUpdateFields();
+
+  if (!stateUpdate?.enabled) {
+    return;
+  }
+
+  if (commandStateUpdateEnabled) {
+    commandStateUpdateEnabled.checked = true;
+  }
+
+  if (commandStateUpdateParameter) {
+    commandStateUpdateParameter.value = stateUpdate.parameter || commandParameterOptions[0];
+  }
+
+  setSelectedCommandStateUpdateType(stateUpdate.valueType || "number");
+
+  if (stateUpdate.valueType === "number" && commandStateUpdateValueNumber) {
+    commandStateUpdateValueNumber.value = stateUpdate.value ?? "";
+  } else if (stateUpdate.valueType === "boolean" && commandStateUpdateValueBoolean) {
+    commandStateUpdateValueBoolean.value = String(stateUpdate.value === true);
+  } else if (commandStateUpdateValueText) {
+    commandStateUpdateValueText.value = stateUpdate.value ?? "";
+  }
+
+  syncCommandStateUpdatePanel();
+}
+
+function validateCommandStateUpdate(stateUpdate) {
+  if (!stateUpdate?.enabled) {
+    return { isValid: true, stateUpdate: null };
+  }
+
+  if (!stateUpdate.parameter) {
+    return { isValid: false, message: "Please select a parameter to update." };
+  }
+
+  if (stateUpdate.valueType === "number") {
+    if (stateUpdate.value === "" || Number.isNaN(Number(stateUpdate.value))) {
+      return { isValid: false, message: "Please enter a valid number for state update." };
+    }
+
+    stateUpdate.value = Number(stateUpdate.value);
+  } else if (stateUpdate.valueType === "string") {
+    if (String(stateUpdate.value).trim() === "") {
+      return { isValid: false, message: "Please enter a string value for state update." };
+    }
+  } else if (stateUpdate.valueType === "boolean") {
+    stateUpdate.value = Boolean(stateUpdate.value);
+  }
+
+  return { isValid: true, stateUpdate };
+}
+
 function generateMacroId() {
   const nextNumber =
     state.macros.reduce((maxValue, macro) => {
@@ -785,6 +1012,19 @@ function getStepTypeLabel(type) {
   return labels[type] || "Step";
 }
 
+function getStepThemeClass(type) {
+  const themeMap = {
+    command: "is-command",
+    delay: "is-delay",
+    ifElse: "is-ifelse",
+    polling: "is-polling",
+    variable: "is-variable",
+    runMacro: "is-runmacro",
+  };
+
+  return themeMap[type] || "is-default";
+}
+
 function getCommandLabel(commandId) {
   const command = state.commands.find((item) => item.id === commandId);
   return command ? `${command.id} - ${command.name}` : "No command selected";
@@ -816,6 +1056,60 @@ function getStepSummary(step) {
   }
 
   return "Unconfigured step";
+}
+
+function getMacroInspectorPreviewText(step) {
+  if (!step) {
+    return "";
+  }
+
+  if (step.type === "ifElse") {
+    return `Preview: IF ${step.variable || "Param_1"} ${step.operator || "=="} ${step.compareValue || ""}`.trim();
+  }
+
+  if (step.type === "variable") {
+    return `Preview: ${step.variableName || "Param_1"} = ${step.value || "(empty)"}`;
+  }
+
+  return `Preview: ${getStepSummary(step)}`;
+}
+
+function updateSelectedMacroStepDisplay(step) {
+  if (!step || !state.selectedMacroStepPath) {
+    return;
+  }
+
+  const selectedCard = macroFlowCanvas?.querySelector(`[data-step-path="${state.selectedMacroStepPath}"]`);
+
+  if (selectedCard) {
+    const summaryElement = selectedCard.querySelector(".macro-step-card__summary");
+    const warningElement = selectedCard.querySelector(".macro-step-warning");
+    const nextSummary = getStepSummary(step);
+    const nextWarning = getStepWarning(step);
+
+    if (summaryElement) {
+      summaryElement.textContent = nextSummary;
+    }
+
+    selectedCard.classList.toggle("is-invalid", Boolean(nextWarning));
+
+    if (warningElement) {
+      warningElement.textContent = nextWarning;
+      warningElement.classList.toggle("is-hidden", !nextWarning);
+    } else if (nextWarning) {
+      const body = selectedCard.querySelector(".macro-step-card__body");
+
+      if (body) {
+        body.insertAdjacentHTML("beforeend", `<div class="macro-step-warning">${escapeHtml(nextWarning)}</div>`);
+      }
+    }
+  }
+
+  const previewElement = macroInspectorPanel?.querySelector(".macro-inspector-preview");
+
+  if (previewElement) {
+    previewElement.textContent = getMacroInspectorPreviewText(step);
+  }
 }
 
 function getStepWarning(step) {
@@ -952,8 +1246,33 @@ function createInsertableMacroStep(type) {
     : createMacroStep(type);
 }
 
-function insertMacroStep(type) {
-  insertMacroStepAt(type, [], getMacroDraftSteps().length);
+function clearMacroDragIndicators() {
+  state.dragMacroInsertTarget = null;
+  macroFlowCanvas?.querySelectorAll(".is-drop-before, .is-drop-after, .is-drag-over").forEach((element) => {
+    element.classList.remove("is-drop-before", "is-drop-after", "is-drag-over");
+  });
+  macroFlowCanvas?.querySelectorAll("[data-macro-add-step-hint]").forEach((element) => {
+    element.classList.remove("is-drop");
+    element.textContent = element.getAttribute("data-macro-default-hint") || "Ready for more logic, delays, or nested control branches.";
+  });
+}
+
+function openMacroInsertActionModal(containerPath = [], insertIndex = null) {
+  state.pendingMacroInsertTarget = {
+    containerPath,
+    insertIndex,
+  };
+  openModal(macroInsertActionModal);
+}
+
+function closeMacroInsertActionModal() {
+  state.pendingMacroInsertTarget = null;
+  closeModal(macroInsertActionModal);
+}
+
+function insertMacroStep(type, containerPath = [], insertIndex = null) {
+  const targetSteps = getStepListByContainerPath(containerPath);
+  insertMacroStepAt(type, containerPath, insertIndex === null ? targetSteps.length : insertIndex);
 }
 
 function insertMacroStepAt(type, containerPath = [], insertIndex = null) {
@@ -969,6 +1288,21 @@ function insertMacroStepAt(type, containerPath = [], insertIndex = null) {
   targetSteps.splice(nextIndex, 0, newStep);
   state.selectedMacroStepPath = serializeStepPath([...containerPath, nextIndex]);
   renderMacroEditor();
+}
+
+function getMacroAddStepBar(containerPath = [], hint = "Ready for more logic, delays, or nested control branches.", buttonLabel = "+ Add Step") {
+  const pathValue = serializeStepPath(containerPath);
+
+  return `
+    <div class="macro-add-step-bar" data-macro-add-step-container="${pathValue}">
+      <div class="macro-add-step-bar__copy">
+        <span class="macro-add-step-bar__hint" data-macro-add-step-hint="true" data-macro-default-hint="${escapeHtml(hint)}">${escapeHtml(hint)}</span>
+      </div>
+      <button class="modal-btn modal-btn--ghost" type="button" data-macro-add-step="true" data-container-path="${pathValue}">
+        ${buttonLabel}
+      </button>
+    </div>
+  `;
 }
 
 function duplicateMacroStep(pathValue) {
@@ -1084,28 +1418,50 @@ function deleteMacro(macroId) {
   showToast(`${macro.name} deleted.`);
 }
 
-function renderMacroLibraryMeta() {
-  if (macroVariableList) {
-    macroVariableList.innerHTML = macroVariableMocks
-      .map((item) => `
-        <div class="macro-meta-item">
-          <strong>${escapeHtml(item.name)}</strong>
-          <span>= ${escapeHtml(item.value)}</span>
-        </div>
-      `)
-      .join("");
+function normalizeMacroValueType(valueType) {
+  const normalized = String(valueType || "").toLowerCase();
+
+  if (normalized === "number" || normalized === "boolean" || normalized === "text") {
+    return normalized;
   }
 
-  if (macroPollingRuleList) {
-    macroPollingRuleList.innerHTML = macroPollingMocks
-      .map((rule) => `
-        <div class="macro-meta-item">
-          <strong>${escapeHtml(rule)}</strong>
-          <span>Polling rule mock</span>
-        </div>
-      `)
-      .join("");
+  if (normalized === "string") {
+    return "text";
   }
+
+  return "text";
+}
+
+function getMacroValueOperators(valueType) {
+  if (valueType === "number") {
+    return ["==", "!=", ">", ">=", "<", "<="];
+  }
+
+  if (valueType === "boolean") {
+    return ["==", "!="];
+  }
+
+  return ["==", "!=", "contains", "startsWith", "endsWith"];
+}
+
+function getMacroTypedInputControl(fieldName, valueType, value, options = {}) {
+  const safeValue = value ?? "";
+  const extraAttrs = options.disabled ? "disabled" : "";
+
+  if (valueType === "number") {
+    return `<input type="number" step="any" data-step-field="${fieldName}" value="${escapeHtml(safeValue)}" ${extraAttrs} />`;
+  }
+
+  if (valueType === "boolean") {
+    return `
+      <select data-step-field="${fieldName}" ${extraAttrs}>
+        <option value="true" ${String(safeValue) === "true" ? "selected" : ""}>true</option>
+        <option value="false" ${String(safeValue) === "false" ? "selected" : ""}>false</option>
+      </select>
+    `;
+  }
+
+  return `<input type="text" data-step-field="${fieldName}" value="${escapeHtml(safeValue)}" ${extraAttrs} />`;
 }
 
 function renderMacroStepActions(pathValue) {
@@ -1118,20 +1474,97 @@ function renderMacroStepActions(pathValue) {
   `;
 }
 
-function renderDropZone(containerPath = [], insertIndex = 0, label = "Drop action here") {
-  const pathValue = serializeStepPath(containerPath);
+function renderMacroReviewSteps(steps, parentPath = []) {
+  return steps
+    .map((step, index) => {
+      const pathSegments = [...parentPath, index];
+      const pathValue = serializeStepPath(pathSegments);
+      const summary = getStepSummary(step);
+      const warning = getStepWarning(step);
 
-  return `
-    <button
-      class="macro-drop-zone"
-      type="button"
-      data-drop-container="${pathValue}"
-      data-drop-index="${insertIndex}"
-      title="Insert step here"
-    >
-      <span>${label}</span>
-    </button>
+      if (step.type === "ifElse") {
+        return `
+          <div class="macro-step-slot">
+            <article class="macro-step-card macro-if-block" data-step-path="${pathValue}">
+              <div class="macro-step-card__main">
+                <div class="macro-step-card__index">${getStepDisplayIndex(pathSegments)}</div>
+                <div class="macro-step-card__body">
+                  <div class="macro-step-card__header">
+                    <div class="macro-step-card__type">
+                      <span class="macro-step-card__badge ${getStepThemeClass(step.type)}">${getStepTypeLabel(step.type)}</span>
+                      <strong>IF condition</strong>
+                    </div>
+                  </div>
+                  <div class="macro-step-card__summary">${escapeHtml(summary)}</div>
+                  ${warning ? `<div class="macro-step-warning">${escapeHtml(warning)}</div>` : ""}
+                </div>
+              </div>
+              <div class="macro-branch-list">
+                <section class="macro-branch-card">
+                  <div class="macro-branch-card__header">
+                    <strong>Then</strong>
+                    <span class="macro-branch-card__tag">THEN</span>
+                  </div>
+                  <div class="macro-step-stack">
+                    ${step.thenSteps.length ? renderMacroReviewSteps(step.thenSteps, [...pathSegments, "then"]) : '<div class="macro-branch-empty">No steps.</div>'}
+                  </div>
+                </section>
+                <section class="macro-branch-card">
+                  <div class="macro-branch-card__header">
+                    <strong>Else</strong>
+                    <span class="macro-branch-card__tag">ELSE</span>
+                  </div>
+                  <div class="macro-step-stack">
+                    ${step.elseSteps.length ? renderMacroReviewSteps(step.elseSteps, [...pathSegments, "else"]) : '<div class="macro-branch-empty">No steps.</div>'}
+                  </div>
+                </section>
+              </div>
+            </article>
+          </div>
+        `;
+      }
+
+      return `
+        <div class="macro-step-slot">
+          <article class="macro-step-card" data-step-path="${pathValue}">
+            <div class="macro-step-card__main">
+              <div class="macro-step-card__index">${getStepDisplayIndex(pathSegments)}</div>
+              <div class="macro-step-card__body">
+                <div class="macro-step-card__header">
+                  <div class="macro-step-card__type">
+                    <span class="macro-step-card__badge ${getStepThemeClass(step.type)}">${getStepTypeLabel(step.type)}</span>
+                    <strong>${getStepTypeLabel(step.type)}</strong>
+                  </div>
+                </div>
+                <div class="macro-step-card__summary">${escapeHtml(summary)}</div>
+                ${warning ? `<div class="macro-step-warning">${escapeHtml(warning)}</div>` : ""}
+              </div>
+            </div>
+          </article>
+        </div>
+      `;
+    })
+    .join("");
+}
+
+function openMacroReviewModal(macroId) {
+  const macro = state.macros.find((item) => item.id === macroId);
+
+  if (!macro || !macroReviewHeader || !macroReviewFlow) {
+    return;
+  }
+
+  macroReviewHeader.innerHTML = `
+    <span class="panel-card__eyebrow">${escapeHtml(macro.id)}</span>
+    <h3>${escapeHtml(macro.name)}</h3>
+    <p>${escapeHtml(macro.description || "No description")}</p>
   `;
+
+  macroReviewFlow.innerHTML = macro.flow.length
+    ? `<div class="macro-step-stack">${renderMacroReviewSteps(macro.flow)}</div>`
+    : `<div class="macro-flow-empty"><strong>No steps in this macro yet</strong></div>`;
+
+  openModal(macroReviewModal);
 }
 
 function renderMacroSteps(steps, parentPath = []) {
@@ -1141,18 +1574,18 @@ function renderMacroSteps(steps, parentPath = []) {
       const pathValue = serializeStepPath(pathSegments);
       const warning = getStepWarning(step);
       const isSelected = state.selectedMacroStepPath === pathValue;
-      const beforeDropZone = renderDropZone(parentPath, index, "Insert here");
+      const containerPath = serializeStepPath(parentPath);
 
       if (step.type === "ifElse") {
         return `
-          ${beforeDropZone}
+          <div class="macro-step-slot" data-step-slot="true" data-container-path="${containerPath}" data-step-index="${index}">
           <article class="macro-step-card macro-if-block ${isSelected ? "is-selected" : ""} ${warning ? "is-invalid" : ""}" data-step-path="${pathValue}">
             <div class="macro-step-card__main">
               <div class="macro-step-card__index">${getStepDisplayIndex(pathSegments)}</div>
               <div class="macro-step-card__body">
                 <div class="macro-step-card__header">
                   <div class="macro-step-card__type">
-                    <span class="macro-step-card__badge">${getStepTypeLabel(step.type)}</span>
+                    <span class="macro-step-card__badge ${getStepThemeClass(step.type)}">${getStepTypeLabel(step.type)}</span>
                     <strong>IF condition</strong>
                   </div>
                   ${renderMacroStepActions(pathValue)}
@@ -1169,8 +1602,8 @@ function renderMacroSteps(steps, parentPath = []) {
                   <span class="macro-branch-card__tag">THEN</span>
                 </div>
                 <div class="macro-step-stack">
-                  ${step.thenSteps.length ? renderMacroSteps(step.thenSteps, [...pathSegments, "then"]) : ""}
-                  ${renderDropZone([...pathSegments, "then"], step.thenSteps.length, "Drop into THEN")}
+                  ${step.thenSteps.length ? renderMacroSteps(step.thenSteps, [...pathSegments, "then"]) : '<div class="macro-branch-empty">No steps yet.</div>'}
+                  ${getMacroAddStepBar([...pathSegments, "then"], "Add the next THEN action or drag one here.")}
                 </div>
               </section>
               <section class="macro-branch-card ${state.selectedMacroStepPath.startsWith(`${pathValue}.else`) ? "is-selected" : ""}">
@@ -1179,24 +1612,25 @@ function renderMacroSteps(steps, parentPath = []) {
                   <span class="macro-branch-card__tag">ELSE</span>
                 </div>
                 <div class="macro-step-stack">
-                  ${step.elseSteps.length ? renderMacroSteps(step.elseSteps, [...pathSegments, "else"]) : ""}
-                  ${renderDropZone([...pathSegments, "else"], step.elseSteps.length, "Drop into ELSE")}
+                  ${step.elseSteps.length ? renderMacroSteps(step.elseSteps, [...pathSegments, "else"]) : '<div class="macro-branch-empty">No steps yet.</div>'}
+                  ${getMacroAddStepBar([...pathSegments, "else"], "Add the next ELSE action or drag one here.")}
                 </div>
               </section>
             </div>
           </article>
+          </div>
         `;
       }
 
       return `
-        ${beforeDropZone}
+        <div class="macro-step-slot" data-step-slot="true" data-container-path="${containerPath}" data-step-index="${index}">
         <article class="macro-step-card ${isSelected ? "is-selected" : ""} ${warning ? "is-invalid" : ""}" data-step-path="${pathValue}">
           <div class="macro-step-card__main">
             <div class="macro-step-card__index">${getStepDisplayIndex(pathSegments)}</div>
             <div class="macro-step-card__body">
               <div class="macro-step-card__header">
                 <div class="macro-step-card__type">
-                  <span class="macro-step-card__badge">${getStepTypeLabel(step.type)}</span>
+                  <span class="macro-step-card__badge ${getStepThemeClass(step.type)}">${getStepTypeLabel(step.type)}</span>
                   <strong>${getStepTypeLabel(step.type)}</strong>
                 </div>
                 ${renderMacroStepActions(pathValue)}
@@ -1207,11 +1641,12 @@ function renderMacroSteps(steps, parentPath = []) {
             </div>
           </div>
         </article>
+        </div>
       `;
     })
     .join("");
 
-  return `${renderedSteps}${renderDropZone(parentPath, steps.length, "Drop action here")}`;
+  return renderedSteps;
 }
 
 function renderMacroFlow() {
@@ -1227,12 +1662,9 @@ function renderMacroFlow() {
         <strong>No steps in this macro yet</strong>
         <p>Start building your control logic</p>
         <button class="modal-btn modal-btn--primary" type="button" data-macro-empty-add="true">+ Add First Step</button>
-        <span>or select an action from the left panel</span>
+        <span>or drag an action card into the flow</span>
       </div>
-      <div class="macro-add-step-bar">
-        <span>Add a default step or choose a tool from the action library.</span>
-        <button class="modal-btn modal-btn--ghost" type="button" data-macro-add-step="true">+ Add Step</button>
-      </div>
+      ${getMacroAddStepBar([], "Drop Action Here", "+ Add Step")}
     `;
     return;
   }
@@ -1241,10 +1673,7 @@ function renderMacroFlow() {
     <div class="macro-step-stack">
       ${renderMacroSteps(steps)}
     </div>
-    <div class="macro-add-step-bar">
-      <span>Ready for more logic, delays, or nested control branches.</span>
-      <button class="modal-btn modal-btn--ghost" type="button" data-macro-add-step="true">+ Add Step</button>
-    </div>
+    ${getMacroAddStepBar([], "Ready for more logic, delays, or nested control branches.", "+ Add Step")}
   `;
 }
 
@@ -1283,7 +1712,6 @@ function renderMacroInspector() {
 
   if (selectedStep.type === "command") {
     fields = `
-      ${getInspectorField("Step Type", `<input type="text" value="${getStepTypeLabel(selectedStep.type)}" disabled />`)}
       ${getInspectorField("Command", `
         <select data-step-field="commandId">
           <option value="">Select command</option>
@@ -1303,19 +1731,25 @@ function renderMacroInspector() {
       `)}
     `;
   } else if (selectedStep.type === "ifElse") {
+    const valueType = normalizeMacroValueType(selectedStep.valueType);
+    const operators = getMacroValueOperators(valueType);
+    const operator = operators.includes(selectedStep.operator) ? selectedStep.operator : operators[0];
     fields = `
-      ${getInspectorField("Condition Source", `<input type="text" value="${escapeHtml(selectedStep.conditionSource)}" disabled />`)}
-      ${getInspectorField("Variable", `<select data-step-field="variable">${renderInspectorOptions(macroVariableMocks.map((item) => item.name), selectedStep.variable)}</select>`)}
-      ${getInspectorField("Operator", `
-        <select data-step-field="operator">
-          <option value="==" ${selectedStep.operator === "==" ? "selected" : ""}>==</option>
-          <option value="!=" ${selectedStep.operator === "!=" ? "selected" : ""}>!=</option>
-          <option value=">" ${selectedStep.operator === ">" ? "selected" : ""}>&gt;</option>
-          <option value="<" ${selectedStep.operator === "<" ? "selected" : ""}>&lt;</option>
+      ${getInspectorField("Variable", `<select data-step-field="variable">${renderInspectorOptions(commandParameterOptions, selectedStep.variable)}</select>`)}
+      ${getInspectorField("Value Type", `
+        <select data-step-field="valueType">
+          <option value="number" ${valueType === "number" ? "selected" : ""}>number</option>
+          <option value="text" ${valueType === "text" ? "selected" : ""}>text</option>
+          <option value="boolean" ${valueType === "boolean" ? "selected" : ""}>boolean</option>
         </select>
       `)}
-      ${getInspectorField("Compare Value", `<input type="text" data-step-field="compareValue" value="${escapeHtml(selectedStep.compareValue)}" />`)}
-      <div class="macro-inspector-preview">Preview: IF ${escapeHtml(selectedStep.variable)} ${escapeHtml(selectedStep.operator)} ${escapeHtml(selectedStep.compareValue)}</div>
+      ${getInspectorField("Operator", `
+        <select data-step-field="operator">
+          ${operators.map((item) => `<option value="${item}" ${operator === item ? "selected" : ""}>${escapeHtml(item)}</option>`).join("")}
+        </select>
+      `)}
+      ${getInspectorField("Compare Value", getMacroTypedInputControl("compareValue", valueType, selectedStep.compareValue))}
+      <div class="macro-inspector-preview">${escapeHtml(getMacroInspectorPreviewText({ ...selectedStep, operator }))}</div>
     `;
   } else if (selectedStep.type === "polling") {
     fields = `
@@ -1326,17 +1760,18 @@ function renderMacroInspector() {
       ${getInspectorField("On Timeout", `<input type="text" data-step-field="onTimeout" value="${escapeHtml(selectedStep.onTimeout)}" />`)}
     `;
   } else if (selectedStep.type === "variable") {
+    const valueType = normalizeMacroValueType(selectedStep.valueType);
     fields = `
-      ${getInspectorField("Variable", `<select data-step-field="variableName">${renderInspectorOptions(macroVariableMocks.map((item) => item.name), selectedStep.variableName)}</select>`)}
+      ${getInspectorField("Variable", `<select data-step-field="variableName">${renderInspectorOptions(commandParameterOptions, selectedStep.variableName)}</select>`)}
       ${getInspectorField("Value Type", `
         <select data-step-field="valueType">
-          <option value="Text" ${selectedStep.valueType === "Text" ? "selected" : ""}>Text</option>
-          <option value="Number" ${selectedStep.valueType === "Number" ? "selected" : ""}>Number</option>
-          <option value="Boolean" ${selectedStep.valueType === "Boolean" ? "selected" : ""}>Boolean</option>
+          <option value="number" ${valueType === "number" ? "selected" : ""}>number</option>
+          <option value="text" ${valueType === "text" ? "selected" : ""}>text</option>
+          <option value="boolean" ${valueType === "boolean" ? "selected" : ""}>boolean</option>
         </select>
       `)}
-      ${getInspectorField("Value", `<input type="text" data-step-field="value" value="${escapeHtml(selectedStep.value)}" />`)}
-      <div class="macro-inspector-preview">Preview: ${escapeHtml(selectedStep.variableName)} = ${escapeHtml(selectedStep.value || "(empty)")}</div>
+      ${getInspectorField("Value", getMacroTypedInputControl("value", valueType, selectedStep.value))}
+      <div class="macro-inspector-preview">${escapeHtml(getMacroInspectorPreviewText(selectedStep))}</div>
     `;
   } else if (selectedStep.type === "runMacro") {
     fields = `
@@ -1369,7 +1804,6 @@ function renderMacroEditor() {
     macroBasicDescriptionInput.value = state.macroDraft.description;
   }
 
-  renderMacroLibraryMeta();
   renderMacroFlow();
   renderMacroInspector();
 }
@@ -1416,7 +1850,7 @@ function renderMacroManagement() {
 
   macroTableBody.innerHTML = currentPageMacros
     .map((macro) => `
-      <tr class="${state.editingMacroId === macro.id && state.macroEditorMode === "editor" ? "is-selected" : ""}">
+      <tr class="${state.editingMacroId === macro.id && state.macroEditorMode === "editor" ? "is-selected" : ""}" data-macro-row-id="${macro.id}">
         <td><span class="command-id">${escapeHtml(macro.id)}</span></td>
         <td><div class="macro-name"><strong>${escapeHtml(macro.name)}</strong></div></td>
         <td><div class="macro-description">${escapeHtml(macro.description)}</div></td>
@@ -1578,6 +2012,9 @@ function renderCommandManagement() {
     .map((command, index) => {
       const preview = command.data.length > 72 ? `${command.data.slice(0, 72)}...` : command.data;
       const commandIndex = pageStart + index;
+      const stateUpdateSummary = command.stateUpdate?.enabled
+        ? `Updates ${command.stateUpdate.parameter} (${command.stateUpdate.valueType})`
+        : "No state update";
 
       return `
         <tr>
@@ -1585,7 +2022,7 @@ function renderCommandManagement() {
           <td>
             <div class="command-name">
               <strong>${escapeHtml(command.name)}</strong>
-              <span>Command #${commandIndex + 1}</span>
+              <span>Command #${commandIndex + 1} · ${escapeHtml(stateUpdateSummary)}</span>
             </div>
           </td>
           <td><span class="command-pill">${escapeHtml(command.interface)}</span></td>
@@ -1658,6 +2095,7 @@ function openCommandEditor(mode, commandIndex = null) {
   commandTelnetIpInput.value = command?.telnetIp || "";
   commandTelnetPortInput.value = command?.telnetPort || "";
   commandDataInput.value = command?.data || "";
+  applyCommandStateUpdateToForm(command?.stateUpdate || null);
   syncCommandEditorInterfaceFields();
 
   openModal(commandEditorModal);
@@ -1697,6 +2135,12 @@ function testRunCommand(commandIndex) {
   const command = state.commands[commandIndex];
 
   if (!command) {
+    return;
+  }
+
+  if (command.stateUpdate?.enabled && command.stateUpdate.parameter) {
+    state.runtimeParameters[command.stateUpdate.parameter] = command.stateUpdate.value;
+    showToast(`Test run sent to ${command.device} via ${command.interface}. ${command.stateUpdate.parameter} updated.`);
     return;
   }
 
@@ -2472,6 +2916,39 @@ if (commandInterfaceSelect) {
   });
 }
 
+if (commandStateUpdateEnabled) {
+  commandStateUpdateEnabled.addEventListener("change", () => {
+    syncCommandStateUpdatePanel();
+  });
+}
+
+if (commandStateUpdateParameter) {
+  commandStateUpdateParameter.addEventListener("change", () => {
+    updateCommandStateUpdatePreview();
+  });
+}
+
+document.querySelectorAll('input[name="commandStateUpdateValueType"]').forEach((input) => {
+  input.addEventListener("change", () => {
+    updateCommandStateValueField();
+    updateCommandStateUpdatePreview();
+  });
+});
+
+[commandStateUpdateValueText, commandStateUpdateValueNumber, commandStateUpdateValueBoolean].forEach((input) => {
+  if (!input) {
+    return;
+  }
+
+  input.addEventListener("input", () => {
+    updateCommandStateUpdatePreview();
+  });
+
+  input.addEventListener("change", () => {
+    updateCommandStateUpdatePreview();
+  });
+});
+
 if (commandEditorForm) {
   commandEditorForm.addEventListener("submit", (event) => {
     event.preventDefault();
@@ -2483,6 +2960,7 @@ if (commandEditorForm) {
     const telnetIp = commandTelnetIpInput.value.trim();
     const telnetPort = commandTelnetPortInput.value.trim();
     const editIndex = commandEditIndex.value === "" ? -1 : Number(commandEditIndex.value);
+    const stateUpdateValidation = validateCommandStateUpdate(readCommandStateUpdateFromForm());
 
     if (!name) {
       showToast("Please enter a command name.");
@@ -2506,6 +2984,11 @@ if (commandEditorForm) {
       }
     }
 
+    if (!stateUpdateValidation.isValid) {
+      showToast(stateUpdateValidation.message);
+      return;
+    }
+
     const nextCommand = {
       id: Number.isInteger(editIndex) && editIndex >= 0 && state.commands[editIndex]
         ? state.commands[editIndex].id
@@ -2516,6 +2999,7 @@ if (commandEditorForm) {
       device,
       telnetIp: interfaceType === "Telnet" ? telnetIp : "",
       telnetPort: interfaceType === "Telnet" ? telnetPort : "",
+      stateUpdate: stateUpdateValidation.stateUpdate,
     };
 
     if (Number.isInteger(editIndex) && editIndex >= 0 && state.commands[editIndex]) {
@@ -2535,6 +3019,7 @@ if (commandEditorForm) {
     commandDeviceSelect.value = "Main Display";
     commandTelnetIpInput.value = "";
     commandTelnetPortInput.value = "";
+    resetCommandEditorStateUpdateFields();
     syncCommandEditorInterfaceFields();
   });
 }
@@ -2618,8 +3103,12 @@ if (macroPagination) {
 if (macroTableBody) {
   macroTableBody.addEventListener("click", (event) => {
     const actionButton = event.target.closest("[data-macro-action]");
+    const macroRow = event.target.closest("[data-macro-row-id]");
 
     if (!actionButton) {
+      if (macroRow) {
+        openMacroReviewModal(macroRow.getAttribute("data-macro-row-id") || "");
+      }
       return;
     }
 
@@ -2686,9 +3175,22 @@ if (macroActionLibrary) {
 
   macroActionLibrary.addEventListener("dragend", () => {
     state.dragInsertType = "";
-    macroFlowCanvas?.querySelectorAll(".is-drag-over").forEach((element) => {
-      element.classList.remove("is-drag-over");
-    });
+    clearMacroDragIndicators();
+  });
+}
+
+if (macroInsertActionGrid) {
+  macroInsertActionGrid.addEventListener("click", (event) => {
+    const actionButton = event.target.closest("[data-macro-modal-insert-type]");
+
+    if (!actionButton || !state.pendingMacroInsertTarget) {
+      return;
+    }
+
+    const insertType = actionButton.getAttribute("data-macro-modal-insert-type") || "command";
+    const { containerPath, insertIndex } = state.pendingMacroInsertTarget;
+    insertMacroStep(insertType, containerPath, insertIndex);
+    closeMacroInsertActionModal();
   });
 }
 
@@ -2698,7 +3200,6 @@ if (macroFlowCanvas) {
     const targetStep = event.target.closest("[data-step-path]");
     const addStepButton = event.target.closest("[data-macro-add-step]");
     const addFirstStepButton = event.target.closest("[data-macro-empty-add]");
-    const dropZoneButton = event.target.closest("[data-drop-container]");
 
     if (actionButton) {
       const stepAction = actionButton.getAttribute("data-macro-step-action");
@@ -2710,15 +3211,10 @@ if (macroFlowCanvas) {
       }
     }
 
-    if (dropZoneButton) {
-      const containerPath = parseStepPath(dropZoneButton.getAttribute("data-drop-container") || "");
-      const insertIndex = Number(dropZoneButton.getAttribute("data-drop-index") || "0");
-      insertMacroStepAt(state.lastMacroInsertType || "command", containerPath, insertIndex);
-      return;
-    }
-
     if (addStepButton || addFirstStepButton) {
-      insertMacroStep(state.lastMacroInsertType || "command");
+      const containerPath = parseStepPath(addStepButton?.getAttribute("data-container-path") || "");
+      const targetSteps = getStepListByContainerPath(containerPath);
+      openMacroInsertActionModal(containerPath, targetSteps.length);
       return;
     }
 
@@ -2728,50 +3224,67 @@ if (macroFlowCanvas) {
   });
 
   macroFlowCanvas.addEventListener("dragover", (event) => {
-    const dropZone = event.target.closest("[data-drop-container]");
+    if (!state.dragInsertType) {
+      return;
+    }
 
-    if (!dropZone || !state.dragInsertType) {
+    const addStepBar = event.target.closest("[data-macro-add-step-container]");
+    const stepSlot = event.target.closest("[data-step-slot]");
+
+    if (!addStepBar && !stepSlot) {
       return;
     }
 
     event.preventDefault();
     event.dataTransfer.dropEffect = "copy";
-    macroFlowCanvas.querySelectorAll(".is-drag-over").forEach((element) => {
-      if (element !== dropZone) {
-        element.classList.remove("is-drag-over");
+    clearMacroDragIndicators();
+
+    if (addStepBar) {
+      const containerPath = parseStepPath(addStepBar.getAttribute("data-macro-add-step-container") || "");
+      const hint = addStepBar.querySelector("[data-macro-add-step-hint]");
+      addStepBar.classList.add("is-drag-over");
+      if (hint) {
+        hint.classList.add("is-drop");
+        hint.textContent = "Drop Action Here";
       }
-    });
-    dropZone.classList.add("is-drag-over");
-  });
-
-  macroFlowCanvas.addEventListener("dragleave", (event) => {
-    const dropZone = event.target.closest("[data-drop-container]");
-
-    if (!dropZone) {
+      state.dragMacroInsertTarget = {
+        containerPath,
+        insertIndex: getStepListByContainerPath(containerPath).length,
+      };
       return;
     }
 
-    if (!dropZone.contains(event.relatedTarget)) {
-      dropZone.classList.remove("is-drag-over");
+    const containerPath = parseStepPath(stepSlot.getAttribute("data-container-path") || "");
+    const stepIndex = Number(stepSlot.getAttribute("data-step-index") || "0");
+    const slotRect = stepSlot.getBoundingClientRect();
+    const shouldInsertBefore = event.clientY < slotRect.top + slotRect.height / 2;
+
+    stepSlot.classList.add(shouldInsertBefore ? "is-drop-before" : "is-drop-after");
+    state.dragMacroInsertTarget = {
+      containerPath,
+      insertIndex: shouldInsertBefore ? stepIndex : stepIndex + 1,
+    };
+  });
+
+  macroFlowCanvas.addEventListener("dragleave", (event) => {
+    if (!event.currentTarget.contains(event.relatedTarget)) {
+      clearMacroDragIndicators();
     }
   });
 
   macroFlowCanvas.addEventListener("drop", (event) => {
-    const dropZone = event.target.closest("[data-drop-container]");
-
-    if (!dropZone) {
+    if (!state.dragInsertType || !state.dragMacroInsertTarget) {
       return;
     }
 
     event.preventDefault();
-    dropZone.classList.remove("is-drag-over");
 
     const insertType = state.dragInsertType || event.dataTransfer?.getData("text/plain") || "command";
-    const containerPath = parseStepPath(dropZone.getAttribute("data-drop-container") || "");
-    const insertIndex = Number(dropZone.getAttribute("data-drop-index") || "0");
+    const { containerPath, insertIndex } = state.dragMacroInsertTarget;
 
     insertMacroStepAt(insertType, containerPath, insertIndex);
     state.dragInsertType = "";
+    clearMacroDragIndicators();
   });
 }
 
@@ -2785,7 +3298,7 @@ if (macroInspectorPanel) {
     }
 
     step[field] = event.target.value;
-    renderMacroEditor();
+    updateSelectedMacroStepDisplay(step);
   });
 
   macroInspectorPanel.addEventListener("change", (event) => {
@@ -2798,6 +3311,16 @@ if (macroInspectorPanel) {
 
     if (field === "waitForResult") {
       step[field] = event.target.value === "true";
+    } else if (field === "valueType") {
+      step[field] = normalizeMacroValueType(event.target.value);
+
+      if (step.type === "ifElse") {
+        const operators = getMacroValueOperators(step[field]);
+        step.operator = operators[0];
+        step.compareValue = step[field] === "boolean" ? "true" : "";
+      } else if (step.type === "variable") {
+        step.value = step[field] === "boolean" ? "true" : "";
+      }
     } else {
       step[field] = event.target.value;
     }
@@ -3085,16 +3608,25 @@ document.querySelectorAll("[data-close-modal]").forEach((button) => {
     const modalId = button.getAttribute("data-close-modal");
     const modal = document.getElementById(modalId);
 
+    if (modalId === "macroInsertActionModal") {
+      closeMacroInsertActionModal();
+      return;
+    }
+
     if (modal) {
       closeModal(modal);
     }
   });
 });
 
-[signinModal, settingsModal, wifiPasswordModal, commandEditorModal, macroDeleteModal, adminConfirmModal].forEach((modal) => {
+[signinModal, settingsModal, wifiPasswordModal, commandEditorModal, macroDeleteModal, adminConfirmModal, macroInsertActionModal, macroReviewModal].forEach((modal) => {
   modal.addEventListener("click", (event) => {
     if (event.target === modal) {
-      closeModal(modal);
+      if (modal === macroInsertActionModal) {
+        closeMacroInsertActionModal();
+      } else {
+        closeModal(modal);
+      }
     }
   });
 });
@@ -3114,12 +3646,16 @@ document.addEventListener("keydown", (event) => {
     closeModal(commandEditorModal);
     closeModal(macroDeleteModal);
     closeModal(adminConfirmModal);
+    closeMacroInsertActionModal();
+    closeModal(macroReviewModal);
     closeModal(commandEditorModal);
     closeModal(macroDeleteModal);
   }
 });
 
 renderUserMenu();
+populateCommandParameterOptions();
+resetCommandEditorStateUpdateFields();
 renderCommandManagement();
 renderMacroManagement();
 syncCommandEditorInterfaceFields();
