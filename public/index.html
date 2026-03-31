@@ -634,6 +634,117 @@
                 </section>
               </section>
 
+              <section class="device-integration-panel is-hidden" id="deviceIntegrationPanel" aria-labelledby="deviceIntegrationPanelTitle">
+                <div id="deviceIntegrationContent"></div>
+              </section>
+
+              <section class="driver-library-panel is-hidden" id="driverLibraryPanel" aria-labelledby="driverLibraryPanelTitle">
+                <div class="driver-library-hero">
+                  <div class="driver-library-hero__copy">
+                    <span class="panel-card__eyebrow">Device Integration</span>
+                    <h2 id="driverLibraryPanelTitle">Driver Library</h2>
+                    <p>Browse and manage device drivers for system integration</p>
+                  </div>
+                  <button class="modal-btn modal-btn--primary" id="importDriverButton" type="button">
+                    Import Driver
+                  </button>
+                </div>
+
+                <section class="panel-card driver-library-card" aria-labelledby="driverLibraryWorkspaceTitle">
+                  <div class="panel-card__header">
+                    <div>
+                      <span class="panel-card__eyebrow">Library Workspace</span>
+                      <h3 id="driverLibraryWorkspaceTitle">Driver Discovery</h3>
+                    </div>
+                  </div>
+
+                  <div class="driver-toolbar">
+                    <label class="form-field driver-search-field">
+                      <span>Search</span>
+                      <input
+                        id="driverSearchInput"
+                        name="driverSearch"
+                        type="search"
+                        placeholder="Search drivers by brand, model, or device type"
+                      />
+                    </label>
+                    <label class="form-field">
+                      <span>Type</span>
+                      <select id="driverTypeFilter">
+                        <option value="All Types">All Types</option>
+                        <option value="Projector">Projector</option>
+                        <option value="Display">Display</option>
+                        <option value="Audio">Audio</option>
+                        <option value="Sensor">Sensor</option>
+                        <option value="Lighting">Lighting</option>
+                      </select>
+                    </label>
+                    <label class="form-field">
+                      <span>Protocol</span>
+                      <select id="driverProtocolFilter">
+                        <option value="All Protocols">All Protocols</option>
+                        <option value="RS-232">RS-232</option>
+                        <option value="TCP/IP">TCP/IP</option>
+                        <option value="Telnet">Telnet</option>
+                        <option value="HTTP">HTTP</option>
+                      </select>
+                    </label>
+                    <label class="form-field">
+                      <span>Vendor</span>
+                      <select id="driverVendorFilter">
+                        <option value="All Vendors">All Vendors</option>
+                        <option value="Panasonic">Panasonic</option>
+                        <option value="Epson">Epson</option>
+                        <option value="Sony">Sony</option>
+                        <option value="Yamaha">Yamaha</option>
+                        <option value="LG">LG</option>
+                        <option value="Generic">Generic</option>
+                      </select>
+                    </label>
+                  </div>
+
+                  <div class="driver-library-layout">
+                    <section class="driver-list-panel" aria-labelledby="driverVendorListTitle">
+                      <div class="driver-list-panel__split">
+                        <div class="driver-vendor-panel">
+                          <div class="driver-list-panel__header">
+                            <span class="panel-card__eyebrow">Brands</span>
+                            <h4 id="driverVendorListTitle">Vendor List</h4>
+                          </div>
+                          <div class="driver-vendor-list" id="driverVendorList"></div>
+                        </div>
+
+                        <div class="driver-model-panel">
+                          <div class="driver-list-panel__header">
+                            <span class="panel-card__eyebrow">Models</span>
+                            <h4 id="driverModelListTitle">Driver Models</h4>
+                          </div>
+                          <div class="driver-model-list" id="driverModelList"></div>
+                        </div>
+                      </div>
+                    </section>
+
+                    <section class="driver-detail-panel" aria-labelledby="driverDetailTitle">
+                      <div class="driver-detail-panel__header">
+                        <div>
+                          <span class="panel-card__eyebrow">Driver Detail</span>
+                          <h3 id="driverDetailTitle">Selected Driver</h3>
+                        </div>
+                        <div class="driver-detail-actions">
+                          <button class="modal-btn modal-btn--primary" id="driverCreateDeviceButton" type="button">
+                            Create Device
+                          </button>
+                          <button class="modal-btn modal-btn--ghost" id="driverExportButton" type="button">
+                            Export Driver
+                          </button>
+                        </div>
+                      </div>
+                      <div class="driver-detail-content" id="driverDetailContent"></div>
+                    </section>
+                  </div>
+                </section>
+              </section>
+
               <section class="display-panel is-hidden" id="displayPanel" aria-labelledby="displayPanelTitle">
                 <div class="display-hero">
                   <div class="display-hero__copy">
@@ -1411,6 +1522,69 @@
           <div class="macro-review-flow" id="macroReviewFlow"></div>
           <div class="modal-window__actions">
             <button class="modal-btn modal-btn--ghost" type="button" data-close-modal="macroReviewModal">
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-backdrop is-hidden" id="importDriverModal" aria-hidden="true">
+      <div class="modal-window modal-window--wide" role="dialog" aria-modal="true" aria-labelledby="importDriverTitle">
+        <div class="modal-window__header">
+          <h2 id="importDriverTitle">Import Driver</h2>
+        </div>
+        <form class="modal-form" id="importDriverForm">
+          <div class="driver-import-dropzone">
+            <span class="panel-card__eyebrow">Driver File Upload</span>
+            <strong>Select driver package</strong>
+            <p>Choose a local driver file to import into the library. This is a mock workflow for now.</p>
+            <input id="importDriverFileInput" name="importDriverFile" type="file" />
+          </div>
+          <div class="modal-window__actions">
+            <button class="modal-btn modal-btn--ghost" type="button" data-close-modal="importDriverModal">
+              Cancel
+            </button>
+            <button class="modal-btn modal-btn--primary" type="submit">
+              Upload
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="modal-backdrop is-hidden" id="deviceDeleteModal" aria-hidden="true">
+      <div class="modal-window" role="dialog" aria-modal="true" aria-labelledby="deviceDeleteTitle">
+        <div class="modal-window__header">
+          <h2 id="deviceDeleteTitle">Delete Device</h2>
+        </div>
+        <div class="modal-form">
+          <div class="settings-section">
+            <h3 id="deviceDeleteName">Device Name</h3>
+            <p id="deviceDeleteMessage">Are you sure you want to delete this device instance?</p>
+          </div>
+          <div class="modal-window__actions">
+            <button class="modal-btn modal-btn--ghost" type="button" data-close-modal="deviceDeleteModal">
+              Cancel
+            </button>
+            <button class="modal-btn modal-btn--primary" id="confirmDeviceDeleteButton" type="button">
+              Delete
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-backdrop is-hidden" id="deviceReviewModal" aria-hidden="true">
+      <div class="modal-window modal-window--command-editor" role="dialog" aria-modal="true" aria-labelledby="deviceReviewTitle">
+        <div class="modal-window__header">
+          <h2 id="deviceReviewTitle">Device Review</h2>
+        </div>
+        <div class="modal-form">
+          <div class="device-review-header" id="deviceReviewHeader"></div>
+          <div class="device-review-content" id="deviceReviewContent"></div>
+          <div class="modal-window__actions">
+            <button class="modal-btn modal-btn--ghost" type="button" data-close-modal="deviceReviewModal">
               Close
             </button>
           </div>

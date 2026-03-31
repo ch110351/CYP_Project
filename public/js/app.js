@@ -44,6 +44,29 @@ const macroInsertActionGrid = document.getElementById("macroInsertActionGrid");
 const macroReviewModal = document.getElementById("macroReviewModal");
 const macroReviewHeader = document.getElementById("macroReviewHeader");
 const macroReviewFlow = document.getElementById("macroReviewFlow");
+const driverLibraryPanel = document.getElementById("driverLibraryPanel");
+const importDriverButton = document.getElementById("importDriverButton");
+const driverSearchInput = document.getElementById("driverSearchInput");
+const driverTypeFilter = document.getElementById("driverTypeFilter");
+const driverProtocolFilter = document.getElementById("driverProtocolFilter");
+const driverVendorFilter = document.getElementById("driverVendorFilter");
+const driverVendorList = document.getElementById("driverVendorList");
+const driverModelList = document.getElementById("driverModelList");
+const driverDetailContent = document.getElementById("driverDetailContent");
+const driverCreateDeviceButton = document.getElementById("driverCreateDeviceButton");
+const driverExportButton = document.getElementById("driverExportButton");
+const importDriverModal = document.getElementById("importDriverModal");
+const importDriverForm = document.getElementById("importDriverForm");
+const importDriverFileInput = document.getElementById("importDriverFileInput");
+const deviceIntegrationPanel = document.getElementById("deviceIntegrationPanel");
+const deviceIntegrationContent = document.getElementById("deviceIntegrationContent");
+const deviceDeleteModal = document.getElementById("deviceDeleteModal");
+const deviceDeleteName = document.getElementById("deviceDeleteName");
+const deviceDeleteMessage = document.getElementById("deviceDeleteMessage");
+const confirmDeviceDeleteButton = document.getElementById("confirmDeviceDeleteButton");
+const deviceReviewModal = document.getElementById("deviceReviewModal");
+const deviceReviewHeader = document.getElementById("deviceReviewHeader");
+const deviceReviewContent = document.getElementById("deviceReviewContent");
 const displayPanel = document.getElementById("displayPanel");
 const networkPanel = document.getElementById("networkPanel");
 const adminPanel = document.getElementById("adminPanel");
@@ -524,6 +547,200 @@ const state = {
       notes: "Restricted engineering-only mode.",
     },
   ],
+  drivers: [
+    {
+      id: "DRV-001",
+      name: "Panasonic Projector LAN",
+      vendor: "Panasonic",
+      model: "Projector",
+      deviceType: "Projector",
+      protocol: "TCP/IP",
+      version: "v1.2.0",
+      responseFormat: "ASCII / Plain Text",
+      commands: ["Power ON", "Power OFF", "Input HDMI1", "Input HDMI2", "Power Status Query"],
+      notes: [
+        "Requires CR at the end of each command",
+        "Status query response uses plain text format",
+        "Device must be reachable on local network",
+      ],
+    },
+    {
+      id: "DRV-002",
+      name: "Panasonic Projector2 LAN",
+      vendor: "Panasonic",
+      model: "Projector2",
+      deviceType: "Projector",
+      protocol: "TCP/IP",
+      version: "v1.1.4",
+      responseFormat: "ASCII / Plain Text",
+      commands: ["Power ON", "Power OFF", "Input HDMI1", "Input VGA", "Lamp Hour Query"],
+      notes: ["Supports LAN monitoring only", "Recommended for enterprise projector fleets"],
+    },
+    {
+      id: "DRV-003",
+      name: "Panasonic Projector3 LAN",
+      vendor: "Panasonic",
+      model: "Projector3",
+      deviceType: "Projector",
+      protocol: "TCP/IP",
+      version: "v1.0.8",
+      responseFormat: "ASCII / Plain Text",
+      commands: ["Power ON", "Power OFF", "Input HDMI1", "Input HDMI2", "Shutter Query"],
+      notes: ["Command timing should allow 300 ms between requests", "Use local subnet reachability checks before polling"],
+    },
+    {
+      id: "DRV-004",
+      name: "Panasonic Commercial LAN",
+      vendor: "Panasonic",
+      model: "Commercial",
+      deviceType: "Display",
+      protocol: "TCP/IP",
+      version: "v2.0.1",
+      responseFormat: "ASCII / Plain Text",
+      commands: ["Power ON", "Power OFF", "Input HDMI1", "Input HDMI2", "Volume Query"],
+      notes: ["Supports commercial display command set over LAN", "Use IP reservation for permanent installations"],
+    },
+    {
+      id: "DRV-005",
+      name: "Epson Projector RS-232",
+      vendor: "Epson",
+      model: "Projector",
+      deviceType: "Projector",
+      protocol: "RS-232",
+      version: "v1.3.2",
+      responseFormat: "ASCII / Plain Text",
+      commands: ["Power ON", "Power OFF", "Source HDMI", "Source VGA", "Power Status Query"],
+      notes: ["Serial settings must match projector manual", "Requires CR/LF termination"],
+    },
+    {
+      id: "DRV-006",
+      name: "Sony Commercial Display",
+      vendor: "Sony",
+      model: "Commercial Display",
+      deviceType: "Display",
+      protocol: "HTTP",
+      version: "v2.3.0",
+      responseFormat: "JSON",
+      commands: ["Power ON", "Power OFF", "Input HDMI1", "Input HDMI2", "Display Status Query"],
+      notes: ["HTTP API must be enabled on the panel", "Recommended for network-managed signage deployments"],
+    },
+    {
+      id: "DRV-007",
+      name: "LG Commercial Display",
+      vendor: "LG",
+      model: "Commercial Display",
+      deviceType: "Display",
+      protocol: "Telnet",
+      version: "v1.9.6",
+      responseFormat: "Hex",
+      commands: ["Power ON", "Power OFF", "Input HDMI1", "Input HDMI2", "Mute Query"],
+      notes: ["Telnet service must be enabled on the device", "Hex response parser required for feedback handling"],
+    },
+    {
+      id: "DRV-008",
+      name: "Yamaha Amp",
+      vendor: "Yamaha",
+      model: "Amp",
+      deviceType: "Audio",
+      protocol: "TCP/IP",
+      version: "v3.0.4",
+      responseFormat: "JSON",
+      commands: ["Power ON", "Power OFF", "Mute ON", "Mute OFF", "Volume Status Query"],
+      notes: ["Best used on dedicated audio VLAN", "JSON response includes channel-level status"],
+    },
+  ],
+  driverLibrary: {
+    search: "",
+    type: "All Types",
+    protocol: "All Protocols",
+    vendor: "All Vendors",
+    selectedVendor: "",
+    selectedDriverId: "",
+  },
+  devices: [
+    {
+      id: "DEV-001",
+      name: "Meeting Room Projector",
+      driverId: "DRV-001",
+      driverName: "Panasonic Projector LAN",
+      manual: false,
+      deviceType: "Projector",
+      description: "Primary projection endpoint for Meeting Room A.",
+      protocol: "TCP/IP",
+      connection: {
+        ipAddress: "192.168.1.100",
+        port: "1024",
+      },
+    },
+    {
+      id: "DEV-002",
+      name: "Lobby Display",
+      driverId: "DRV-006",
+      driverName: "Sony Commercial Display",
+      manual: false,
+      deviceType: "Display",
+      description: "Lobby signage display connected through enterprise network.",
+      protocol: "HTTP",
+      connection: {
+        baseUrl: "http://192.168.1.120/api",
+        authToken: "",
+      },
+    },
+    {
+      id: "DEV-003",
+      name: "Room Amplifier",
+      driverId: "DRV-008",
+      driverName: "Yamaha Amp",
+      manual: false,
+      deviceType: "Audio",
+      description: "Power amplifier serving Room B ceiling speakers.",
+      protocol: "TCP/IP",
+      connection: {
+        ipAddress: "192.168.1.140",
+        port: "80",
+      },
+    },
+    {
+      id: "DEV-004",
+      name: "Sensor A",
+      driverId: "",
+      driverName: "",
+      manual: true,
+      deviceType: "Sensor",
+      description: "Occupancy sensor integrated manually for trigger logic.",
+      protocol: "HTTP",
+      connection: {
+        baseUrl: "http://192.168.1.210/status",
+        authToken: "",
+      },
+    },
+    {
+      id: "DEV-005",
+      name: "Lighting Controller",
+      driverId: "",
+      driverName: "",
+      manual: true,
+      deviceType: "Lighting",
+      description: "Legacy serial lighting gateway with manual command mapping.",
+      protocol: "RS-232",
+      connection: {
+        baudRate: "9600",
+        dataBit: "8",
+        parity: "None",
+        stopBit: "1",
+      },
+    },
+  ],
+  deviceIntegration: {
+    view: "list",
+    search: "",
+    type: "All Types",
+    mode: "",
+    editingDeviceId: "",
+    pendingDeleteDeviceId: "",
+    detailConnectionEdit: false,
+    draft: null,
+  },
   display: {
     timeMode: "auto",
     timeFormat: "12",
@@ -1808,6 +2025,904 @@ function renderMacroEditor() {
   renderMacroInspector();
 }
 
+// Filter the mock driver catalog entirely on the client for now.
+function getFilteredDrivers() {
+  const keyword = state.driverLibrary.search.trim().toLowerCase();
+
+  return state.drivers.filter((driver) => {
+    const matchesKeyword =
+      !keyword ||
+      [driver.vendor, driver.model, driver.deviceType, driver.name].some((value) =>
+        String(value).toLowerCase().includes(keyword)
+      );
+    const matchesType = state.driverLibrary.type === "All Types" || driver.deviceType === state.driverLibrary.type;
+    const matchesProtocol =
+      state.driverLibrary.protocol === "All Protocols" || driver.protocol === state.driverLibrary.protocol;
+    const matchesVendor =
+      state.driverLibrary.vendor === "All Vendors" || driver.vendor === state.driverLibrary.vendor;
+
+    return matchesKeyword && matchesType && matchesProtocol && matchesVendor;
+  });
+}
+
+function normalizeDriverLibrarySelection(filteredDrivers = getFilteredDrivers()) {
+  const availableVendors = [...new Set(filteredDrivers.map((driver) => driver.vendor))];
+
+  if (!availableVendors.length) {
+    state.driverLibrary.selectedVendor = "";
+    state.driverLibrary.selectedDriverId = "";
+    return;
+  }
+
+  if (!availableVendors.includes(state.driverLibrary.selectedVendor)) {
+    state.driverLibrary.selectedVendor = availableVendors[0];
+  }
+
+  const visibleDrivers = filteredDrivers.filter((driver) => driver.vendor === state.driverLibrary.selectedVendor);
+  const selectedDriverExists = visibleDrivers.some((driver) => driver.id === state.driverLibrary.selectedDriverId);
+
+  if (!selectedDriverExists) {
+    state.driverLibrary.selectedDriverId = visibleDrivers[0]?.id || "";
+  }
+}
+
+function getSelectedDriver() {
+  return state.drivers.find((driver) => driver.id === state.driverLibrary.selectedDriverId) || null;
+}
+
+function renderDriverVendorList(filteredDrivers) {
+  if (!driverVendorList) {
+    return;
+  }
+
+  const vendorItems = [...new Set(filteredDrivers.map((driver) => driver.vendor))];
+
+  if (!vendorItems.length) {
+    driverVendorList.innerHTML = `
+      <div class="driver-detail-empty">
+        <h4>No drivers found</h4>
+        <p>Try adjusting your search or filters</p>
+      </div>
+    `;
+    return;
+  }
+
+  driverVendorList.innerHTML = vendorItems
+    .map((vendor) => {
+      const count = filteredDrivers.filter((driver) => driver.vendor === vendor).length;
+      return `
+        <button class="driver-vendor-item ${vendor === state.driverLibrary.selectedVendor ? "is-selected" : ""}" type="button" data-driver-vendor="${vendor}">
+          <strong>${escapeHtml(vendor)}</strong>
+          <span>${count}</span>
+        </button>
+      `;
+    })
+    .join("");
+}
+
+function renderDriverModelList(filteredDrivers) {
+  if (!driverModelList) {
+    return;
+  }
+
+  const visibleDrivers = filteredDrivers.filter((driver) => driver.vendor === state.driverLibrary.selectedVendor);
+
+  if (!visibleDrivers.length) {
+    driverModelList.innerHTML = `
+      <div class="driver-detail-empty">
+        <h4>No drivers found</h4>
+        <p>Try adjusting your search or filters</p>
+      </div>
+    `;
+    return;
+  }
+
+  driverModelList.innerHTML = visibleDrivers
+    .map(
+      (driver) => `
+        <button class="driver-model-item ${driver.id === state.driverLibrary.selectedDriverId ? "is-selected" : ""}" type="button" data-driver-id="${driver.id}">
+          <div class="driver-model-item__name">
+            <strong>${escapeHtml(driver.name)}</strong>
+            <span class="driver-protocol-badge">${escapeHtml(driver.protocol)}</span>
+          </div>
+          <div class="driver-model-item__meta">
+            <span>${escapeHtml(driver.vendor)}</span>
+            <span>${escapeHtml(driver.deviceType)}</span>
+          </div>
+        </button>
+      `
+    )
+    .join("");
+}
+
+function renderDriverDetail() {
+  if (!driverDetailContent) {
+    return;
+  }
+
+  const driver = getSelectedDriver();
+
+  if (driverCreateDeviceButton) {
+    driverCreateDeviceButton.disabled = !driver;
+  }
+
+  if (driverExportButton) {
+    driverExportButton.disabled = !driver;
+  }
+
+  if (!driver) {
+    driverDetailContent.innerHTML = `
+      <div class="driver-detail-empty">
+        <h4>Select a driver to view details</h4>
+        <p>Choose a model from the list to inspect protocol support and commands.</p>
+      </div>
+    `;
+    return;
+  }
+
+  driverDetailContent.innerHTML = `
+    <section class="driver-detail-section">
+      <div class="driver-detail-section__header">
+        <div>
+          <span class="panel-card__eyebrow">Driver Summary</span>
+          <h4>${escapeHtml(driver.name)}</h4>
+        </div>
+        <span class="driver-protocol-badge">${escapeHtml(driver.protocol)}</span>
+      </div>
+      <div class="driver-summary-grid">
+        <div class="driver-summary-item"><span>Driver Name</span><strong>${escapeHtml(driver.name)}</strong></div>
+        <div class="driver-summary-item"><span>Vendor</span><strong>${escapeHtml(driver.vendor)}</strong></div>
+        <div class="driver-summary-item"><span>Device Type</span><strong>${escapeHtml(driver.deviceType)}</strong></div>
+        <div class="driver-summary-item"><span>Version</span><strong>${escapeHtml(driver.version)}</strong></div>
+        <div class="driver-summary-item"><span>Supported Protocol</span><strong>${escapeHtml(driver.protocol)}</strong></div>
+        <div class="driver-summary-item"><span>Response Format</span><strong>${escapeHtml(driver.responseFormat)}</strong></div>
+      </div>
+    </section>
+
+    <section class="driver-detail-section">
+      <div class="driver-detail-section__header">
+        <div>
+          <span class="panel-card__eyebrow">Supported Commands</span>
+          <h4>Control Capabilities</h4>
+        </div>
+      </div>
+      <ul class="driver-detail-list">
+        ${driver.commands.map((command) => `<li>${escapeHtml(command)}</li>`).join("")}
+      </ul>
+    </section>
+
+    <section class="driver-detail-section">
+      <div class="driver-detail-section__header">
+        <div>
+          <span class="panel-card__eyebrow">Response Format</span>
+          <h4>Expected Payload Type</h4>
+        </div>
+      </div>
+      <ul class="driver-detail-list">
+        <li>${escapeHtml(driver.responseFormat)}</li>
+      </ul>
+    </section>
+
+    <section class="driver-detail-section">
+      <div class="driver-detail-section__header">
+        <div>
+          <span class="panel-card__eyebrow">Notes</span>
+          <h4>Integration Notes</h4>
+        </div>
+      </div>
+      <ul class="driver-detail-list">
+        ${driver.notes.map((note) => `<li>${escapeHtml(note)}</li>`).join("")}
+      </ul>
+    </section>
+  `;
+}
+
+// Driver Library follows a vendor -> model master-detail workflow for SI users.
+function renderDriverLibrary() {
+  if (!driverLibraryPanel) {
+    return;
+  }
+
+  if (driverSearchInput && driverSearchInput.value !== state.driverLibrary.search) {
+    driverSearchInput.value = state.driverLibrary.search;
+  }
+
+  if (driverTypeFilter) {
+    driverTypeFilter.value = state.driverLibrary.type;
+  }
+
+  if (driverProtocolFilter) {
+    driverProtocolFilter.value = state.driverLibrary.protocol;
+  }
+
+  if (driverVendorFilter) {
+    driverVendorFilter.value = state.driverLibrary.vendor;
+  }
+
+  const filteredDrivers = getFilteredDrivers();
+  normalizeDriverLibrarySelection(filteredDrivers);
+  renderDriverVendorList(filteredDrivers);
+  renderDriverModelList(filteredDrivers);
+  renderDriverDetail();
+}
+
+function generateDeviceId() {
+  const nextNumber =
+    state.devices.reduce((maxValue, device) => {
+      const matched = String(device.id || "").match(/(\d+)$/);
+      const numericId = matched ? Number(matched[1]) : 0;
+      return Math.max(maxValue, numericId);
+    }, 0) + 1;
+
+  return `DEV-${String(nextNumber).padStart(3, "0")}`;
+}
+
+function getEmptyDeviceDraft() {
+  return {
+    mode: "",
+    driverId: state.drivers[0]?.id || "",
+    name: "",
+    description: "",
+    deviceType: "Projector",
+    protocol: "TCP/IP",
+    connection: {
+      ipAddress: "",
+      port: "",
+      baudRate: "9600",
+      dataBit: "8",
+      parity: "None",
+      stopBit: "1",
+      baseUrl: "",
+      authToken: "",
+    },
+    testStatus: "Not Tested",
+    testMessage: "Connection test has not been run.",
+  };
+}
+
+function getFilteredDevices() {
+  const keyword = state.deviceIntegration.search.trim().toLowerCase();
+
+  return state.devices.filter((device) => {
+    const connectionText = getDeviceConnectionLabel(device).toLowerCase();
+    const matchesKeyword =
+      !keyword ||
+      [device.name, connectionText].some((value) => String(value).toLowerCase().includes(keyword));
+    const matchesType = state.deviceIntegration.type === "All Types" || device.deviceType === state.deviceIntegration.type;
+    return matchesKeyword && matchesType;
+  });
+}
+
+function getDeviceById(deviceId) {
+  return state.devices.find((device) => device.id === deviceId) || null;
+}
+
+function getDriverById(driverId) {
+  return state.drivers.find((driver) => driver.id === driverId) || null;
+}
+
+function getDeviceConnectionLabel(device) {
+  if (device.protocol === "RS-232") {
+    return "RS-232";
+  }
+
+  if (device.protocol === "HTTP") {
+    return device.connection.baseUrl || "HTTP";
+  }
+
+  return device.connection.ipAddress || device.protocol;
+}
+
+function getProtocolFields(protocol, connection) {
+  if (protocol === "RS-232") {
+    return `
+      <div class="device-form-grid">
+        ${getInspectorField("Baud Rate", `<input type="number" name="baudRate" value="${escapeHtml(connection.baudRate || "9600")}" />`)}
+        ${getInspectorField("Data Bit", `<input type="number" name="dataBit" value="${escapeHtml(connection.dataBit || "8")}" />`)}
+        ${getInspectorField("Parity", `
+          <select name="parity">
+            <option value="None" ${connection.parity === "None" ? "selected" : ""}>None</option>
+            <option value="Even" ${connection.parity === "Even" ? "selected" : ""}>Even</option>
+            <option value="Odd" ${connection.parity === "Odd" ? "selected" : ""}>Odd</option>
+          </select>
+        `)}
+        ${getInspectorField("Stop Bit", `<input type="number" name="stopBit" value="${escapeHtml(connection.stopBit || "1")}" />`)}
+      </div>
+    `;
+  }
+
+  if (protocol === "HTTP") {
+    return `
+      <div class="device-form-grid">
+        ${getInspectorField("Base URL", `<input type="text" name="baseUrl" value="${escapeHtml(connection.baseUrl || "")}" placeholder="http://192.168.1.120/api" />`)}
+        ${getInspectorField("Authentication Token", `<input type="text" name="authToken" value="${escapeHtml(connection.authToken || "")}" placeholder="Optional" />`)}
+      </div>
+    `;
+  }
+
+  return `
+    <div class="device-form-grid">
+      ${getInspectorField("IP Address", `<input type="text" name="ipAddress" value="${escapeHtml(connection.ipAddress || "")}" placeholder="192.168.1.100" />`)}
+      ${getInspectorField("Port", `<input type="number" name="port" value="${escapeHtml(connection.port || "")}" placeholder="23" />`)}
+    </div>
+  `;
+}
+
+function openDevicesListView() {
+  state.deviceIntegration.view = "list";
+  state.deviceIntegration.mode = "";
+  state.deviceIntegration.editingDeviceId = "";
+  state.deviceIntegration.detailConnectionEdit = false;
+  state.deviceIntegration.draft = null;
+  renderDeviceIntegration();
+}
+
+function renderDevicesListWithSearchFocus(cursorPosition = null) {
+  renderDeviceIntegration();
+
+  const nextSearchInput = document.getElementById("deviceSearchInput");
+
+  if (!nextSearchInput) {
+    return;
+  }
+
+  nextSearchInput.focus();
+
+  if (cursorPosition !== null) {
+    nextSearchInput.setSelectionRange(cursorPosition, cursorPosition);
+  }
+}
+
+function openAddDeviceView(mode = "", existingDeviceId = "", presetDriverId = "") {
+  const existingDevice = existingDeviceId ? getDeviceById(existingDeviceId) : null;
+  const draft = getEmptyDeviceDraft();
+
+  if (existingDevice) {
+    draft.mode = existingDevice.manual ? "manual" : "driver";
+    draft.driverId = existingDevice.driverId || draft.driverId;
+    draft.name = existingDevice.name;
+    draft.description = existingDevice.description;
+    draft.deviceType = existingDevice.deviceType;
+    draft.protocol = existingDevice.protocol;
+    draft.connection = {
+      ...draft.connection,
+      ...existingDevice.connection,
+    };
+  } else if (mode) {
+    draft.mode = mode;
+  }
+
+  if (!existingDevice && presetDriverId) {
+    draft.mode = "driver";
+    draft.driverId = presetDriverId;
+  }
+
+  state.deviceIntegration.view = "add";
+  state.deviceIntegration.mode = draft.mode;
+  state.deviceIntegration.editingDeviceId = existingDeviceId;
+  state.deviceIntegration.draft = draft;
+  renderDeviceIntegration();
+}
+
+function openDeviceDetailView(deviceId) {
+  state.deviceIntegration.view = "detail";
+  state.deviceIntegration.editingDeviceId = deviceId;
+  state.deviceIntegration.detailConnectionEdit = false;
+  renderDeviceIntegration();
+}
+
+function buildCommandsFromDriver(deviceName, driver) {
+  const interfaceMap = {
+    "TCP/IP": "System",
+    Telnet: "Telnet",
+    "RS-232": "RS232",
+    HTTP: "System",
+  };
+  const existingMax =
+    state.commands.reduce((maxValue, command) => {
+      const matched = String(command.id || "").match(/(\d+)$/);
+      return Math.max(maxValue, matched ? Number(matched[1]) : 0);
+    }, 0);
+
+  return driver.commands.map((capability, index) => ({
+    id: `CMD-${String(existingMax + index + 1).padStart(3, "0")}`,
+    name: `${deviceName}_${driver.model}_${capability}`.replace(/\s+/g, "_"),
+    interface: interfaceMap[driver.protocol] || "System",
+    data: capability,
+    device: deviceName,
+    telnetIp: driver.protocol === "Telnet" ? "0.0.0.0" : "",
+    telnetPort: driver.protocol === "Telnet" ? "23" : "",
+    stateUpdate: null,
+  }));
+}
+
+function saveDeviceDraft() {
+  const draft = state.deviceIntegration.draft;
+
+  if (!draft || !draft.name.trim()) {
+    showToast("Please enter a device name.");
+    return;
+  }
+
+  const driver = draft.mode === "driver" ? getDriverById(draft.driverId) : null;
+  const nextDevice = {
+    id: state.deviceIntegration.editingDeviceId ? state.deviceIntegration.editingDeviceId : generateDeviceId(),
+    name: draft.name.trim(),
+    driverId: draft.mode === "driver" ? driver?.id || "" : "",
+    driverName: draft.mode === "driver" ? driver?.name || "" : "",
+    manual: draft.mode !== "driver",
+    deviceType: draft.mode === "driver" ? driver?.deviceType || draft.deviceType : draft.deviceType,
+    description: draft.description.trim(),
+    protocol: draft.mode === "driver" ? driver?.protocol || draft.protocol : draft.protocol,
+    connection: { ...draft.connection },
+  };
+
+  if (state.deviceIntegration.editingDeviceId) {
+    state.devices = state.devices.map((device) => (device.id === nextDevice.id ? nextDevice : device));
+    showToast(`${nextDevice.name} updated.`);
+  } else {
+    state.devices.unshift(nextDevice);
+
+    if (driver) {
+      state.commands.unshift(...buildCommandsFromDriver(nextDevice.name, driver));
+    }
+
+    showToast(`${nextDevice.name} saved.`);
+  }
+
+  openDevicesListView();
+}
+
+function runDeviceConnectionTest(context = "draft") {
+  const isSuccess = Math.random() > 0.2;
+  const message = isSuccess
+    ? "Connection verified. Device responded within expected timing."
+    : "Connection failed. Check address, protocol, or physical wiring.";
+
+  if (context === "draft" && state.deviceIntegration.draft) {
+    state.deviceIntegration.draft.testStatus = isSuccess ? "Success" : "Failed";
+    state.deviceIntegration.draft.testMessage = message;
+    renderDeviceIntegration();
+    return;
+  }
+
+  showToast(isSuccess ? "Device test successful." : "Device test failed.");
+}
+
+function promptDeleteDevice(deviceId) {
+  const device = getDeviceById(deviceId);
+
+  if (!device || !deviceDeleteName || !deviceDeleteMessage) {
+    return;
+  }
+
+  state.deviceIntegration.pendingDeleteDeviceId = deviceId;
+  deviceDeleteName.textContent = device.name;
+  deviceDeleteMessage.textContent = `Are you sure you want to delete ${device.name} from the integrated device list?`;
+  openModal(deviceDeleteModal);
+}
+
+function renderDeviceReviewContent(device) {
+  const driver = device.driverId ? getDriverById(device.driverId) : null;
+  const commandList = driver ? driver.commands : [];
+
+  const connectionMarkup =
+    device.protocol === "RS-232"
+      ? `
+        <div class="driver-summary-grid">
+          <div class="driver-summary-item"><span>Baud Rate</span><strong>${escapeHtml(device.connection.baudRate || "9600")}</strong></div>
+          <div class="driver-summary-item"><span>Data Bit</span><strong>${escapeHtml(device.connection.dataBit || "8")}</strong></div>
+          <div class="driver-summary-item"><span>Parity</span><strong>${escapeHtml(device.connection.parity || "None")}</strong></div>
+          <div class="driver-summary-item"><span>Stop Bit</span><strong>${escapeHtml(device.connection.stopBit || "1")}</strong></div>
+        </div>
+      `
+      : device.protocol === "HTTP"
+        ? `
+          <div class="driver-summary-grid">
+            <div class="driver-summary-item"><span>Base URL</span><strong>${escapeHtml(device.connection.baseUrl || "---")}</strong></div>
+            <div class="driver-summary-item"><span>Authentication Token</span><strong>${escapeHtml(device.connection.authToken || "Not configured")}</strong></div>
+          </div>
+        `
+        : `
+          <div class="driver-summary-grid">
+            <div class="driver-summary-item"><span>IP Address</span><strong>${escapeHtml(device.connection.ipAddress || "---")}</strong></div>
+            <div class="driver-summary-item"><span>Port</span><strong>${escapeHtml(device.connection.port || "---")}</strong></div>
+          </div>
+        `;
+
+  return `
+    <section class="device-form-section">
+      <span class="panel-card__eyebrow">Device Summary</span>
+      <div class="driver-summary-grid">
+        <div class="driver-summary-item"><span>Device Name</span><strong>${escapeHtml(device.name)}</strong></div>
+        <div class="driver-summary-item"><span>Driver</span><strong>${escapeHtml(device.driverName || "Manual Device")}</strong></div>
+        <div class="driver-summary-item"><span>Device Type</span><strong>${escapeHtml(device.deviceType)}</strong></div>
+        <div class="driver-summary-item"><span>Protocol</span><strong>${escapeHtml(device.protocol)}</strong></div>
+      </div>
+    </section>
+    <section class="device-form-section">
+      <span class="panel-card__eyebrow">Connection</span>
+      ${connectionMarkup}
+    </section>
+    <section class="device-form-section">
+      <span class="panel-card__eyebrow">${device.manual ? "Manual Device" : "Commands from Driver"}</span>
+      ${
+        commandList.length
+          ? `<ul class="driver-detail-list">${commandList.map((command) => `<li>${escapeHtml(command)}</li>`).join("")}</ul>`
+          : `
+            <div class="device-manual-notice">
+              <strong>Manual Device</strong>
+              <p>No driver assigned.</p>
+              <p>Commands must be configured manually in Command Management.</p>
+            </div>
+          `
+      }
+    </section>
+  `;
+}
+
+function openDeviceReviewModal(deviceId) {
+  const device = getDeviceById(deviceId);
+
+  if (!device || !deviceReviewHeader || !deviceReviewContent) {
+    return;
+  }
+
+  deviceReviewHeader.innerHTML = `
+    <h3>${escapeHtml(device.name)}</h3>
+    <p>${escapeHtml(device.description || "Integrated device instance")}</p>
+  `;
+  deviceReviewContent.innerHTML = renderDeviceReviewContent(device);
+  openModal(deviceReviewModal);
+}
+
+function deleteDevice(deviceId) {
+  const device = getDeviceById(deviceId);
+
+  if (!device) {
+    return;
+  }
+
+  state.devices = state.devices.filter((item) => item.id !== deviceId);
+  showToast(`${device.name} deleted.`);
+  openDevicesListView();
+}
+
+function renderDevicesListView() {
+  const filteredDevices = getFilteredDevices();
+  const hasAnyDevices = state.devices.length > 0;
+
+  return `
+    <div class="device-page-hero">
+      <div class="device-page-hero__copy">
+        <span class="panel-card__eyebrow">Device Integration</span>
+        <h2 id="deviceIntegrationPanelTitle">Devices</h2>
+        <p>Manage integrated device instances for control workflows</p>
+      </div>
+      <button class="modal-btn modal-btn--primary" type="button" data-device-action="open-add">+ Add Device</button>
+    </div>
+
+    <section class="panel-card device-page-card">
+      <div class="device-toolbar">
+        <label class="form-field device-search-field">
+          <span>Search</span>
+          <input id="deviceSearchInput" type="search" placeholder="Search devices by name, IP" value="${escapeHtml(state.deviceIntegration.search)}" />
+        </label>
+        <label class="form-field">
+          <span>Type</span>
+          <select id="deviceTypeFilter">
+            <option value="All Types" ${state.deviceIntegration.type === "All Types" ? "selected" : ""}>All Types</option>
+            <option value="Projector" ${state.deviceIntegration.type === "Projector" ? "selected" : ""}>Projector</option>
+            <option value="Display" ${state.deviceIntegration.type === "Display" ? "selected" : ""}>Display</option>
+            <option value="Audio" ${state.deviceIntegration.type === "Audio" ? "selected" : ""}>Audio</option>
+            <option value="Sensor" ${state.deviceIntegration.type === "Sensor" ? "selected" : ""}>Sensor</option>
+            <option value="Lighting" ${state.deviceIntegration.type === "Lighting" ? "selected" : ""}>Lighting</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="device-table-wrap">
+        ${
+          filteredDevices.length
+            ? `
+              <table class="device-table">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Driver</th>
+                    <th>Connection</th>
+                    <th>Type</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${filteredDevices
+                    .map(
+                      (device) => `
+                        <tr class="device-table__row" data-device-open-id="${device.id}">
+                          <td><div class="device-table__name"><strong>${escapeHtml(device.name)}</strong><span>${escapeHtml(device.description || "Integrated device instance")}</span></div></td>
+                          <td><span class="device-driver-badge ${device.driverName ? "is-driver" : "is-manual"}">${escapeHtml(device.driverName || "---")}</span></td>
+                          <td>${escapeHtml(getDeviceConnectionLabel(device))}</td>
+                          <td><span class="driver-protocol-badge">${escapeHtml(device.deviceType)}</span></td>
+                          <td>
+                            <div class="macro-actions">
+                              <button class="macro-action-btn" type="button" data-device-row-action="edit" data-device-id="${device.id}" aria-label="Edit device" title="Edit">
+                                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4l10-10-4-4L4 16v4Zm13-13 2 2M4 20h16" /></svg>
+                              </button>
+                              <button class="macro-action-btn" type="button" data-device-row-action="test" data-device-id="${device.id}" aria-label="Test connection" title="Test">
+                                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 18h.01M8.2 15.8a5.4 5.4 0 1 1 7.6 0M5.4 13a9.4 9.4 0 0 1 13.2 0M2.7 10.3a13.2 13.2 0 0 1 18.6 0" /></svg>
+                              </button>
+                              <button class="macro-action-btn" type="button" data-device-row-action="commands" data-device-id="${device.id}" aria-label="Go to commands" title="Commands">
+                                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 7h12M8 12h12M8 17h12M4 7h.01M4 12h.01M4 17h.01" /></svg>
+                              </button>
+                              <button class="macro-action-btn macro-action-btn--danger" type="button" data-device-row-action="delete" data-device-id="${device.id}" aria-label="Delete device" title="Delete">
+                                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14M9 7V4h6v3M8 10v7M12 10v7M16 10v7M7 7l1 13h8l1-13" /></svg>
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      `
+                    )
+                    .join("")}
+                </tbody>
+              </table>
+            `
+            : `
+              <div class="driver-detail-empty">
+                <h4>${hasAnyDevices ? "No devices found" : "No devices added yet"}</h4>
+                <p>${hasAnyDevices ? "Try adjusting your search or type filter." : "Start by creating a device instance from a driver or manual setup."}</p>
+                ${
+                  hasAnyDevices
+                    ? ""
+                    : '<button class="modal-btn modal-btn--primary" type="button" data-device-action="open-add">+ Add Your First Device</button>'
+                }
+              </div>
+            `
+        }
+      </div>
+    </section>
+  `;
+}
+
+function renderDeviceModeCards(selectedMode) {
+  return `
+    <div class="device-mode-grid">
+      <button class="device-mode-card ${selectedMode === "driver" ? "is-selected" : ""}" type="button" data-device-mode="driver">
+        <span class="panel-card__eyebrow">Select Driver</span>
+        <strong>Use Driver</strong>
+        <p>Use a predefined driver to quickly configure a supported device. Includes protocol and command capability preview.</p>
+        <span class="device-mode-card__cta">Continue</span>
+      </button>
+      <button class="device-mode-card ${selectedMode === "manual" ? "is-selected" : ""}" type="button" data-device-mode="manual">
+        <span class="panel-card__eyebrow">Manual Setup</span>
+        <strong>Manual Device</strong>
+        <p>Create a device without a predefined driver. Commands will need to be created manually later.</p>
+        <span class="device-mode-card__cta">Continue</span>
+      </button>
+    </div>
+  `;
+}
+
+function renderDeviceDraftView() {
+  const draft = state.deviceIntegration.draft || getEmptyDeviceDraft();
+  const selectedDriver = draft.mode === "driver" ? getDriverById(draft.driverId) : null;
+  const effectiveProtocol = draft.mode === "driver" ? selectedDriver?.protocol || draft.protocol : draft.protocol;
+  const effectiveType = draft.mode === "driver" ? selectedDriver?.deviceType || draft.deviceType : draft.deviceType;
+  const title = state.deviceIntegration.editingDeviceId ? "Edit Device" : "Add Device";
+
+  return `
+    <div class="device-page-hero">
+      <div class="device-page-hero__copy">
+        <button class="modal-btn modal-btn--ghost" type="button" data-device-action="back-to-list">Back</button>
+        <span class="panel-card__eyebrow">Device Integration</span>
+        <h2>${title}</h2>
+        <p>Select how you want to create this device instance</p>
+      </div>
+      <div class="driver-detail-actions">
+        <button class="modal-btn modal-btn--ghost" type="button" data-device-action="back-to-list">Cancel</button>
+        <button class="modal-btn modal-btn--primary" type="button" data-device-action="save-device">Save Device</button>
+      </div>
+    </div>
+
+    <section class="panel-card device-page-card">
+      ${renderDeviceModeCards(draft.mode)}
+      ${
+        !draft.mode
+          ? ""
+          : `
+            <div class="device-add-layout">
+              <section class="device-form-panel">
+                ${
+                  draft.mode === "driver"
+                    ? `
+                      <div class="device-form-section">
+                        <span class="panel-card__eyebrow">Select Driver</span>
+                        ${getInspectorField(
+                          "Driver",
+                          `<select name="driverId" data-device-draft-field="driverId">
+                            ${state.drivers
+                              .map(
+                                (driver) =>
+                                  `<option value="${driver.id}" ${driver.id === draft.driverId ? "selected" : ""}>${escapeHtml(driver.name)}</option>`
+                              )
+                              .join("")}
+                          </select>`
+                        )}
+                      </div>
+                    `
+                    : ""
+                }
+
+                <div class="device-form-section">
+                  <span class="panel-card__eyebrow">Basic Information</span>
+                  <div class="device-form-grid">
+                    ${getInspectorField("Device Name", `<input type="text" name="name" data-device-draft-field="name" value="${escapeHtml(draft.name)}" />`)}
+                    ${
+                      draft.mode === "manual"
+                        ? getInspectorField(
+                            "Device Type",
+                            `<select name="deviceType" data-device-draft-field="deviceType">
+                              ${["Projector", "Display", "Audio", "Sensor", "Lighting", "Other"]
+                                .map((item) => `<option value="${item}" ${draft.deviceType === item ? "selected" : ""}>${item}</option>`)
+                                .join("")}
+                            </select>`
+                          )
+                        : `<div class="device-driver-preview-card"><span>Device Type</span><strong>${escapeHtml(effectiveType)}</strong></div>`
+                    }
+                    ${getInspectorField("Description", `<textarea name="description" data-device-draft-field="description" rows="3">${escapeHtml(draft.description)}</textarea>`)}
+                  </div>
+                </div>
+
+                <div class="device-form-section">
+                  <span class="panel-card__eyebrow">Connection Settings</span>
+                  ${
+                    draft.mode === "manual"
+                      ? getInspectorField(
+                          "Protocol",
+                          `<select name="protocol" data-device-draft-field="protocol">
+                            ${["RS-232", "TCP/IP", "Telnet", "HTTP", "Other"]
+                              .map((item) => `<option value="${item}" ${draft.protocol === item ? "selected" : ""}>${item}</option>`)
+                              .join("")}
+                          </select>`
+                        )
+                      : `<div class="device-driver-preview-card"><span>Protocol</span><strong>${escapeHtml(effectiveProtocol)}</strong></div>`
+                  }
+                  ${getProtocolFields(effectiveProtocol, draft.connection)}
+                </div>
+
+                <div class="device-form-section">
+                  <span class="panel-card__eyebrow">Test Connection</span>
+                  <div class="device-test-row">
+                    <button class="modal-btn modal-btn--ghost" type="button" data-device-action="test-draft-connection">Test Connection</button>
+                    <span class="device-test-status ${draft.testStatus === "Success" ? "is-success" : draft.testStatus === "Failed" ? "is-failed" : ""}">${escapeHtml(draft.testStatus)}</span>
+                  </div>
+                  <div class="device-test-message">${escapeHtml(draft.testMessage)}</div>
+                </div>
+
+                ${
+                  draft.mode === "manual"
+                    ? `
+                      <div class="device-manual-notice">
+                        <strong>Manual Device Notice</strong>
+                        <p>No predefined driver is assigned to this device.</p>
+                        <p>Commands must be created manually in Command Management after saving.</p>
+                      </div>
+                    `
+                    : ""
+                }
+              </section>
+
+              <aside class="device-side-panel">
+                ${
+                  draft.mode === "driver" && selectedDriver
+                    ? `
+                      <section class="device-form-section">
+                        <span class="panel-card__eyebrow">Driver Summary Preview</span>
+                        <div class="driver-summary-grid">
+                          <div class="driver-summary-item"><span>Vendor</span><strong>${escapeHtml(selectedDriver.vendor)}</strong></div>
+                          <div class="driver-summary-item"><span>Device Type</span><strong>${escapeHtml(selectedDriver.deviceType)}</strong></div>
+                          <div class="driver-summary-item"><span>Supported Protocol</span><strong>${escapeHtml(selectedDriver.protocol)}</strong></div>
+                          <div class="driver-summary-item"><span>Command Count</span><strong>${selectedDriver.commands.length}</strong></div>
+                        </div>
+                      </section>
+                      <section class="device-form-section">
+                        <span class="panel-card__eyebrow">Capability Preview</span>
+                        <ul class="driver-detail-list">
+                          ${selectedDriver.commands.map((command) => `<li>${escapeHtml(command)}</li>`).join("")}
+                        </ul>
+                        <div class="device-driver-sync-note">
+                          Saving this driver-based device will automatically add its available commands into Command Management.
+                        </div>
+                      </section>
+                    `
+                    : ""
+                }
+              </aside>
+            </div>
+          `
+      }
+    </section>
+  `;
+}
+
+function renderDeviceDetailView() {
+  const device = getDeviceById(state.deviceIntegration.editingDeviceId);
+
+  if (!device) {
+    return renderDevicesListView();
+  }
+
+  const driver = device.driverId ? getDriverById(device.driverId) : null;
+
+  return `
+    <div class="device-page-hero">
+      <div class="device-page-hero__copy">
+        <button class="modal-btn modal-btn--ghost" type="button" data-device-action="back-to-list">Back</button>
+        <span class="panel-card__eyebrow">Device Detail</span>
+        <h2>${escapeHtml(device.name)}</h2>
+        <p>${escapeHtml(device.description || "Integrated device instance")}</p>
+      </div>
+      <div class="driver-detail-actions">
+        <button class="modal-btn modal-btn--ghost" type="button" data-device-action="edit-connection" data-device-id="${device.id}">Edit Connection</button>
+        <button class="modal-btn modal-btn--ghost" type="button" data-device-action="test-device" data-device-id="${device.id}">Test Connection</button>
+        <button class="modal-btn modal-btn--ghost" type="button" data-device-action="go-commands" data-device-id="${device.id}">Go to Commands</button>
+        <button class="modal-btn modal-btn--primary" type="button" data-device-action="delete-device" data-device-id="${device.id}">Delete Device</button>
+      </div>
+    </div>
+
+    <section class="panel-card device-page-card">
+      <div class="device-detail-grid">
+        <section class="device-form-section">
+          <span class="panel-card__eyebrow">Device Summary</span>
+          <div class="driver-summary-grid">
+            <div class="driver-summary-item"><span>Device Name</span><strong>${escapeHtml(device.name)}</strong></div>
+            <div class="driver-summary-item"><span>Driver</span><strong>${escapeHtml(device.driverName || "Manual Device")}</strong></div>
+            <div class="driver-summary-item"><span>Device Type</span><strong>${escapeHtml(device.deviceType)}</strong></div>
+            <div class="driver-summary-item"><span>Connection</span><strong>${escapeHtml(getDeviceConnectionLabel(device))}</strong></div>
+          </div>
+        </section>
+        <section class="device-form-section">
+          <span class="panel-card__eyebrow">Connection</span>
+          ${getProtocolFields(device.protocol, device.connection)}
+        </section>
+      </div>
+
+      <section class="device-form-section">
+        <span class="panel-card__eyebrow">${device.manual ? "Manual Device" : "Commands from Driver"}</span>
+        ${
+          driver
+            ? `<ul class="driver-detail-list">${driver.commands.map((command) => `<li>${escapeHtml(command)}</li>`).join("")}</ul>`
+            : `
+              <div class="device-manual-notice">
+                <strong>Manual Device</strong>
+                <p>No driver assigned.</p>
+                <p>Commands must be configured manually.</p>
+              </div>
+            `
+        }
+      </section>
+    </section>
+  `;
+}
+
+function renderDeviceIntegration() {
+  if (!deviceIntegrationContent) {
+    return;
+  }
+
+  if (state.deviceIntegration.view === "add") {
+    deviceIntegrationContent.innerHTML = renderDeviceDraftView();
+    return;
+  }
+
+  if (state.deviceIntegration.view === "detail") {
+    deviceIntegrationContent.innerHTML = renderDeviceDetailView();
+    return;
+  }
+
+  deviceIntegrationContent.innerHTML = renderDevicesListView();
+}
+
 function renderMacroManagement() {
   if (!macroPanel || !macroTableBody || !macroSummary || !macroEmptyState || !macroPagination) {
     return;
@@ -1930,24 +3045,34 @@ function updatePadPage(pageIndex) {
 }
 
 function updateContentStage(sectionTitle, isHome) {
+  const isDeviceIntegration = sectionTitle === "Device Integration";
   const isCommandManagement = sectionTitle === "Command Management";
   const isMacroManagement = sectionTitle === "Macro Management";
+  const isDriverLibrary = sectionTitle === "Driver Library";
   const isDisplay = sectionTitle === "Pad Display Setting";
   const isNetwork = sectionTitle === "Network";
   const isAdmin = sectionTitle === "Admin";
   homeDashboard.classList.toggle("is-hidden", !isHome);
-  contentPlaceholder.classList.toggle("is-hidden", isHome || isCommandManagement || isMacroManagement || isDisplay || isNetwork);
-  commandPanel.classList.toggle("is-hidden", !isCommandManagement);
-  macroPanel.classList.toggle("is-hidden", !isMacroManagement);
   contentPlaceholder.classList.toggle(
     "is-hidden",
-    isHome || isCommandManagement || isMacroManagement || isDisplay || isNetwork || isAdmin
+    isHome || isDeviceIntegration || isCommandManagement || isMacroManagement || isDriverLibrary || isDisplay || isNetwork
   );
+  deviceIntegrationPanel.classList.toggle("is-hidden", !isDeviceIntegration);
   commandPanel.classList.toggle("is-hidden", !isCommandManagement);
   macroPanel.classList.toggle("is-hidden", !isMacroManagement);
+  driverLibraryPanel.classList.toggle("is-hidden", !isDriverLibrary);
+  contentPlaceholder.classList.toggle(
+    "is-hidden",
+    isHome || isDeviceIntegration || isCommandManagement || isMacroManagement || isDriverLibrary || isDisplay || isNetwork || isAdmin
+  );
   displayPanel.classList.toggle("is-hidden", !isDisplay);
   networkPanel.classList.toggle("is-hidden", !isNetwork);
   adminPanel.classList.toggle("is-hidden", !isAdmin);
+
+  if (isDeviceIntegration) {
+    renderDeviceIntegration();
+    return;
+  }
 
   if (isCommandManagement) {
     renderCommandManagement();
@@ -1961,6 +3086,11 @@ function updateContentStage(sectionTitle, isHome) {
     } else {
       openMacroListView();
     }
+    return;
+  }
+
+  if (isDriverLibrary) {
+    renderDriverLibrary();
     return;
   }
 
@@ -2440,6 +3570,30 @@ function setGroupOpen(group, shouldOpen) {
   group.classList.toggle("is-open", shouldOpen);
   parent.setAttribute("aria-expanded", String(shouldOpen));
   children.classList.toggle("is-hidden", !shouldOpen);
+}
+
+function navigateToSection(title, isHome = false) {
+  const directItem = Array.from(navItems).find((item) => (item.dataset.title || item.dataset.section) === title);
+  const childItem = Array.from(navChildren).find((item) => (item.dataset.title || item.dataset.section) === title);
+
+  clearNavActive();
+
+  if (directItem) {
+    directItem.classList.add("is-active");
+  }
+
+  if (childItem) {
+    const group = childItem.closest(".nav-group");
+    childItem.classList.add("is-active");
+
+    if (group) {
+      group.classList.add("is-active");
+      setGroupOpen(group, true);
+    }
+  }
+
+  pageTitle.textContent = title;
+  updateContentStage(title, isHome);
 }
 
 navToggle.addEventListener("click", () => {
@@ -3050,6 +4204,246 @@ if (macroSearchInput) {
   });
 }
 
+if (driverSearchInput) {
+  driverSearchInput.addEventListener("input", () => {
+    state.driverLibrary.search = driverSearchInput.value;
+    renderDriverLibrary();
+  });
+}
+
+if (driverTypeFilter) {
+  driverTypeFilter.addEventListener("change", () => {
+    state.driverLibrary.type = driverTypeFilter.value;
+    renderDriverLibrary();
+  });
+}
+
+if (driverProtocolFilter) {
+  driverProtocolFilter.addEventListener("change", () => {
+    state.driverLibrary.protocol = driverProtocolFilter.value;
+    renderDriverLibrary();
+  });
+}
+
+if (driverVendorFilter) {
+  driverVendorFilter.addEventListener("change", () => {
+    state.driverLibrary.vendor = driverVendorFilter.value;
+    renderDriverLibrary();
+  });
+}
+
+if (driverVendorList) {
+  driverVendorList.addEventListener("click", (event) => {
+    const vendorButton = event.target.closest("[data-driver-vendor]");
+
+    if (!vendorButton) {
+      return;
+    }
+
+    state.driverLibrary.selectedVendor = vendorButton.getAttribute("data-driver-vendor") || "";
+    state.driverLibrary.selectedDriverId = "";
+    renderDriverLibrary();
+  });
+}
+
+if (driverModelList) {
+  driverModelList.addEventListener("click", (event) => {
+    const modelButton = event.target.closest("[data-driver-id]");
+
+    if (!modelButton) {
+      return;
+    }
+
+    state.driverLibrary.selectedDriverId = modelButton.getAttribute("data-driver-id") || "";
+    renderDriverLibrary();
+  });
+}
+
+if (importDriverButton) {
+  importDriverButton.addEventListener("click", () => {
+    openModal(importDriverModal);
+  });
+}
+
+if (importDriverForm) {
+  importDriverForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const fileName = importDriverFileInput?.files?.[0]?.name || "mock-driver.pkg";
+    closeModal(importDriverModal);
+    importDriverForm.reset();
+    showToast(`${fileName} imported successfully.`);
+  });
+}
+
+if (driverCreateDeviceButton) {
+  driverCreateDeviceButton.addEventListener("click", () => {
+    const selectedDriver = getSelectedDriver();
+
+    if (!selectedDriver) {
+      return;
+    }
+
+    navigateToSection("Device Integration", false);
+    openAddDeviceView("driver", "", selectedDriver.id);
+  });
+}
+
+if (driverExportButton) {
+  driverExportButton.addEventListener("click", () => {
+    if (!getSelectedDriver()) {
+      return;
+    }
+
+    showToast("Driver exported.");
+  });
+}
+
+if (deviceIntegrationContent) {
+  deviceIntegrationContent.addEventListener("click", (event) => {
+    const actionButton = event.target.closest("[data-device-action]");
+    const rowActionButton = event.target.closest("[data-device-row-action]");
+    const modeButton = event.target.closest("[data-device-mode]");
+    const openRow = event.target.closest("[data-device-open-id]");
+
+    if (modeButton) {
+      openAddDeviceView(modeButton.getAttribute("data-device-mode") || "");
+      return;
+    }
+
+    if (rowActionButton) {
+      const action = rowActionButton.getAttribute("data-device-row-action");
+      const deviceId = rowActionButton.getAttribute("data-device-id") || "";
+
+      if (action === "edit") {
+        openAddDeviceView("", deviceId);
+        return;
+      }
+
+      if (action === "test") {
+        runDeviceConnectionTest("detail");
+        return;
+      }
+
+      if (action === "commands") {
+        showToast("Go to Command Management.");
+        return;
+      }
+
+      if (action === "delete") {
+        promptDeleteDevice(deviceId);
+      }
+      return;
+    }
+
+    if (openRow) {
+      openDeviceReviewModal(openRow.getAttribute("data-device-open-id") || "");
+      return;
+    }
+
+    if (!actionButton) {
+      return;
+    }
+
+    const action = actionButton.getAttribute("data-device-action");
+    const deviceId = actionButton.getAttribute("data-device-id") || "";
+
+    if (action === "open-add") {
+      openAddDeviceView();
+      return;
+    }
+
+    if (action === "back-to-list") {
+      openDevicesListView();
+      return;
+    }
+
+    if (action === "save-device") {
+      saveDeviceDraft();
+      return;
+    }
+
+    if (action === "test-draft-connection") {
+      runDeviceConnectionTest("draft");
+      return;
+    }
+
+    if (action === "edit-connection") {
+      openAddDeviceView("", deviceId);
+      return;
+    }
+
+    if (action === "test-device") {
+      runDeviceConnectionTest("detail");
+      return;
+    }
+
+    if (action === "go-commands") {
+      showToast("Go to Command Management.");
+      return;
+    }
+
+    if (action === "delete-device") {
+      promptDeleteDevice(deviceId);
+    }
+  });
+
+  deviceIntegrationContent.addEventListener("input", (event) => {
+    const field = event.target.getAttribute("data-device-draft-field");
+
+    if (event.target.id === "deviceSearchInput") {
+      state.deviceIntegration.search = event.target.value;
+      renderDevicesListWithSearchFocus(event.target.selectionStart ?? state.deviceIntegration.search.length);
+      return;
+    }
+
+    if (!field || !state.deviceIntegration.draft) {
+      if (state.deviceIntegration.draft && event.target.name) {
+        state.deviceIntegration.draft.connection[event.target.name] = event.target.value;
+      }
+      return;
+    }
+
+    state.deviceIntegration.draft[field] = event.target.value;
+  });
+
+  deviceIntegrationContent.addEventListener("change", (event) => {
+    const field = event.target.getAttribute("data-device-draft-field");
+
+    if (event.target.id === "deviceTypeFilter") {
+      state.deviceIntegration.type = event.target.value;
+      renderDeviceIntegration();
+      return;
+    }
+
+    if (field && state.deviceIntegration.draft) {
+      state.deviceIntegration.draft[field] = event.target.value;
+
+      if (field === "driverId" || field === "protocol" || field === "deviceType") {
+        renderDeviceIntegration();
+        return;
+      }
+    }
+
+    if (state.deviceIntegration.draft && event.target.name) {
+      state.deviceIntegration.draft.connection[event.target.name] = event.target.value;
+    }
+  });
+}
+
+if (confirmDeviceDeleteButton) {
+  confirmDeviceDeleteButton.addEventListener("click", () => {
+    if (!state.deviceIntegration.pendingDeleteDeviceId) {
+      closeModal(deviceDeleteModal);
+      return;
+    }
+
+    const targetId = state.deviceIntegration.pendingDeleteDeviceId;
+    state.deviceIntegration.pendingDeleteDeviceId = "";
+    closeModal(deviceDeleteModal);
+    deleteDevice(targetId);
+  });
+}
+
 if (macroBasicNameInput) {
   macroBasicNameInput.addEventListener("input", () => {
     if (!state.macroDraft) {
@@ -3619,7 +5013,7 @@ document.querySelectorAll("[data-close-modal]").forEach((button) => {
   });
 });
 
-[signinModal, settingsModal, wifiPasswordModal, commandEditorModal, macroDeleteModal, adminConfirmModal, macroInsertActionModal, macroReviewModal].forEach((modal) => {
+[signinModal, settingsModal, wifiPasswordModal, commandEditorModal, macroDeleteModal, adminConfirmModal, macroInsertActionModal, macroReviewModal, importDriverModal, deviceDeleteModal, deviceReviewModal].forEach((modal) => {
   modal.addEventListener("click", (event) => {
     if (event.target === modal) {
       if (modal === macroInsertActionModal) {
@@ -3648,6 +5042,9 @@ document.addEventListener("keydown", (event) => {
     closeModal(adminConfirmModal);
     closeMacroInsertActionModal();
     closeModal(macroReviewModal);
+    closeModal(importDriverModal);
+    closeModal(deviceDeleteModal);
+    closeModal(deviceReviewModal);
     closeModal(commandEditorModal);
     closeModal(macroDeleteModal);
   }
@@ -3656,6 +5053,8 @@ document.addEventListener("keydown", (event) => {
 renderUserMenu();
 populateCommandParameterOptions();
 resetCommandEditorStateUpdateFields();
+renderDriverLibrary();
+renderDeviceIntegration();
 renderCommandManagement();
 renderMacroManagement();
 syncCommandEditorInterfaceFields();
