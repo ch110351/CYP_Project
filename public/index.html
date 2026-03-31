@@ -959,6 +959,152 @@
                   </section>
                 </div>
               </section>
+
+              <section class="admin-panel is-hidden" id="adminPanel" aria-labelledby="adminPanelTitle">
+                <div class="admin-hero">
+                  <div class="admin-hero__copy">
+                    <span class="panel-card__eyebrow">Security and Administrative Access Control</span>
+                    <h2 id="adminPanelTitle">Admin</h2>
+                    <p>
+                      Manage password protection, configuration backup, system maintenance, firmware
+                      upgrade, and access control for administrators and operators.
+                    </p>
+                  </div>
+                </div>
+
+                <div class="admin-layout">
+                  <section class="panel-card admin-card" aria-labelledby="adminSecurityTitle">
+                    <div class="panel-card__header">
+                      <div>
+                        <span class="panel-card__eyebrow">Security</span>
+                        <h3 id="adminSecurityTitle">Password and Access Control</h3>
+                      </div>
+                    </div>
+
+                    <form class="admin-form" id="adminSecurityForm">
+                      <div class="admin-form-grid">
+                        <label class="form-field">
+                          <span>New Password</span>
+                          <input id="adminPasswordInput" name="adminPassword" type="password" autocomplete="new-password" />
+                        </label>
+                        <label class="form-field">
+                          <span>Confirm Password</span>
+                          <input
+                            id="adminPasswordConfirmInput"
+                            name="adminPasswordConfirm"
+                            type="password"
+                            autocomplete="new-password"
+                          />
+                        </label>
+                        <label class="form-field">
+                          <span>Access Control Role</span>
+                          <select id="accessRoleSelect" name="accessRole">
+                            <option value="Admin" selected>Admin</option>
+                            <option value="Operator">Operator</option>
+                          </select>
+                        </label>
+                        <div class="admin-summary-card">
+                          <span class="info-item__label">Current Access</span>
+                          <strong class="info-item__value" id="accessRoleSummary">Admin</strong>
+                          <span class="admin-summary-card__hint">Role-based operation for maintenance and daily use.</span>
+                        </div>
+                      </div>
+
+                      <div class="admin-actions">
+                        <button class="modal-btn modal-btn--primary" type="submit">Apply Security Setting</button>
+                      </div>
+                    </form>
+                  </section>
+
+                  <section class="panel-card admin-card" aria-labelledby="adminConfigTitle">
+                    <div class="panel-card__header">
+                      <div>
+                        <span class="panel-card__eyebrow">Backup and Logs</span>
+                        <h3 id="adminConfigTitle">Import, Export, and Log Download</h3>
+                      </div>
+                    </div>
+
+                    <div class="admin-block">
+                      <div class="admin-form-grid">
+                        <label class="form-field">
+                          <span>Import Configuration</span>
+                          <input id="configImportInput" name="configImport" type="file" accept=".json,.zip,.cfg" />
+                        </label>
+                        <div class="admin-summary-card">
+                          <span class="info-item__label">Last Imported File</span>
+                          <strong class="info-item__value" id="configImportSummary">No file imported</strong>
+                        </div>
+                      </div>
+
+                      <div class="admin-action-grid">
+                        <button class="modal-btn modal-btn--primary" id="importConfigButton" type="button">Import Config</button>
+                        <button class="modal-btn modal-btn--ghost" id="exportConfigButton" type="button">Export Config</button>
+                        <button class="modal-btn modal-btn--ghost" id="downloadLogButton" type="button">Download Log</button>
+                      </div>
+                    </div>
+                  </section>
+
+                  <section class="panel-card admin-card" aria-labelledby="adminFirmwareTitle">
+                    <div class="panel-card__header">
+                      <div>
+                        <span class="panel-card__eyebrow">Firmware Upgrade</span>
+                        <h3 id="adminFirmwareTitle">FW Upgrade</h3>
+                      </div>
+                    </div>
+
+                    <div class="admin-form">
+                      <div class="admin-section">
+                        <div class="admin-section__header">
+                          <strong>OTA Update</strong>
+                          <p>Check and apply the latest firmware from the online update service.</p>
+                        </div>
+
+                        <div class="admin-actions admin-actions--inline">
+                          <button class="modal-btn modal-btn--primary" id="otaUpdateButton" type="button">Start OTA Update</button>
+                        </div>
+                      </div>
+
+                      <form class="admin-section" id="firmwareForm">
+                        <div class="admin-section__header">
+                          <strong>Manual Update</strong>
+                          <p>Choose a local firmware package to update the pad manually.</p>
+                        </div>
+
+                        <div class="admin-form-grid">
+                          <label class="form-field" id="firmwareFileField">
+                          <span>Firmware File</span>
+                          <input id="firmwareFileInput" name="firmwareFile" type="file" accept=".bin,.pkg,.zip" />
+                        </label>
+                        <div class="admin-summary-card">
+                          <span class="info-item__label">Current Firmware</span>
+                          <strong class="info-item__value" id="firmwareSummary">v0.2.6 / OTA Ready</strong>
+                        </div>
+                        </div>
+
+                        <div class="admin-actions">
+                          <button class="modal-btn modal-btn--primary" type="submit">Start Manual Update</button>
+                        </div>
+                      </form>
+                    </div>
+                  </section>
+
+                  <section class="panel-card admin-card" aria-labelledby="adminSystemTitle">
+                    <div class="panel-card__header">
+                      <div>
+                        <span class="panel-card__eyebrow">System Action</span>
+                        <h3 id="adminSystemTitle">Reboot and Factory Reset</h3>
+                      </div>
+                    </div>
+
+                    <div class="admin-block">
+                      <div class="admin-action-grid">
+                        <button class="modal-btn modal-btn--ghost" id="rebootButton" type="button">Reboot</button>
+                        <button class="modal-btn modal-btn--ghost" id="factoryResetButton" type="button">Factory Reset</button>
+                      </div>
+                    </div>
+                  </section>
+                </div>
+              </section>
             </div>
           </section>
         </main>
@@ -1108,6 +1254,26 @@
       </div>
     </div>
 
+    <div class="modal-backdrop is-hidden" id="adminConfirmModal" aria-hidden="true">
+      <div class="modal-window" role="dialog" aria-modal="true" aria-labelledby="adminConfirmTitle">
+        <div class="modal-window__header">
+          <h2 id="adminConfirmTitle">Confirm Action</h2>
+        </div>
+        <form class="modal-form" id="adminConfirmForm">
+          <div class="settings-section">
+            <h3 id="adminConfirmActionLabel">System Action</h3>
+            <p id="adminConfirmMessage">Please confirm this action.</p>
+          </div>
+          <div class="modal-window__actions">
+            <button class="modal-btn modal-btn--ghost" type="button" data-close-modal="adminConfirmModal">
+              Cancel
+            </button>
+            <button class="modal-btn modal-btn--primary" type="submit">Confirm</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
     <div class="modal-backdrop is-hidden" id="macroDeleteModal" aria-hidden="true">
       <div class="modal-window" role="dialog" aria-modal="true" aria-labelledby="macroDeleteTitle">
         <div class="modal-window__header">
@@ -1129,7 +1295,6 @@
         </div>
       </div>
     </div>
-
     <script src="/js/app.js"></script>
   </body>
 </html>

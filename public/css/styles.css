@@ -2012,6 +2012,108 @@ a {
   box-shadow: 0 0 0 3px rgba(47, 111, 237, 0.1);
 }
 
+.admin-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.admin-hero,
+.admin-summary-card {
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(245, 249, 253, 0.92));
+}
+
+.admin-hero {
+  padding: 18px 20px;
+}
+
+.admin-hero__copy h2 {
+  margin: 0 0 8px;
+  font-size: 1.35rem;
+}
+
+.admin-hero__copy p,
+.admin-summary-card__hint,
+#adminConfirmMessage {
+  margin: 0;
+  color: var(--text-body);
+  line-height: 1.5;
+}
+
+.admin-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+}
+
+.admin-card {
+  overflow: hidden;
+}
+
+.admin-form,
+.admin-block {
+  padding: 0 16px 16px;
+}
+
+.admin-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.admin-section {
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(245, 249, 253, 0.92));
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.admin-section__header {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.admin-section__header strong {
+  font-size: 1rem;
+}
+
+.admin-section__header p {
+  margin: 0;
+  color: var(--text-body);
+  line-height: 1.5;
+}
+
+.admin-form-grid,
+.admin-action-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.admin-summary-card {
+  min-height: 108px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+}
+
+.admin-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.admin-actions--inline {
+  justify-content: flex-start;
+}
+
 .network-panel {
   display: flex;
   flex-direction: column;
@@ -2657,6 +2759,7 @@ body.is-collapsed .nav__children {
   .display-toggle-row,
   .display-actions,
   .display-switch-card,
+  .admin-actions,
   .network-status-card__main,
   .network-actions,
   .network-hero,
@@ -2702,6 +2805,8 @@ body.is-collapsed .nav__children {
 
   .display-form-grid,
   .display-switch-grid,
+  .admin-form-grid,
+  .admin-action-grid,
   .network-info-grid,
   .network-form-grid {
     grid-template-columns: 1fr;

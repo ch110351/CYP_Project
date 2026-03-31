@@ -43,6 +43,7 @@ const macroFlowCanvas = document.getElementById("macroFlowCanvas");
 const macroInspectorPanel = document.getElementById("macroInspectorPanel");
 const displayPanel = document.getElementById("displayPanel");
 const networkPanel = document.getElementById("networkPanel");
+const adminPanel = document.getElementById("adminPanel");
 const padButtons = document.querySelectorAll(".pad-button");
 const lightBrightnessSlider = document.getElementById("lightBrightnessSlider");
 const padPagesViewport = document.getElementById("padPagesViewport");
@@ -85,6 +86,10 @@ const commandTelnetPortField = document.getElementById("commandTelnetPortField")
 const commandTelnetIpInput = document.getElementById("commandTelnetIpInput");
 const commandTelnetPortInput = document.getElementById("commandTelnetPortInput");
 const commandDataInput = document.getElementById("commandDataInput");
+const adminConfirmModal = document.getElementById("adminConfirmModal");
+const adminConfirmForm = document.getElementById("adminConfirmForm");
+const adminConfirmActionLabel = document.getElementById("adminConfirmActionLabel");
+const adminConfirmMessage = document.getElementById("adminConfirmMessage");
 const displayForm = document.getElementById("displayForm");
 const timeModeInputs = document.querySelectorAll('input[name="timeMode"]');
 const timeFormatSelect = document.getElementById("timeFormatSelect");
@@ -103,6 +108,22 @@ const customImageInput = document.getElementById("customImageInput");
 const macroDeleteModal = document.getElementById("macroDeleteModal");
 const macroDeleteName = document.getElementById("macroDeleteName");
 const confirmMacroDeleteButton = document.getElementById("confirmMacroDeleteButton");
+const adminSecurityForm = document.getElementById("adminSecurityForm");
+const adminPasswordInput = document.getElementById("adminPasswordInput");
+const adminPasswordConfirmInput = document.getElementById("adminPasswordConfirmInput");
+const accessRoleSelect = document.getElementById("accessRoleSelect");
+const accessRoleSummary = document.getElementById("accessRoleSummary");
+const configImportInput = document.getElementById("configImportInput");
+const configImportSummary = document.getElementById("configImportSummary");
+const importConfigButton = document.getElementById("importConfigButton");
+const exportConfigButton = document.getElementById("exportConfigButton");
+const downloadLogButton = document.getElementById("downloadLogButton");
+const otaUpdateButton = document.getElementById("otaUpdateButton");
+const firmwareForm = document.getElementById("firmwareForm");
+const firmwareFileInput = document.getElementById("firmwareFileInput");
+const firmwareSummary = document.getElementById("firmwareSummary");
+const rebootButton = document.getElementById("rebootButton");
+const factoryResetButton = document.getElementById("factoryResetButton");
 
 const state = {
   isLoggedIn: false,
@@ -486,6 +507,14 @@ const state = {
     screenSaverContent: "Clock",
     customImage: "",
     language: "English",
+  },
+  admin: {
+    passwordConfigured: false,
+    accessRole: "Admin",
+    importedConfigName: "",
+    firmwareMode: "ota",
+    firmwareFileName: "",
+    pendingAction: "",
   },
 };
 
@@ -1471,12 +1500,20 @@ function updateContentStage(sectionTitle, isHome) {
   const isMacroManagement = sectionTitle === "Macro Management";
   const isDisplay = sectionTitle === "Pad Display Setting";
   const isNetwork = sectionTitle === "Network";
+  const isAdmin = sectionTitle === "Admin";
   homeDashboard.classList.toggle("is-hidden", !isHome);
   contentPlaceholder.classList.toggle("is-hidden", isHome || isCommandManagement || isMacroManagement || isDisplay || isNetwork);
   commandPanel.classList.toggle("is-hidden", !isCommandManagement);
   macroPanel.classList.toggle("is-hidden", !isMacroManagement);
+  contentPlaceholder.classList.toggle(
+    "is-hidden",
+    isHome || isCommandManagement || isMacroManagement || isDisplay || isNetwork || isAdmin
+  );
+  commandPanel.classList.toggle("is-hidden", !isCommandManagement);
+  macroPanel.classList.toggle("is-hidden", !isMacroManagement);
   displayPanel.classList.toggle("is-hidden", !isDisplay);
   networkPanel.classList.toggle("is-hidden", !isNetwork);
+  adminPanel.classList.toggle("is-hidden", !isAdmin);
 
   if (isCommandManagement) {
     renderCommandManagement();
@@ -1500,6 +1537,11 @@ function updateContentStage(sectionTitle, isHome) {
 
   if (isNetwork) {
     renderNetworkPanel();
+    return;
+  }
+
+  if (isAdmin) {
+    renderAdminPanel();
     return;
   }
 
@@ -1659,6 +1701,37 @@ function testRunCommand(commandIndex) {
   }
 
   showToast(`Test run sent to ${command.device} via ${command.interface}.`);
+}
+
+function renderAdminPanel() {
+  accessRoleSelect.value = state.admin.accessRole;
+  accessRoleSummary.textContent = state.admin.accessRole;
+  configImportSummary.textContent = state.admin.importedConfigName || "No file imported";
+  firmwareFileInput.value = "";
+  firmwareSummary.textContent = state.admin.firmwareMode === "manual" && state.admin.firmwareFileName
+    ? `v0.2.6 / Manual ${state.admin.firmwareFileName}`
+    : "v0.2.6 / OTA Ready";
+}
+
+function triggerDownload(filename, content, type) {
+  const blob = new Blob([content], { type });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+}
+
+function openAdminConfirm(action) {
+  state.admin.pendingAction = action;
+  adminConfirmActionLabel.textContent = action === "factory-reset" ? "Factory Reset" : "Reboot";
+  adminConfirmMessage.textContent = action === "factory-reset"
+    ? "This will restore the pad to factory defaults and clear current configuration. Do you want to continue?"
+    : "The pad will reboot and temporarily disconnect. Do you want to continue?";
+  openModal(adminConfirmModal);
 }
 
 function renderDisplayPanel() {
@@ -2797,6 +2870,140 @@ if (confirmMacroDeleteButton) {
   });
 }
 
+if (adminSecurityForm) {
+  adminSecurityForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+
+    const password = adminPasswordInput.value.trim();
+    const confirmPassword = adminPasswordConfirmInput.value.trim();
+
+    if (password || confirmPassword) {
+      if (password.length < 4) {
+        showToast("Password must be at least 4 characters.");
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        showToast("Password confirmation does not match.");
+        return;
+      }
+
+      state.admin.passwordConfigured = true;
+    }
+
+    state.admin.accessRole = accessRoleSelect.value;
+    adminSecurityForm.reset();
+    accessRoleSelect.value = state.admin.accessRole;
+    renderAdminPanel();
+    showToast("Admin security settings applied.");
+  });
+}
+
+if (importConfigButton) {
+  importConfigButton.addEventListener("click", () => {
+    const selectedFile = configImportInput.files?.[0];
+
+    if (!selectedFile) {
+      showToast("Please choose a configuration file to import.");
+      return;
+    }
+
+    state.admin.importedConfigName = selectedFile.name;
+    renderAdminPanel();
+    showToast(`Configuration imported from ${selectedFile.name}.`);
+  });
+}
+
+if (exportConfigButton) {
+  exportConfigButton.addEventListener("click", () => {
+    const exportedConfig = {
+      exportedAt: new Date().toISOString(),
+      network: state.ethernet,
+      wifi: {
+        enabled: state.wifi.enabled,
+        connectedSSID: state.wifi.connectedSSID,
+      },
+      display: state.display,
+      admin: {
+        accessRole: state.admin.accessRole,
+      },
+    };
+
+    triggerDownload("pad-config-export.json", JSON.stringify(exportedConfig, null, 2), "application/json");
+    showToast("Configuration export started.");
+  });
+}
+
+if (downloadLogButton) {
+  downloadLogButton.addEventListener("click", () => {
+    const logContent = [
+      `[${new Date().toISOString()}] INFO System online`,
+      `[${new Date().toISOString()}] INFO Network status: ${state.ethernet.connected ? "Ethernet Active" : "Wi-Fi Active"}`,
+      `[${new Date().toISOString()}] INFO Access role: ${state.admin.accessRole}`,
+    ].join("\n");
+
+    triggerDownload("pad-system-log.txt", logContent, "text/plain");
+    showToast("Log download started.");
+  });
+}
+
+if (otaUpdateButton) {
+  otaUpdateButton.addEventListener("click", () => {
+    state.admin.firmwareMode = "ota";
+    renderAdminPanel();
+    showToast("OTA update started.");
+  });
+}
+
+if (firmwareForm) {
+  firmwareForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+
+    const firmwareFile = firmwareFileInput.files?.[0];
+
+    if (!firmwareFile) {
+      showToast("Please choose a local firmware file.");
+      return;
+    }
+
+    state.admin.firmwareMode = "manual";
+    state.admin.firmwareFileName = firmwareFile.name;
+    renderAdminPanel();
+    showToast(`Manual firmware upgrade started with ${firmwareFile.name}.`);
+  });
+}
+
+if (rebootButton) {
+  rebootButton.addEventListener("click", () => {
+    openAdminConfirm("reboot");
+  });
+}
+
+if (factoryResetButton) {
+  factoryResetButton.addEventListener("click", () => {
+    openAdminConfirm("factory-reset");
+  });
+}
+
+if (adminConfirmForm) {
+  adminConfirmForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+
+    const pendingAction = state.admin.pendingAction;
+    closeModal(adminConfirmModal);
+    state.admin.pendingAction = "";
+
+    if (pendingAction === "factory-reset") {
+      showToast("Factory reset initiated.");
+      return;
+    }
+
+    if (pendingAction === "reboot") {
+      showToast("System reboot initiated.");
+    }
+  });
+}
+
 if (wifiToggle) {
   wifiToggle.addEventListener("change", () => {
     state.wifi.enabled = wifiToggle.checked;
@@ -2884,7 +3091,7 @@ document.querySelectorAll("[data-close-modal]").forEach((button) => {
   });
 });
 
-[signinModal, settingsModal, wifiPasswordModal, commandEditorModal, macroDeleteModal].forEach((modal) => {
+[signinModal, settingsModal, wifiPasswordModal, commandEditorModal, macroDeleteModal, adminConfirmModal].forEach((modal) => {
   modal.addEventListener("click", (event) => {
     if (event.target === modal) {
       closeModal(modal);
@@ -2904,6 +3111,9 @@ document.addEventListener("keydown", (event) => {
     closeModal(signinModal);
     closeModal(settingsModal);
     closeModal(wifiPasswordModal);
+    closeModal(commandEditorModal);
+    closeModal(macroDeleteModal);
+    closeModal(adminConfirmModal);
     closeModal(commandEditorModal);
     closeModal(macroDeleteModal);
   }
