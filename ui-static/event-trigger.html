@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Event Trigger</title>
+    <link rel="stylesheet" href="./css/ui-static.css" />
+  </head>
+  <body>
+    <div class="shell">
+      <header class="topbar">
+        <div class="brand-box"><img src="./assets/cyp-logo.png" alt="CYP logo" /></div>
+        <div class="topbar-note">Static page for UI drawing</div>
+      </header>
+      <div class="workspace">
+        <aside class="sidebar">
+          <div class="nav-group">
+            <p class="nav-title">Control</p>
+            <a class="nav-link is-active" href="./event-trigger.html">Event Trigger</a>
+          </div>
+        </aside>
+        <main class="main">
+          <section class="canvas">
+            <span class="eyebrow">Control Automation</span>
+            <h1 class="page-title">Event Trigger</h1>
+            <div class="page-hero">
+              <div><p>Placeholder static page for future sensor / feedback / event-based automation layout.</p></div>
+              <div class="actions"><span class="btn btn-primary">Create Trigger</span></div>
+            </div>
+            <section class="page-card">
+              <div class="table-wrap">
+                <table class="table">
+                  <thead><tr><th>Trigger Name</th><th>Source</th><th>Condition</th><th>Action</th><th>Status</th></tr></thead>
+                  <tbody>
+                    <tr><td>Occupancy Detected</td><td>Sensor A</td><td>Value = true</td><td>Run Macro: Weekday Startup</td><td><span class="status status-enabled">Enabled</span></td></tr>
+                    <tr><td>No Signal Timeout</td><td>Display Feedback</td><td>30 min idle</td><td>Run Macro: Shutdown</td><td><span class="status status-disabled">Disabled</span></td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </section>
+          </section>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>

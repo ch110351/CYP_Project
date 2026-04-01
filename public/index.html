@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="/css/automation-layout.css" />
     <link rel="stylesheet" href="/css/automation-components.css" />
     <link rel="stylesheet" href="/css/automation-pages.css" />
+    <link rel="stylesheet" href="/css/scenario.css" />
   </head>
   <body>
     <div class="app-shell">
@@ -636,6 +637,10 @@
 
               <section class="automation-panel is-hidden" id="automationPanel" aria-labelledby="automationPanelTitle">
                 <div id="automationContent"></div>
+              </section>
+
+              <section class="scenario-panel is-hidden" id="scenarioPanel" aria-labelledby="scenarioPanelTitle">
+                <div id="scenarioContent"></div>
               </section>
 
               <section class="device-integration-panel is-hidden" id="deviceIntegrationPanel" aria-labelledby="deviceIntegrationPanelTitle">
@@ -1616,7 +1621,42 @@
         </div>
       </div>
     </div>
+
+    <div class="modal-backdrop is-hidden" id="scenarioLayoutConfirmModal" aria-hidden="true">
+      <div class="modal-window" role="dialog" aria-modal="true" aria-labelledby="scenarioLayoutConfirmTitle">
+        <div class="modal-window__header">
+          <h2 id="scenarioLayoutConfirmTitle">Change Layout</h2>
+        </div>
+        <div class="modal-form">
+          <div class="settings-section">
+            <h3>Layout Compatibility</h3>
+            <p id="scenarioLayoutConfirmMessage">Changing layout may remove incompatible buttons.</p>
+          </div>
+          <div class="modal-window__actions">
+            <button class="modal-btn modal-btn--ghost" type="button" data-close-modal="scenarioLayoutConfirmModal">
+              Cancel
+            </button>
+            <button class="modal-btn modal-btn--primary" id="confirmScenarioLayoutButton" type="button">
+              Confirm
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-backdrop is-hidden" id="scenarioButtonConfigModal" aria-hidden="true">
+      <div class="modal-window modal-window--command-editor" role="dialog" aria-modal="true" aria-labelledby="scenarioButtonConfigTitle">
+        <div id="scenarioButtonConfigContent"></div>
+      </div>
+    </div>
+
+    <div class="modal-backdrop is-hidden" id="scenarioActionPickerModal" aria-hidden="true">
+      <div class="modal-window modal-window--wide" role="dialog" aria-modal="true" aria-labelledby="scenarioActionPickerTitle">
+        <div id="scenarioActionPickerContent"></div>
+      </div>
+    </div>
     <script src="/js/app.js"></script>
     <script src="/js/automation.js"></script>
+    <script src="/js/scenario.js"></script>
   </body>
 </html>

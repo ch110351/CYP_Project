@@ -45,6 +45,7 @@ const macroReviewModal = document.getElementById("macroReviewModal");
 const macroReviewHeader = document.getElementById("macroReviewHeader");
 const macroReviewFlow = document.getElementById("macroReviewFlow");
 const automationPanel = document.getElementById("automationPanel");
+const scenarioPanel = document.getElementById("scenarioPanel");
 const driverLibraryPanel = document.getElementById("driverLibraryPanel");
 const importDriverButton = document.getElementById("importDriverButton");
 const driverSearchInput = document.getElementById("driverSearchInput");
@@ -3050,6 +3051,7 @@ function updateContentStage(sectionTitle, isHome) {
   const isCommandManagement = sectionTitle === "Command Management";
   const isMacroManagement = sectionTitle === "Macro Management";
   const isScheduling = sectionTitle === "Scheduling";
+  const isScenarioManagement = sectionTitle === "Scenario Management";
   const isDriverLibrary = sectionTitle === "Driver Library";
   const isDisplay = sectionTitle === "Pad Display Setting";
   const isNetwork = sectionTitle === "Network";
@@ -3057,16 +3059,34 @@ function updateContentStage(sectionTitle, isHome) {
   homeDashboard.classList.toggle("is-hidden", !isHome);
   contentPlaceholder.classList.toggle(
     "is-hidden",
-    isHome || isDeviceIntegration || isCommandManagement || isMacroManagement || isScheduling || isDriverLibrary || isDisplay || isNetwork
+    isHome ||
+      isDeviceIntegration ||
+      isCommandManagement ||
+      isMacroManagement ||
+      isScheduling ||
+      isScenarioManagement ||
+      isDriverLibrary ||
+      isDisplay ||
+      isNetwork
   );
   deviceIntegrationPanel.classList.toggle("is-hidden", !isDeviceIntegration);
   commandPanel.classList.toggle("is-hidden", !isCommandManagement);
   macroPanel.classList.toggle("is-hidden", !isMacroManagement);
   automationPanel.classList.toggle("is-hidden", !isScheduling);
+  scenarioPanel.classList.toggle("is-hidden", !isScenarioManagement);
   driverLibraryPanel.classList.toggle("is-hidden", !isDriverLibrary);
   contentPlaceholder.classList.toggle(
     "is-hidden",
-    isHome || isDeviceIntegration || isCommandManagement || isMacroManagement || isScheduling || isDriverLibrary || isDisplay || isNetwork || isAdmin
+    isHome ||
+      isDeviceIntegration ||
+      isCommandManagement ||
+      isMacroManagement ||
+      isScheduling ||
+      isScenarioManagement ||
+      isDriverLibrary ||
+      isDisplay ||
+      isNetwork ||
+      isAdmin
   );
   displayPanel.classList.toggle("is-hidden", !isDisplay);
   networkPanel.classList.toggle("is-hidden", !isNetwork);
@@ -3095,6 +3115,13 @@ function updateContentStage(sectionTitle, isHome) {
   if (isScheduling) {
     if (typeof window.renderAutomationModule === "function") {
       window.renderAutomationModule(sectionTitle);
+    }
+    return;
+  }
+
+  if (isScenarioManagement) {
+    if (typeof window.renderScenarioModule === "function") {
+      window.renderScenarioModule();
     }
     return;
   }
@@ -3583,6 +3610,10 @@ function setGroupOpen(group, shouldOpen) {
 }
 
 function navigateToSection(title, isHome = false, options = {}) {
+  if (typeof window.canLeaveCurrentSection === "function" && !window.canLeaveCurrentSection(title)) {
+    return;
+  }
+
   const directItem = Array.from(navItems).find((item) => (item.dataset.title || item.dataset.section) === title);
   const childItem = Array.from(navChildren).find((item) => (item.dataset.title || item.dataset.section) === title);
 
@@ -5013,7 +5044,7 @@ document.querySelectorAll("[data-close-modal]").forEach((button) => {
   });
 });
 
-[signinModal, settingsModal, wifiPasswordModal, commandEditorModal, macroDeleteModal, adminConfirmModal, macroInsertActionModal, macroReviewModal, importDriverModal, deviceDeleteModal, deviceReviewModal].forEach((modal) => {
+[signinModal, settingsModal, wifiPasswordModal, commandEditorModal, macroDeleteModal, adminConfirmModal, macroInsertActionModal, macroReviewModal, importDriverModal, deviceDeleteModal, deviceReviewModal, document.getElementById("scenarioLayoutConfirmModal")].forEach((modal) => {
   modal.addEventListener("click", (event) => {
     if (event.target === modal) {
       if (modal === macroInsertActionModal) {
@@ -5045,6 +5076,7 @@ document.addEventListener("keydown", (event) => {
     closeModal(importDriverModal);
     closeModal(deviceDeleteModal);
     closeModal(deviceReviewModal);
+    closeModal(document.getElementById("scenarioLayoutConfirmModal"));
     closeModal(commandEditorModal);
     closeModal(macroDeleteModal);
   }

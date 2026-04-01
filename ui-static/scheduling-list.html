@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Scheduling</title>
+    <link rel="stylesheet" href="./css/ui-static.css" />
+  </head>
+  <body>
+    <div class="shell">
+      <header class="topbar">
+        <div class="brand-box"><img src="./assets/cyp-logo.png" alt="CYP logo" /></div>
+        <div class="topbar-note">Static page for UI drawing</div>
+      </header>
+      <div class="workspace">
+        <aside class="sidebar">
+          <div class="nav-group">
+            <p class="nav-title">Control</p>
+            <a class="nav-link" href="./index.html">Overview</a>
+            <a class="nav-link is-active" href="./scheduling-list.html">Scheduling</a>
+          </div>
+        </aside>
+        <main class="main">
+          <section class="canvas">
+            <span class="eyebrow">Control Automation</span>
+            <h1 class="page-title">Scheduling</h1>
+            <div class="page-hero">
+              <div>
+                <p>Define what should run and when it should run in one scheduling workflow.</p>
+              </div>
+              <div class="actions">
+                <a class="btn btn-primary" href="./scheduling-create.html">Create Schedule</a>
+              </div>
+            </div>
+            <section class="page-card">
+              <div class="toolbar">
+                <label class="field">
+                  <span>Search</span>
+                  <input type="search" value="startup" />
+                </label>
+                <label class="field">
+                  <span>Filter</span>
+                  <select>
+                    <option>All</option>
+                    <option selected>Recurring</option>
+                    <option>Interval</option>
+                    <option>Calendar</option>
+                  </select>
+                </label>
+              </div>
+              <div class="table-wrap">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>Schedule Name</th>
+                      <th>Type</th>
+                      <th>Bound Item</th>
+                      <th>Trigger Type</th>
+                      <th>Rule Summary</th>
+                      <th>Next Run</th>
+                      <th>Status</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><div class="name-stack"><strong>Weekday Startup Cycle</strong><span>SCH-001</span></div></td>
+                      <td><span class="badge type-command">Command</span></td>
+                      <td>Display Power On</td>
+                      <td><span class="trigger">Recurring</span></td>
+                      <td>Every Mon, Tue, Wed, Thu, Fri at 08:30</td>
+                      <td>Apr 01, 2026, 08:30</td>
+                      <td><span class="status status-enabled">Enabled</span></td>
+                      <td><div class="icon-actions"><span class="icon-btn">E</span><span class="icon-btn">D</span><span class="icon-btn">R</span></div></td>
+                    </tr>
+                    <tr>
+                      <td><div class="name-stack"><strong>Every 4 Hours Check</strong><span>SCH-002</span></div></td>
+                      <td><span class="badge type-command">Command</span></td>
+                      <td>Switcher Input 1</td>
+                      <td><span class="trigger">Interval</span></td>
+                      <td>Every 4 hours starting at 00:00</td>
+                      <td>Apr 01, 2026, 12:00</td>
+                      <td><span class="status status-enabled">Enabled</span></td>
+                      <td><div class="icon-actions"><span class="icon-btn">E</span><span class="icon-btn">D</span><span class="icon-btn">R</span></div></td>
+                    </tr>
+                    <tr>
+                      <td><div class="name-stack"><strong>End of Day Shutdown</strong><span>SCH-003</span></div></td>
+                      <td><span class="badge type-macro">Macro</span></td>
+                      <td>Weekday Shutdown</td>
+                      <td><span class="trigger">Calendar</span></td>
+                      <td>Run on 2026-04-10 at 18:00</td>
+                      <td>Apr 10, 2026, 18:00</td>
+                      <td><span class="status status-disabled">Disabled</span></td>
+                      <td><div class="icon-actions"><span class="icon-btn">E</span><span class="icon-btn">D</span><span class="icon-btn">R</span></div></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </section>
+          </section>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>

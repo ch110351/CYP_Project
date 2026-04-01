@@ -17,6 +17,12 @@ app.get("/", (req, res) => {
   });
 });
 
+["/scenarios"].forEach((routePath) => {
+  app.get(routePath, (req, res) => {
+    res.sendFile(appShell);
+  });
+});
+
 ["/jobs", "/jobs/create"].forEach((routePath) => {
   app.get(routePath, (req, res) => {
     res.redirect("/scheduling");

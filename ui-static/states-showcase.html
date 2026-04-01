@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>States Showcase</title>
+    <link rel="stylesheet" href="./css/ui-static.css" />
+  </head>
+  <body>
+    <div class="shell">
+      <header class="topbar">
+        <div class="brand-box"><img src="./assets/cyp-logo.png" alt="CYP logo" /></div>
+        <div class="topbar-note">Static page for UI drawing</div>
+      </header>
+      <div class="workspace">
+        <aside class="sidebar">
+          <div class="nav-group">
+            <p class="nav-title">Showcase</p>
+            <a class="nav-link" href="./dialogs-showcase.html">Dialogs / Modals</a>
+            <a class="nav-link is-active" href="./states-showcase.html">States</a>
+          </div>
+        </aside>
+        <main class="main">
+          <section class="canvas">
+            <span class="eyebrow">UI Reference</span>
+            <h1 class="page-title">States Showcase</h1>
+            <div class="split" style="margin-top:18px">
+              <section class="page-card">
+                <div class="panel-header"><span class="eyebrow">Empty</span><h2 class="panel-title">Empty State</h2></div>
+                <div class="empty-box">
+                  <strong>No schedules yet</strong>
+                  <p>Create your first schedule to bind a command or macro to time-based automation.</p>
+                  <span class="btn btn-primary">Create Schedule</span>
+                </div>
+              </section>
+              <section class="page-card">
+                <div class="panel-header"><span class="eyebrow">No Result</span><h2 class="panel-title">Search Empty</h2></div>
+                <div class="empty-box">
+                  <strong>No schedules match your search</strong>
+                  <p>Try adjusting your search keyword or trigger filter.</p>
+                </div>
+              </section>
+            </div>
+            <div class="split" style="margin-top:16px">
+              <section class="page-card">
+                <div class="panel-header"><span class="eyebrow">Confirmation</span><h2 class="panel-title">Delete Confirm</h2></div>
+                <div class="preview-card">
+                  <span>Message</span>
+                  <strong>Delete Weekday Startup Cycle from the scheduling list?</strong>
+                </div>
+              </section>
+              <section class="page-card">
+                <div class="panel-header"><span class="eyebrow">Toast</span><h2 class="panel-title">Toast States</h2></div>
+                <div class="toast-stack" style="padding:0 16px 16px">
+                  <div class="toast-static is-success">Schedule "Weekday Startup Cycle" created.</div>
+                  <div class="toast-static">Job "Daily Startup" executed (mock).</div>
+                  <div class="toast-static is-error">Please choose a Command or Macro.</div>
+                </div>
+              </section>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>

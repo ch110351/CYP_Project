@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dialogs Showcase</title>
+    <link rel="stylesheet" href="./css/ui-static.css" />
+  </head>
+  <body>
+    <div class="shell">
+      <header class="topbar">
+        <div class="brand-box"><img src="./assets/cyp-logo.png" alt="CYP logo" /></div>
+        <div class="topbar-note">Static page for UI drawing</div>
+      </header>
+      <div class="workspace">
+        <aside class="sidebar">
+          <div class="nav-group">
+            <p class="nav-title">Showcase</p>
+            <a class="nav-link is-active" href="./dialogs-showcase.html">Dialogs / Modals</a>
+            <a class="nav-link" href="./states-showcase.html">States</a>
+          </div>
+        </aside>
+        <main class="main">
+          <section class="canvas">
+            <span class="eyebrow">UI Reference</span>
+            <h1 class="page-title">Dialogs / Modals</h1>
+            <div class="stack" style="margin-top:18px">
+              <section class="modal-backdrop-static">
+                <div class="modal-window-static">
+                  <div class="modal-header-static">
+                    <span class="eyebrow">Review Dialog</span>
+                    <h2 class="panel-title">Device Review</h2>
+                  </div>
+                  <div class="modal-body-static">
+                    <div class="summary-grid" style="padding:0">
+                      <div class="summary-card"><span>Device Name</span><strong>Meeting Room Projector</strong></div>
+                      <div class="summary-card"><span>Driver</span><strong>Panasonic Projector LAN</strong></div>
+                      <div class="summary-card"><span>Type</span><strong>Projector</strong></div>
+                      <div class="summary-card"><span>Connection</span><strong>192.168.1.100</strong></div>
+                    </div>
+                  </div>
+                  <div class="modal-actions-static">
+                    <span class="btn">Close</span>
+                  </div>
+                </div>
+              </section>
+
+              <section class="modal-backdrop-static">
+                <div class="modal-window-static" style="max-width:520px">
+                  <div class="modal-header-static">
+                    <span class="eyebrow">Confirmation</span>
+                    <h2 class="panel-title">Delete Schedule</h2>
+                  </div>
+                  <div class="modal-body-static">
+                    <p>Are you sure you want to delete <strong>Weekday Startup Cycle</strong>?</p>
+                  </div>
+                  <div class="modal-actions-static">
+                    <span class="btn">Cancel</span>
+                    <span class="btn btn-primary">Delete</span>
+                  </div>
+                </div>
+              </section>
+
+              <section class="modal-backdrop-static">
+                <div class="modal-window-static">
+                  <div class="modal-header-static">
+                    <span class="eyebrow">Import Flow</span>
+                    <h2 class="panel-title">Import Driver</h2>
+                  </div>
+                  <div class="modal-body-static">
+                    <div class="field">
+                      <span>Driver File Upload</span>
+                      <input type="text" value="mock-driver.pkg" />
+                    </div>
+                  </div>
+                  <div class="modal-actions-static">
+                    <span class="btn">Cancel</span>
+                    <span class="btn btn-primary">Upload</span>
+                  </div>
+                </div>
+              </section>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>

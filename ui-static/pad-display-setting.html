@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pad Display Setting</title>
+    <link rel="stylesheet" href="./css/ui-static.css" />
+  </head>
+  <body>
+    <div class="shell">
+      <header class="topbar">
+        <div class="brand-box"><img src="./assets/cyp-logo.png" alt="CYP logo" /></div>
+        <div class="topbar-note">Static page for UI drawing</div>
+      </header>
+      <div class="workspace">
+        <aside class="sidebar">
+          <div class="nav-group">
+            <p class="nav-title">Setting</p>
+            <a class="nav-link is-active" href="./pad-display-setting.html">Pad Display Setting</a>
+          </div>
+        </aside>
+        <main class="main">
+          <section class="canvas">
+            <span class="eyebrow">Setting</span>
+            <h1 class="page-title">Pad Display Setting</h1>
+            <div class="split" style="margin-top:18px">
+              <section class="page-card form-panel">
+                <div class="panel-header"><span class="eyebrow">Display Preference</span><h2 class="panel-title">Display Setup</h2></div>
+                <div class="form-grid">
+                  <label class="field"><span>Time Format</span><select><option selected>24 Hour</option></select></label>
+                  <label class="field"><span>Theme</span><select><option selected>Light</option></select></label>
+                  <label class="field"><span>Brightness</span><input type="range" value="72" /></label>
+                  <label class="field"><span>Idle Lock (minutes)</span><input type="number" value="5" /></label>
+                </div>
+              </section>
+              <section class="page-card preview-panel">
+                <div class="panel-header"><span class="eyebrow">Summary</span><h2 class="panel-title">Current State</h2></div>
+                <div class="preview-card"><span>Theme</span><strong>Light</strong></div>
+                <div class="preview-card"><span>Brightness</span><strong>72%</strong></div>
+                <div class="preview-card"><span>Screen Lock</span><strong>Enabled after 5 minutes</strong></div>
+              </section>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>

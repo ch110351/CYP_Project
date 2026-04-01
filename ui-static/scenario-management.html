@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Scenario Management</title>
+    <link rel="stylesheet" href="./css/ui-static.css" />
+  </head>
+  <body>
+    <div class="shell">
+      <header class="topbar">
+        <div class="brand-box"><img src="./assets/cyp-logo.png" alt="CYP logo" /></div>
+        <div class="topbar-note">Static page for UI drawing</div>
+      </header>
+      <div class="workspace">
+        <aside class="sidebar">
+          <div class="nav-group">
+            <p class="nav-title">Scenes</p>
+            <a class="nav-link is-active" href="./scenario-management.html">Scenario Management</a>
+          </div>
+        </aside>
+        <main class="main">
+          <section class="canvas">
+            <span class="eyebrow">Scenes</span>
+            <h1 class="page-title">Scenario Management</h1>
+            <div class="page-hero">
+              <div><p>Static reference page for scenario / scene grouping and activation workflow.</p></div>
+              <div class="actions"><span class="btn btn-primary">Create Scenario</span></div>
+            </div>
+            <div class="split" style="margin-top:18px">
+              <section class="page-card">
+                <div class="panel-header"><span class="eyebrow">Scenario List</span><h2 class="panel-title">Scenarios</h2></div>
+                <div class="list">
+                  <div class="list-item is-selected"><strong>Meeting Mode</strong><div class="muted">Presentation / audio / display scene</div></div>
+                  <div class="list-item"><strong>Video Conference</strong><div class="muted">Camera / mic / display preset</div></div>
+                  <div class="list-item"><strong>Shutdown</strong><div class="muted">End-of-day reset state</div></div>
+                </div>
+              </section>
+              <section class="page-card">
+                <div class="panel-header"><span class="eyebrow">Detail</span><h2 class="panel-title">Meeting Mode</h2></div>
+                <div class="preview-card"><span>Commands / Macros</span><ul><li>Display Power On</li><li>Run Weekday Startup</li><li>Audio Volume 40%</li></ul></div>
+                <div class="preview-card"><span>Description</span><strong>Primary meeting room startup state for standard presentation mode.</strong></div>
+              </section>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>

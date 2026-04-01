@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Devices</title>
+    <link rel="stylesheet" href="./css/ui-static.css" />
+  </head>
+  <body>
+    <div class="shell">
+      <header class="topbar">
+        <div class="brand-box"><img src="./assets/cyp-logo.png" alt="CYP logo" /></div>
+        <div class="topbar-note">Static page for UI drawing</div>
+      </header>
+      <div class="workspace">
+        <aside class="sidebar">
+          <div class="nav-group">
+            <p class="nav-title">Device</p>
+            <a class="nav-link is-active" href="./devices-list.html">Devices</a>
+            <a class="nav-link" href="./device-create.html">Add Device</a>
+            <a class="nav-link" href="./driver-library.html">Driver Library</a>
+          </div>
+        </aside>
+        <main class="main">
+          <section class="canvas">
+            <span class="eyebrow">Device Integration</span>
+            <h1 class="page-title">Devices</h1>
+            <div class="page-hero">
+              <div>
+                <p>Manage integrated device instances for control workflows.</p>
+              </div>
+              <div class="actions">
+                <a class="btn btn-primary" href="./device-create.html">+ Add Device</a>
+              </div>
+            </div>
+            <section class="page-card">
+              <div class="toolbar">
+                <label class="field">
+                  <span>Search</span>
+                  <input type="search" value="room" />
+                </label>
+                <label class="field">
+                  <span>Type</span>
+                  <select><option>All Types</option><option selected>Projector</option></select>
+                </label>
+              </div>
+              <div class="table-wrap">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Driver</th>
+                      <th>Connection</th>
+                      <th>Type</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><div class="name-stack"><strong>Meeting Room Projector</strong><span>Integrated device instance</span></div></td>
+                      <td><span class="badge type-command">Panasonic Projector LAN</span></td>
+                      <td>192.168.1.100</td>
+                      <td><span class="trigger">Projector</span></td>
+                      <td><div class="icon-actions"><span class="icon-btn">E</span><span class="icon-btn">T</span><span class="icon-btn">C</span><span class="icon-btn">D</span></div></td>
+                    </tr>
+                    <tr>
+                      <td><div class="name-stack"><strong>Lighting Controller</strong><span>Manual device</span></div></td>
+                      <td><span class="status status-disabled">---</span></td>
+                      <td>RS-232</td>
+                      <td><span class="trigger">Lighting</span></td>
+                      <td><div class="icon-actions"><span class="icon-btn">E</span><span class="icon-btn">T</span><span class="icon-btn">C</span><span class="icon-btn">D</span></div></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </section>
+          </section>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>
