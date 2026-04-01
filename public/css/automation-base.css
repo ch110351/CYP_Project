@@ -1,0 +1,31 @@
+.automation-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.automation-page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.automation-page h2,
+.automation-page h3,
+.automation-page p {
+  margin: 0;
+}
+
+.automation-table-wrap,
+.automation-preview-stack,
+.automation-form-section,
+.automation-empty {
+  display: flex;
+  flex-direction: column;
+}
+
+.automation-preview-stack,
+.automation-form-section,
+.automation-empty {
+  gap: 14px;
+}

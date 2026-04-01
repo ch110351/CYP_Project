@@ -44,6 +44,7 @@ const macroInsertActionGrid = document.getElementById("macroInsertActionGrid");
 const macroReviewModal = document.getElementById("macroReviewModal");
 const macroReviewHeader = document.getElementById("macroReviewHeader");
 const macroReviewFlow = document.getElementById("macroReviewFlow");
+const automationPanel = document.getElementById("automationPanel");
 const driverLibraryPanel = document.getElementById("driverLibraryPanel");
 const importDriverButton = document.getElementById("importDriverButton");
 const driverSearchInput = document.getElementById("driverSearchInput");
@@ -3048,6 +3049,7 @@ function updateContentStage(sectionTitle, isHome) {
   const isDeviceIntegration = sectionTitle === "Device Integration";
   const isCommandManagement = sectionTitle === "Command Management";
   const isMacroManagement = sectionTitle === "Macro Management";
+  const isScheduling = sectionTitle === "Scheduling";
   const isDriverLibrary = sectionTitle === "Driver Library";
   const isDisplay = sectionTitle === "Pad Display Setting";
   const isNetwork = sectionTitle === "Network";
@@ -3055,15 +3057,16 @@ function updateContentStage(sectionTitle, isHome) {
   homeDashboard.classList.toggle("is-hidden", !isHome);
   contentPlaceholder.classList.toggle(
     "is-hidden",
-    isHome || isDeviceIntegration || isCommandManagement || isMacroManagement || isDriverLibrary || isDisplay || isNetwork
+    isHome || isDeviceIntegration || isCommandManagement || isMacroManagement || isScheduling || isDriverLibrary || isDisplay || isNetwork
   );
   deviceIntegrationPanel.classList.toggle("is-hidden", !isDeviceIntegration);
   commandPanel.classList.toggle("is-hidden", !isCommandManagement);
   macroPanel.classList.toggle("is-hidden", !isMacroManagement);
+  automationPanel.classList.toggle("is-hidden", !isScheduling);
   driverLibraryPanel.classList.toggle("is-hidden", !isDriverLibrary);
   contentPlaceholder.classList.toggle(
     "is-hidden",
-    isHome || isDeviceIntegration || isCommandManagement || isMacroManagement || isDriverLibrary || isDisplay || isNetwork || isAdmin
+    isHome || isDeviceIntegration || isCommandManagement || isMacroManagement || isScheduling || isDriverLibrary || isDisplay || isNetwork || isAdmin
   );
   displayPanel.classList.toggle("is-hidden", !isDisplay);
   networkPanel.classList.toggle("is-hidden", !isNetwork);
@@ -3085,6 +3088,13 @@ function updateContentStage(sectionTitle, isHome) {
       openMacroEditor(state.editingMacroId);
     } else {
       openMacroListView();
+    }
+    return;
+  }
+
+  if (isScheduling) {
+    if (typeof window.renderAutomationModule === "function") {
+      window.renderAutomationModule(sectionTitle);
     }
     return;
   }
@@ -3572,7 +3582,7 @@ function setGroupOpen(group, shouldOpen) {
   children.classList.toggle("is-hidden", !shouldOpen);
 }
 
-function navigateToSection(title, isHome = false) {
+function navigateToSection(title, isHome = false, options = {}) {
   const directItem = Array.from(navItems).find((item) => (item.dataset.title || item.dataset.section) === title);
   const childItem = Array.from(navChildren).find((item) => (item.dataset.title || item.dataset.section) === title);
 
@@ -3594,6 +3604,10 @@ function navigateToSection(title, isHome = false) {
 
   pageTitle.textContent = title;
   updateContentStage(title, isHome);
+
+  if (options.syncRoute !== false && typeof window.syncAppRouteForSection === "function") {
+    window.syncAppRouteForSection(title);
+  }
 }
 
 navToggle.addEventListener("click", () => {
@@ -3608,14 +3622,8 @@ navToggle.addEventListener("click", () => {
 navItems.forEach((item) => {
   item.addEventListener("click", (event) => {
     event.preventDefault();
-
-    navItems.forEach((navItem) => navItem.classList.remove("is-active"));
-    item.classList.add("is-active");
-    navChildren.forEach((navChild) => navChild.classList.remove("is-active"));
-    navGroups.forEach((group) => group.classList.remove("is-active"));
     const title = item.dataset.title || item.dataset.section || "Home";
-    pageTitle.textContent = title;
-    updateContentStage(title, title === "Home");
+    navigateToSection(title, title === "Home");
   });
 });
 
@@ -3638,16 +3646,8 @@ navParents.forEach((parent) => {
 navChildren.forEach((child) => {
   child.addEventListener("click", (event) => {
     event.preventDefault();
-
-    clearNavActive();
-
-    const group = child.closest(".nav-group");
-    child.classList.add("is-active");
-    group.classList.add("is-active");
-    setGroupOpen(group, true);
     const title = child.dataset.title || child.dataset.section || "Home";
-    pageTitle.textContent = title;
-    updateContentStage(title, false);
+    navigateToSection(title, false);
   });
 });
 

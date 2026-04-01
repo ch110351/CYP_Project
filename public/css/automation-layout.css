@@ -1,0 +1,56 @@
+.automation-hero {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.automation-hero__copy,
+.automation-hero__actions,
+.automation-form-main,
+.automation-preview-panel {
+  display: flex;
+  flex-direction: column;
+}
+
+.automation-hero__copy {
+  gap: 8px;
+}
+
+.automation-hero__actions {
+  gap: 10px;
+  align-items: flex-end;
+}
+
+.automation-toolbar,
+.automation-form-grid,
+.automation-form-shell {
+  display: grid;
+  gap: 16px;
+}
+
+.automation-toolbar {
+  grid-template-columns: minmax(280px, 1.5fr) minmax(180px, 0.55fr);
+  padding: 0 16px 16px;
+}
+
+.automation-toolbar__search {
+  min-width: 0;
+}
+
+.automation-form-shell {
+  grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
+  align-items: start;
+}
+
+.automation-form-main {
+  gap: 18px;
+}
+
+.automation-form-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.automation-form-grid .form-field--full {
+  grid-column: 1 / -1;
+}
