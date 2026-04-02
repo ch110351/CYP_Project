@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Android Controller Pad</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:FILL@0..1" />
     <link rel="stylesheet" href="/css/styles.css" />
     <link rel="stylesheet" href="/css/automation-base.css" />
     <link rel="stylesheet" href="/css/automation-layout.css" />
@@ -243,19 +244,12 @@
                           <div class="pad-screen">
                             <div class="pad-screen__topbar">
                               <div class="pad-screen__site">
-                                <span class="pad-screen__site-name">Meeting Room A</span>
-                                <span class="pad-screen__site-status">Ready</span>
+                                <span class="pad-screen__site-name">Meeting Room A Pad</span>
                               </div>
                               <div class="pad-screen__indicators">
-                                <span class="pad-indicator is-online"></span>
-                                <span class="pad-indicator is-sync"></span>
+                                <span class="material-symbols-outlined pad-topbar__icon" aria-hidden="true">wifi</span>
                                 <span class="pad-time">09:45</span>
                               </div>
-                            </div>
-
-                            <div class="pad-screen__title">
-                              <strong>Main Control</strong>
-                              <span>Touch panel active</span>
                             </div>
 
                             <div class="pad-pages">
@@ -271,17 +265,13 @@
                                         aria-pressed="true"
                                       >
                                         <span class="pad-button__status is-on"></span>
-                                        <span class="pad-button__icon">D</span>
+                                        <span class="pad-button__icon material-symbols-outlined" aria-hidden="true">tv</span>
                                         <span class="pad-button__name">Display On</span>
                                       </button>
 
                               <div class="pad-slider-card" data-pad-action="Lighting Brightness">
                                 <span class="pad-button__status is-on"></span>
-                                <span class="pad-button__icon pad-button__icon--brightness" aria-hidden="true">
-                                  <svg viewBox="0 0 24 24">
-                                    <path d="M12 4.5v2.2M12 17.3v2.2M4.5 12h2.2M17.3 12h2.2M6.7 6.7l1.6 1.6M15.7 15.7l1.6 1.6M17.3 6.7l-1.6 1.6M8.3 15.7l-1.6 1.6M12 8.2a3.8 3.8 0 1 1 0 7.6 3.8 3.8 0 0 1 0-7.6Z" />
-                                  </svg>
-                                </span>
+                                <span class="pad-button__icon material-symbols-outlined" aria-hidden="true">light_mode</span>
                                 <label class="pad-slider" for="lightBrightnessSlider">
                                   <input
                                     id="lightBrightnessSlider"
@@ -301,7 +291,7 @@
                                         data-selectable="true"
                                       >
                                         <span class="pad-button__status is-on"></span>
-                                        <span class="pad-button__icon">S</span>
+                                        <span class="pad-button__icon material-symbols-outlined" aria-hidden="true">input_hdmi</span>
                                         <span class="pad-button__name">Source HDMI 1</span>
                                       </button>
                                       <button
@@ -311,17 +301,17 @@
                                         data-selectable="true"
                                       >
                                         <span class="pad-button__status"></span>
-                                        <span class="pad-button__icon">S</span>
+                                        <span class="pad-button__icon material-symbols-outlined" aria-hidden="true">settings_input_hdmi</span>
                                         <span class="pad-button__name">Source HDMI 2</span>
                                       </button>
                                       <button class="pad-button" type="button" data-pad-action="Volume Up">
                                         <span class="pad-button__status"></span>
-                                        <span class="pad-button__icon">V</span>
+                                        <span class="pad-button__icon material-symbols-outlined" aria-hidden="true">volume_up</span>
                                         <span class="pad-button__name">Volume Up</span>
                                       </button>
                                       <button class="pad-button" type="button" data-pad-action="Volume Down">
                                         <span class="pad-button__status"></span>
-                                        <span class="pad-button__icon">V</span>
+                                        <span class="pad-button__icon material-symbols-outlined" aria-hidden="true">volume_down</span>
                                         <span class="pad-button__name">Volume Down</span>
                                       </button>
                                       <button
@@ -331,12 +321,12 @@
                                         data-selectable="true"
                                       >
                                         <span class="pad-button__status is-on"></span>
-                                        <span class="pad-button__icon">M</span>
+                                        <span class="pad-button__icon material-symbols-outlined" aria-hidden="true">auto_awesome</span>
                                         <span class="pad-button__name">Scene Meeting</span>
                                       </button>
                                       <button class="pad-button" type="button" data-pad-action="System Off">
                                         <span class="pad-button__status is-alert"></span>
-                                        <span class="pad-button__icon">P</span>
+                                        <span class="pad-button__icon material-symbols-outlined" aria-hidden="true">power_settings_new</span>
                                         <span class="pad-button__name">System Off</span>
                                       </button>
                                     </div>
@@ -346,32 +336,32 @@
                                     <div class="pad-grid pad-grid--3x2">
                                       <button class="pad-button" type="button" data-pad-action="Curtain Open">
                                         <span class="pad-button__status"></span>
-                                        <span class="pad-button__icon">C</span>
+                                        <span class="pad-button__icon material-symbols-outlined" aria-hidden="true">curtains</span>
                                         <span class="pad-button__name">Curtain Open</span>
                                       </button>
                                       <button class="pad-button" type="button" data-pad-action="Curtain Close">
                                         <span class="pad-button__status"></span>
-                                        <span class="pad-button__icon">C</span>
+                                        <span class="pad-button__icon material-symbols-outlined" aria-hidden="true">blinds_closed</span>
                                         <span class="pad-button__name">Curtain Close</span>
                                       </button>
                                       <button class="pad-button" type="button" data-pad-action="Mute Audio">
                                         <span class="pad-button__status"></span>
-                                        <span class="pad-button__icon">A</span>
+                                        <span class="pad-button__icon material-symbols-outlined" aria-hidden="true">mic_off</span>
                                         <span class="pad-button__name">Mute Audio</span>
                                       </button>
                                       <button class="pad-button" type="button" data-pad-action="Mic On">
                                         <span class="pad-button__status is-on"></span>
-                                        <span class="pad-button__icon">M</span>
+                                        <span class="pad-button__icon material-symbols-outlined" aria-hidden="true">mic</span>
                                         <span class="pad-button__name">Mic On</span>
                                       </button>
                                       <button class="pad-button" type="button" data-pad-action="Camera Preset 1">
                                         <span class="pad-button__status"></span>
-                                        <span class="pad-button__icon">P</span>
+                                        <span class="pad-button__icon material-symbols-outlined" aria-hidden="true">videocam</span>
                                         <span class="pad-button__name">Preset 1</span>
                                       </button>
                                       <button class="pad-button" type="button" data-pad-action="Camera Preset 2">
                                         <span class="pad-button__status"></span>
-                                        <span class="pad-button__icon">P</span>
+                                        <span class="pad-button__icon material-symbols-outlined" aria-hidden="true">video_camera_front</span>
                                         <span class="pad-button__name">Preset 2</span>
                                       </button>
                                     </div>
@@ -381,22 +371,22 @@
                                     <div class="pad-grid pad-grid--4x1">
                                       <button class="pad-button" type="button" data-pad-action="Room Mode Video">
                                         <span class="pad-button__status"></span>
-                                        <span class="pad-button__icon">R</span>
+                                        <span class="pad-button__icon material-symbols-outlined" aria-hidden="true">tv_display</span>
                                         <span class="pad-button__name">Room Video</span>
                                       </button>
                                       <button class="pad-button" type="button" data-pad-action="Room Mode Hybrid">
                                         <span class="pad-button__status"></span>
-                                        <span class="pad-button__icon">R</span>
+                                        <span class="pad-button__icon material-symbols-outlined" aria-hidden="true">groups_2</span>
                                         <span class="pad-button__name">Room Hybrid</span>
                                       </button>
                                       <button class="pad-button" type="button" data-pad-action="Privacy Mode">
                                         <span class="pad-button__status"></span>
-                                        <span class="pad-button__icon">P</span>
+                                        <span class="pad-button__icon material-symbols-outlined" aria-hidden="true">privacy_tip</span>
                                         <span class="pad-button__name">Privacy Mode</span>
                                       </button>
                                       <button class="pad-button" type="button" data-pad-action="All Standby">
                                         <span class="pad-button__status is-alert"></span>
-                                        <span class="pad-button__icon">S</span>
+                                        <span class="pad-button__icon material-symbols-outlined" aria-hidden="true">bedtime</span>
                                         <span class="pad-button__name">All Standby</span>
                                       </button>
                                     </div>
@@ -1653,6 +1643,12 @@
     <div class="modal-backdrop is-hidden" id="scenarioActionPickerModal" aria-hidden="true">
       <div class="modal-window modal-window--wide" role="dialog" aria-modal="true" aria-labelledby="scenarioActionPickerTitle">
         <div id="scenarioActionPickerContent"></div>
+      </div>
+    </div>
+
+    <div class="modal-backdrop is-hidden" id="scenarioIconPickerModal" aria-hidden="true">
+      <div class="modal-window modal-window--wide" role="dialog" aria-modal="true" aria-labelledby="scenarioIconPickerTitle">
+        <div id="scenarioIconPickerContent"></div>
       </div>
     </div>
     <script src="/js/app.js"></script>

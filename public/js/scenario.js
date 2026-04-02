@@ -8,17 +8,27 @@
   const buttonConfigContent = document.getElementById("scenarioButtonConfigContent");
   const actionPickerModal = document.getElementById("scenarioActionPickerModal");
   const actionPickerContent = document.getElementById("scenarioActionPickerContent");
+  const iconPickerModal = document.getElementById("scenarioIconPickerModal");
+  const iconPickerContent = document.getElementById("scenarioIconPickerContent");
   const layoutCatalog = [
     { id: "1x2", label: "1x2", capacity: 2, rows: 1, cols: 2 },
     { id: "2x2", label: "2x2", capacity: 4, rows: 2, cols: 2 },
     { id: "2x3", label: "2x3", capacity: 6, rows: 2, cols: 3 },
     { id: "2x4", label: "2x4", capacity: 8, rows: 2, cols: 4 },
   ];
+  const templateCategoryOrder = ["Basic", "Media", "Control"];
   const buttonCatalog = [
-    { id: "1x1", label: "1x1 Button", size: "1x1", enabled: true, note: "Draggable" },
-    { id: "1x2", label: "1x2 Button", size: "1x2", enabled: true, note: "Horizontal span" },
-    { id: "2x1", label: "2x1 Button", size: "2x1", enabled: true, note: "Vertical span" },
-    { id: "2x2", label: "2x2 Button", size: "2x2", enabled: true, note: "Large tile" },
+    { id: "custom-1x1", label: "Custom Button", size: "1x1", category: "Basic", enabled: true, note: "General purpose button", icon: "P" },
+    { id: "media-player-1x1", label: "Media Player", size: "1x1", category: "Media", enabled: true, note: "Transport and volume controls", icon: "M" },
+    { id: "lighting-onoff-1x1", label: "Lighting On-Off", size: "1x1", category: "Control", enabled: true, note: "Dedicated light power control", icon: "L" },
+    { id: "curtain-control-1x1", label: "Curtain Control", size: "1x1", category: "Control", enabled: true, note: "Open, stop and close control", icon: "C" },
+    { id: "volume-control-1x1", label: "Volume Control", size: "1x1", category: "Media", enabled: true, note: "Volume slider and mute", icon: "V" },
+    { id: "door-control-1x1", label: "Door Control", size: "1x1", category: "Control", enabled: true, note: "Door lock and unlock", icon: "D" },
+    { id: "fan-control-1x1", label: "Fan Control", size: "1x1", category: "Control", enabled: true, note: "Fan power and speed", icon: "A" },
+    { id: "dimmer-vertical-1x2", label: "Dimmer Control", size: "1x2", category: "Control", enabled: true, note: "Vertical dimmer and color temperature", icon: "L" },
+    { id: "dimmer-horizontal-2x1", label: "Dimmer Control", size: "2x1", category: "Control", enabled: true, note: "Horizontal dimmer and color temperature", icon: "L" },
+    { id: "thermostat-2x2", label: "Thermostat", size: "2x2", category: "Control", enabled: true, note: "HVAC mode and temperature control", icon: "A" },
+    { id: "ptz-camera-2x2", label: "PTZ Camera", size: "2x2", category: "Control", enabled: true, note: "PTZ movement and zoom", icon: "P" },
   ];
   const iconCatalog = ["P", "L", "A", "M", "S", "V", "C", "D"];
   const pickerItems = {
@@ -43,6 +53,40 @@
     repeatStart: "Start Actions",
     repeatLoop: "Repeat Actions",
     repeatStop: "Stop Actions",
+    mediaPrevious: "Previous Action",
+    mediaPlayPause: "Play / Pause Action",
+    mediaNext: "Next Action",
+    mediaVolume: "Volume Action",
+    lightOn: "ON Action",
+    lightOff: "OFF Action",
+    curtainOpen: "Open Action",
+    curtainStop: "Stop Action",
+    curtainClose: "Close Action",
+    volumeMute: "Mute Action",
+    volumeAdjust: "Volume Control Action",
+    doorLock: "Lock Action",
+    doorUnlock: "Unlock Action",
+    fanPower: "Power Action",
+    fanSpeed1: "Speed 1 Action",
+    fanSpeed2: "Speed 2 Action",
+    fanSpeed3: "Speed 3 Action",
+    dimmerPower: "Power Action",
+    dimmerBrightness: "Brightness Control Action",
+    dimmerColorTemp: "Color Temperature Control Action",
+    thermostatPower: "Power Action",
+    thermostatTempUp: "Temp + Action",
+    thermostatTempDown: "Temp - Action",
+    thermostatModeCool: "Cool Action",
+    thermostatModeHeat: "Heat Action",
+    thermostatModeFan: "Fan Action",
+    thermostatModeAuto: "Auto Action",
+    ptzPower: "Power Action",
+    ptzUp: "Up Action",
+    ptzDown: "Down Action",
+    ptzLeft: "Left Action",
+    ptzRight: "Right Action",
+    ptzZoomIn: "Zoom In Action",
+    ptzZoomOut: "Zoom Out Action",
   };
 
   if (!scenarioPanel || !scenarioContent) {
@@ -84,6 +128,8 @@
     currentActionTarget: "normal",
     configValidationErrors: [],
     isConfigDirty: false,
+    isIconPickerOpen: false,
+    uploadedIconName: "",
   };
 
   function initializeScenarioState() {
@@ -120,74 +166,91 @@
     window.alert(message);
   }
 
+  function getMaterialSymbolName(iconKey) {
+    const icons = {
+      P: "tv",
+      L: "lightbulb",
+      A: "air",
+      M: "play_circle",
+      S: "tune",
+      V: "volume_up",
+      C: "curtains",
+      D: "door_front",
+      UP: "upload",
+    };
+
+    return icons[iconKey] || "widgets";
+  }
+
+  function renderIconMarkup(iconKey, className = "") {
+    return `<span class="${className} material-symbols-outlined" aria-hidden="true">${getMaterialSymbolName(iconKey)}</span>`;
+  }
+
   function getEmptyButtonConfig(button) {
+    const templateId = button.buttonTemplateType || "custom-1x1";
+    const storedBindings = button.config?.actionBindings || {};
+    const actionBindings = {};
+
+    getTemplateActionTargets(templateId).forEach((targetKey) => {
+      actionBindings[targetKey] = Array.isArray(storedBindings[targetKey]) ? storedBindings[targetKey].map((item) => ({ ...item })) : [];
+    });
+
     return {
       buttonId: button.id,
-      icon: button.icon || "B",
+      templateId,
+      icon: button.icon || getTemplateDefinition(templateId).icon || "P",
       label: button.label || "",
       mode: button.executionMode || "Normal",
-      normalActions: Array.isArray(button.config?.normalActions) ? button.config.normalActions.map((item) => ({ ...item })) : [],
-      toggleOnActions: Array.isArray(button.config?.toggleOnActions) ? button.config.toggleOnActions.map((item) => ({ ...item })) : [],
-      toggleOffActions: Array.isArray(button.config?.toggleOffActions) ? button.config.toggleOffActions.map((item) => ({ ...item })) : [],
-      repeatStartActions: Array.isArray(button.config?.repeatStartActions) ? button.config.repeatStartActions.map((item) => ({ ...item })) : [],
-      repeatLoopActions: Array.isArray(button.config?.repeatLoopActions) ? button.config.repeatLoopActions.map((item) => ({ ...item })) : [],
-      repeatStopActions: Array.isArray(button.config?.repeatStopActions) ? button.config.repeatStopActions.map((item) => ({ ...item })) : [],
+      actionBindings,
       repeatInterval: String(button.config?.repeatInterval || "1000"),
+      previewState: { ...(button.previewState || getDefaultPreviewState(templateId)) },
+      mockControlState: { ...(button.mockControlState || getDefaultMockControlState(templateId)) },
     };
   }
 
   function getActionListByTarget(config, targetKey) {
-    const map = {
-      normal: "normalActions",
-      toggleOn: "toggleOnActions",
-      toggleOff: "toggleOffActions",
-      repeatStart: "repeatStartActions",
-      repeatLoop: "repeatLoopActions",
-      repeatStop: "repeatStopActions",
-    };
-
-    return config[map[targetKey]] || [];
+    return config.actionBindings?.[targetKey] || [];
   }
 
   function setActionListByTarget(config, targetKey, nextActions) {
-    const map = {
-      normal: "normalActions",
-      toggleOn: "toggleOnActions",
-      toggleOff: "toggleOffActions",
-      repeatStart: "repeatStartActions",
-      repeatLoop: "repeatLoopActions",
-      repeatStop: "repeatStopActions",
-    };
-
-    config[map[targetKey]] = nextActions;
+    config.actionBindings[targetKey] = nextActions;
   }
 
   function validateButtonConfig(config) {
     const errors = [];
+    const templateId = config.templateId || "custom-1x1";
     const mode = config.mode || "Normal";
 
-    if (mode === "Normal" && config.normalActions.length === 0) {
-      errors.push("Normal mode requires at least one action.");
-    }
-
-    if (mode === "Toggle") {
-      if (config.toggleOnActions.length === 0) {
-        errors.push("Toggle mode requires at least one ON action.");
+    if (templateId === "custom-1x1") {
+      if (mode === "Normal" && getActionListByTarget(config, "normal").length === 0) {
+        errors.push("Normal mode requires at least one action.");
       }
 
-      if (config.toggleOffActions.length === 0) {
-        errors.push("Toggle mode requires at least one OFF action.");
-      }
-    }
+      if (mode === "Toggle") {
+        if (getActionListByTarget(config, "toggleOn").length === 0) {
+          errors.push("Toggle mode requires at least one ON action.");
+        }
 
-    if (mode === "Repeat") {
-      if (config.repeatLoopActions.length === 0) {
-        errors.push("Repeat mode requires at least one Repeat action.");
+        if (getActionListByTarget(config, "toggleOff").length === 0) {
+          errors.push("Toggle mode requires at least one OFF action.");
+        }
       }
 
-      if (!config.repeatInterval || Number(config.repeatInterval) <= 0 || Number.isNaN(Number(config.repeatInterval))) {
-        errors.push("Repeat mode requires a valid repeat interval.");
+      if (mode === "Repeat") {
+        if (getActionListByTarget(config, "repeatLoop").length === 0) {
+          errors.push("Repeat mode requires at least one Repeat action.");
+        }
+
+        if (!config.repeatInterval || Number(config.repeatInterval) <= 0 || Number.isNaN(Number(config.repeatInterval))) {
+          errors.push("Repeat mode requires a valid repeat interval.");
+        }
       }
+    } else {
+      getTemplateActionTargets(templateId).forEach((targetKey) => {
+        if (getActionListByTarget(config, targetKey).length === 0) {
+          errors.push(`${actionTargetLabels[targetKey]} is required.`);
+        }
+      });
     }
 
     return {
@@ -218,14 +281,88 @@
   }
 
   function getButtonCatalogItem(size) {
-    return buttonCatalog.find((button) => button.size === size) || buttonCatalog[0];
+    return buttonCatalog.find((button) => button.id === size || button.size === size) || buttonCatalog[0];
+  }
+
+  function getTemplateDefinition(templateId) {
+    return buttonCatalog.find((button) => button.id === templateId) || buttonCatalog[0];
+  }
+
+  function getDefaultPreviewState(templateId) {
+    const defaults = {
+      "custom-1x1": {},
+      "media-player-1x1": { volume: 62, playback: "Play" },
+      "lighting-onoff-1x1": { power: true },
+      "curtain-control-1x1": { curtainState: "Stop" },
+      "volume-control-1x1": { volume: 54, muted: false },
+      "door-control-1x1": { locked: true },
+      "fan-control-1x1": { speed: 2, powered: true },
+      "dimmer-vertical-1x2": { selectedDimmerTarget: "brightness", level: 72, power: true },
+      "dimmer-horizontal-2x1": { selectedDimmerTarget: "brightness", level: 68, power: true },
+      "thermostat-2x2": { temperature: 22, mode: "Cool", power: true },
+      "ptz-camera-2x2": { zoom: 2, power: true },
+    };
+
+    return { ...(defaults[templateId] || {}) };
+  }
+
+  function getDefaultMockControlState(templateId) {
+    const defaults = {
+      "custom-1x1": { power: true },
+      "media-player-1x1": { active: true },
+      "lighting-onoff-1x1": { power: true },
+      "curtain-control-1x1": { active: true },
+      "volume-control-1x1": { active: true },
+      "door-control-1x1": { active: true },
+      "fan-control-1x1": { power: true },
+      "dimmer-vertical-1x2": { power: true },
+      "dimmer-horizontal-2x1": { power: true },
+      "thermostat-2x2": { power: true },
+      "ptz-camera-2x2": { power: true },
+    };
+
+    return { ...(defaults[templateId] || {}) };
+  }
+
+  function getTemplateActionTargets(templateId) {
+    const targetMap = {
+      "custom-1x1": ["normal"],
+      "media-player-1x1": ["mediaPrevious", "mediaPlayPause", "mediaNext", "mediaVolume"],
+      "lighting-onoff-1x1": ["lightOn", "lightOff"],
+      "curtain-control-1x1": ["curtainOpen", "curtainStop", "curtainClose"],
+      "volume-control-1x1": ["volumeMute", "volumeAdjust"],
+      "door-control-1x1": ["doorLock", "doorUnlock"],
+      "fan-control-1x1": ["fanPower", "fanSpeed1", "fanSpeed2", "fanSpeed3"],
+      "dimmer-vertical-1x2": ["dimmerPower", "dimmerBrightness", "dimmerColorTemp"],
+      "dimmer-horizontal-2x1": ["dimmerPower", "dimmerBrightness", "dimmerColorTemp"],
+      "thermostat-2x2": [
+        "thermostatPower",
+        "thermostatTempUp",
+        "thermostatTempDown",
+        "thermostatModeCool",
+        "thermostatModeHeat",
+        "thermostatModeFan",
+        "thermostatModeAuto",
+      ],
+      "ptz-camera-2x2": ["ptzPower", "ptzUp", "ptzDown", "ptzLeft", "ptzRight", "ptzZoomIn", "ptzZoomOut"],
+    };
+
+    return targetMap[templateId] || ["normal"];
   }
 
   function getButtonSpan(size) {
-    const [rows, cols] = String(size || "1x1")
-      .split("x")
-      .map((value) => Math.max(1, Number(value) || 1));
+    const catalogMatch = getButtonCatalogItem(size);
+    const normalized = String(catalogMatch?.size || size || "1x1");
 
+    if (normalized === "1x2") {
+      return { rows: 2, cols: 1 };
+    }
+
+    if (normalized === "2x1") {
+      return { rows: 1, cols: 2 };
+    }
+
+    const [rows, cols] = normalized.split("x").map((value) => Math.max(1, Number(value) || 1));
     return { rows, cols };
   }
 
@@ -301,7 +438,7 @@
   }
 
   function createButtonInstance(position) {
-    const buttonTemplate = getButtonCatalogItem(scenarioState.dragState.type || "1x1");
+    const buttonTemplate = getTemplateDefinition(scenarioState.dragState.type || "custom-1x1");
 
     scenarioState.buttonCounter += 1;
 
@@ -310,8 +447,13 @@
       page: scenarioState.selectedPage,
       position,
       size: buttonTemplate.size,
-      icon: buttonTemplate.size,
-      label: `${buttonTemplate.label.replace(" Button", "")} ${scenarioState.buttonCounter}`,
+      buttonTemplateType: buttonTemplate.id,
+      buttonCategory: buttonTemplate.category,
+      buttonSize: buttonTemplate.size,
+      icon: buttonTemplate.icon,
+      label: buttonTemplate.label,
+      previewState: getDefaultPreviewState(buttonTemplate.id),
+      mockControlState: getDefaultMockControlState(buttonTemplate.id),
       isValid: false,
     };
   }
@@ -565,14 +707,16 @@
     targetButton.label = scenarioState.currentButtonConfig.label || targetButton.label || "Button";
     targetButton.executionMode = scenarioState.currentButtonConfig.mode;
     targetButton.config = {
-      normalActions: scenarioState.currentButtonConfig.normalActions.map((item) => ({ ...item })),
-      toggleOnActions: scenarioState.currentButtonConfig.toggleOnActions.map((item) => ({ ...item })),
-      toggleOffActions: scenarioState.currentButtonConfig.toggleOffActions.map((item) => ({ ...item })),
-      repeatStartActions: scenarioState.currentButtonConfig.repeatStartActions.map((item) => ({ ...item })),
-      repeatLoopActions: scenarioState.currentButtonConfig.repeatLoopActions.map((item) => ({ ...item })),
-      repeatStopActions: scenarioState.currentButtonConfig.repeatStopActions.map((item) => ({ ...item })),
+      actionBindings: Object.fromEntries(
+        Object.entries(scenarioState.currentButtonConfig.actionBindings || {}).map(([key, actions]) => [
+          key,
+          actions.map((item) => ({ ...item })),
+        ])
+      ),
       repeatInterval: scenarioState.currentButtonConfig.repeatInterval,
     };
+    targetButton.previewState = { ...scenarioState.currentButtonConfig.previewState };
+    targetButton.mockControlState = { ...scenarioState.currentButtonConfig.mockControlState };
     targetButton.isValid = validation.isValid;
     markDirty();
     scenarioState.isConfigDirty = false;
@@ -596,6 +740,28 @@
     scenarioState.pickerSelectedId = "";
     scenarioState.pickerSearch = "";
     closeModal(actionPickerModal);
+  }
+
+  function openIconPicker() {
+    scenarioState.isIconPickerOpen = true;
+    renderIconPickerModal();
+    openModal(iconPickerModal);
+  }
+
+  function closeIconPicker() {
+    scenarioState.isIconPickerOpen = false;
+    closeModal(iconPickerModal);
+  }
+
+  function applyConfigIcon(iconValue) {
+    if (!scenarioState.currentButtonConfig) {
+      return;
+    }
+
+    scenarioState.currentButtonConfig.icon = iconValue || "B";
+    scenarioState.isConfigDirty = true;
+    closeIconPicker();
+    renderButtonConfigModal();
   }
 
   function confirmActionPickerSelection() {
@@ -691,9 +857,16 @@
                 type="button"
                 data-scenario-layout="${layout.id}"
               >
-                <div>
+                <div class="scenario-layout-card__copy">
                   <strong>${layout.label}</strong>
                   <span>${layout.capacity} slots</span>
+                </div>
+                <div
+                  class="scenario-layout-card__preview"
+                  style="--layout-cols:${layout.cols}; --layout-rows:${layout.rows};"
+                  aria-hidden="true"
+                >
+                  ${Array.from({ length: layout.capacity }, () => '<span class="scenario-layout-card__slot"></span>').join("")}
                 </div>
                 <span class="scenario-resource-item__meta">${layout.rows} x ${layout.cols}</span>
               </button>
@@ -705,31 +878,51 @@
   }
 
   function renderButtonTab() {
+    const groupedMarkup = templateCategoryOrder
+      .map((category) => {
+        const categoryItems = buttonCatalog.filter((button) => button.category === category);
+
+        return `
+          <section class="scenario-library-group">
+            <div class="scenario-library-group__header">
+              <strong>${category}</strong>
+            </div>
+            <div class="scenario-resource-list" role="list" aria-label="${category} templates">
+              ${categoryItems
+                .map(
+                  (button) => `
+                    <div
+                      class="scenario-button-library-item scenario-button-library-item--${button.size} ${button.enabled ? "" : "is-disabled"}"
+                      ${button.enabled ? `draggable="true" data-button-template="${button.id}"` : ""}
+                    >
+                      <div class="scenario-button-library-item__preview">
+                        <div class="pad-button scenario-pad-button scenario-button-library-item__preview-button scenario-button-library-item__preview-button--${button.size} scenario-pad-button--${button.size}" aria-hidden="true">
+                          ${renderTemplateBody(
+                            {
+                              buttonTemplateType: button.id,
+                              icon: button.icon,
+                              label: button.label,
+                              previewState: getDefaultPreviewState(button.id),
+                            },
+                            "library"
+                          )}
+                        </div>
+                      </div>
+                      <div class="scenario-button-library-item__copy">
+                        <strong>${button.label}</strong>
+                      </div>
+                    </div>
+                  `
+                )
+                .join("")}
+            </div>
+          </section>
+        `;
+      })
+      .join("");
+
     return `
-      <div class="scenario-resource-list" role="list" aria-label="Pad button list">
-        ${buttonCatalog
-          .map(
-            (button) => `
-              <div
-                class="scenario-button-library-item scenario-button-library-item--${button.size} ${button.enabled ? "" : "is-disabled"}"
-                ${button.enabled ? `draggable="true" data-button-template="${button.size}"` : ""}
-              >
-                <div class="scenario-button-library-item__preview">
-                  <div class="pad-button scenario-button-library-item__preview-button scenario-button-library-item__preview-button--${button.size}">
-                    <span class="pad-button__status"></span>
-                    <span class="pad-button__icon">${button.size}</span>
-                    <span class="pad-button__name">${button.label.replace(" Button", "")}</span>
-                  </div>
-                </div>
-                <div class="scenario-button-library-item__copy">
-                  <strong>${button.label}</strong>
-                  <span>${button.note}</span>
-                </div>
-              </div>
-            `
-          )
-          .join("")}
-      </div>
+      <div class="scenario-library-groups">${groupedMarkup}</div>
     `;
   }
 
@@ -785,8 +978,7 @@
           style="grid-row:${row + 1} / span ${span.rows}; grid-column:${col + 1} / span ${span.cols};"
         >
           <span class="pad-button__status ${highlightInvalid || isInvalid ? "is-alert" : ""}"></span>
-          <span class="pad-button__icon scenario-pad-button__icon" aria-hidden="true">${placedButton.icon || "B"}</span>
-          <span class="pad-button__name scenario-pad-button__name">${escapeValue(placedButton.label)}</span>
+          ${renderTemplateBody(placedButton, "pad")}
           ${isInvalid ? '<span class="scenario-pad-button__badge">Not Configured</span>' : ""}
         </button>
       `;
@@ -919,18 +1111,11 @@
                       <div class="pad-screen__topbar">
                         <div class="pad-screen__site">
                           <span class="pad-screen__site-name">Scenario Pad</span>
-                          <span class="pad-screen__site-status">${scenarioState.isDirty ? "Draft" : "Synced"}</span>
                         </div>
                         <div class="pad-screen__indicators">
-                          <span class="pad-indicator is-online"></span>
-                          <span class="pad-indicator ${derivedState.canSync ? "" : "is-sync"}"></span>
+                          <span class="material-symbols-outlined pad-topbar__icon" aria-hidden="true">wifi</span>
                           <span class="pad-time">11:28</span>
                         </div>
-                      </div>
-
-                      <div class="pad-screen__title">
-                        <strong>Scenario Page ${scenarioState.selectedPage + 1}</strong>
-                        <span>Drag scenario buttons into available slots</span>
                       </div>
 
                       <div class="pad-pages__viewport scenario-pages__viewport" id="scenarioPagesViewport">
@@ -953,7 +1138,8 @@
                                   type="button"
                                   data-scenario-page-dot="${index}"
                                   aria-label="Scenario page ${index + 1}"
-                                ></button>
+                                >
+                                </button>
                               `
                             )
                             .join("")}
@@ -963,15 +1149,6 @@
                   </div>
                 </div>
               </div>
-            </div>
-
-            <div class="scenario-preview-status-note">
-              ${derivedState.hasInvalidButtons ? "Contains invalid buttons that must be configured before sync." : "Swipe left or right on the pad preview to change pages."}
-            </div>
-
-            <div class="scenario-preview-panel__note">
-              <strong>Placeholder Behavior</strong>
-              <p>Click a placed button to open its future configuration workflow. Full button configuration and command or macro binding will be added next.</p>
             </div>
           </section>
         </div>
@@ -1028,6 +1205,227 @@
     `;
   }
 
+  function renderSmallFeatureIcon(iconKey, className = "") {
+    return renderIconMarkup(iconKey, `scenario-template__feature-icon ${className}`);
+  }
+
+  function renderControlChip(label, className = "") {
+    return `<span class="scenario-template__chip ${className}">${escapeValue(label)}</span>`;
+  }
+
+  function getControlSymbolName(controlKey) {
+    const icons = {
+      previous: "skip_previous",
+      play: "play_arrow",
+      pause: "pause",
+      next: "skip_next",
+      powerOn: "power_settings_new",
+      powerOff: "power_off",
+      open: "unfold_more",
+      stop: "stop",
+      close: "close_fullscreen",
+      lock: "lock",
+      unlock: "lock_open",
+      speed1: "looks_one",
+      speed2: "looks_two",
+      speed3: "looks_3",
+      brightness: "light_mode",
+      colorTemp: "wb_incandescent",
+      up: "keyboard_arrow_up",
+      down: "keyboard_arrow_down",
+      left: "keyboard_arrow_left",
+      right: "keyboard_arrow_right",
+      zoomIn: "zoom_in",
+      zoomOut: "zoom_out",
+      tempUp: "add",
+      tempDown: "remove",
+    };
+
+    return icons[controlKey] || "radio_button_checked";
+  }
+
+  function renderControlIconChip(controlKey, className = "", label = "") {
+    return `
+      <span class="scenario-template__chip scenario-template__chip--icon ${className}" aria-label="${escapeValue(label || controlKey)}" title="${escapeValue(label || controlKey)}">
+        <span class="material-symbols-outlined" aria-hidden="true">${getControlSymbolName(controlKey)}</span>
+      </span>
+    `;
+  }
+
+  function renderTemplateBody(buttonLike, context = "pad") {
+    const templateId = buttonLike.buttonTemplateType || buttonLike.templateId || "custom-1x1";
+    const label = buttonLike.label || getTemplateDefinition(templateId).label;
+    const icon = buttonLike.icon || getTemplateDefinition(templateId).icon || "P";
+    const previewState = buttonLike.previewState || {};
+    const isCustom = templateId === "custom-1x1";
+
+    if (templateId === "custom-1x1") {
+      return `
+        <div class="scenario-template scenario-template--custom">
+          ${context === "config" ? renderSmallFeatureIcon(icon, "is-large is-custom-trigger") : renderIconMarkup(icon, "pad-button__icon scenario-template__main-icon")}
+          <span class="pad-button__name scenario-template__label">${escapeValue(label)}</span>
+        </div>
+      `;
+    }
+
+    if (templateId === "media-player-1x1") {
+      return `
+        <div class="scenario-template scenario-template--media-player">
+          ${renderSmallFeatureIcon("M", "is-top-left")}
+          <div class="scenario-template__transport">
+            ${renderControlIconChip("previous", "", "Previous")}
+            ${renderControlIconChip(previewState.playback === "Pause" ? "pause" : "play", "is-active", previewState.playback || "Play")}
+            ${renderControlIconChip("next", "", "Next")}
+          </div>
+          <div class="scenario-template__slider">
+            <span style="width:${previewState.volume || 62}%"></span>
+          </div>
+        </div>
+      `;
+    }
+
+    if (templateId === "lighting-onoff-1x1") {
+      return `
+        <div class="scenario-template scenario-template--dual">
+          ${renderSmallFeatureIcon("L", "is-top-left")}
+          <div class="scenario-template__dual-actions">
+            ${renderControlIconChip("powerOn", "is-active", "On")}
+            ${renderControlIconChip("powerOff", "", "Off")}
+          </div>
+        </div>
+      `;
+    }
+
+    if (templateId === "curtain-control-1x1") {
+      return `
+        <div class="scenario-template scenario-template--triple">
+          ${renderSmallFeatureIcon("C", "is-top-left")}
+          <div class="scenario-template__triple-actions">
+            ${renderControlIconChip("open", "", "Open")}
+            ${renderControlIconChip("stop", "is-active", "Stop")}
+            ${renderControlIconChip("close", "", "Close")}
+          </div>
+        </div>
+      `;
+    }
+
+    if (templateId === "volume-control-1x1") {
+      return `
+        <div class="scenario-template scenario-template--volume">
+          ${renderSmallFeatureIcon("V", "is-top-left")}
+          ${renderIconMarkup("V", "scenario-template__mute")}
+          <div class="scenario-template__slider">
+            <span style="width:${previewState.volume || 54}%"></span>
+          </div>
+        </div>
+      `;
+    }
+
+    if (templateId === "door-control-1x1") {
+      return `
+        <div class="scenario-template scenario-template--dual">
+          ${renderSmallFeatureIcon("D", "is-top-left")}
+          <div class="scenario-template__dual-actions">
+            ${renderControlIconChip("lock", previewState.locked ? "is-active" : "", "Lock")}
+            ${renderControlIconChip("unlock", !previewState.locked ? "is-active" : "", "Unlock")}
+          </div>
+        </div>
+      `;
+    }
+
+    if (templateId === "fan-control-1x1") {
+      return `
+        <div class="scenario-template scenario-template--fan">
+          ${renderSmallFeatureIcon("A", "is-top-left")}
+          ${renderSmallFeatureIcon("P", "is-top-right")}
+          <div class="scenario-template__speed-stack">
+            ${renderControlIconChip("speed1", previewState.speed === 1 ? "is-active" : "", "Speed 1")}
+            ${renderControlIconChip("speed2", previewState.speed === 2 ? "is-active" : "", "Speed 2")}
+            ${renderControlIconChip("speed3", previewState.speed === 3 ? "is-active" : "", "Speed 3")}
+          </div>
+        </div>
+      `;
+    }
+
+    if (templateId === "dimmer-vertical-1x2") {
+      return `
+        <div class="scenario-template scenario-template--dimmer-vertical">
+          <div class="scenario-template__corner-row">
+            ${renderSmallFeatureIcon("L", "is-top-left")}
+            ${renderSmallFeatureIcon("P", "is-top-right")}
+          </div>
+          <div class="scenario-template__vertical-slider"><span style="height:${previewState.level || 72}%"></span></div>
+          <div class="scenario-template__bottom-icons">
+            ${renderControlIconChip("brightness", previewState.selectedDimmerTarget === "brightness" ? "is-active" : "", "Brightness")}
+            ${renderControlIconChip("colorTemp", previewState.selectedDimmerTarget === "colorTemp" ? "is-active" : "", "Color Temperature")}
+          </div>
+        </div>
+      `;
+    }
+
+    if (templateId === "dimmer-horizontal-2x1") {
+      return `
+        <div class="scenario-template scenario-template--dimmer-horizontal">
+          <div class="scenario-template__corner-row">
+            ${renderSmallFeatureIcon("L", "is-top-left")}
+            ${renderSmallFeatureIcon("P", "is-top-right")}
+          </div>
+          <div class="scenario-template__horizontal-layout">
+            <div class="scenario-template__stacked-icons">
+              ${renderControlIconChip("brightness", previewState.selectedDimmerTarget === "brightness" ? "is-active" : "", "Brightness")}
+              ${renderControlIconChip("colorTemp", previewState.selectedDimmerTarget === "colorTemp" ? "is-active" : "", "Color Temperature")}
+            </div>
+            <div class="scenario-template__slider scenario-template__slider--wide">
+              <span style="width:${previewState.level || 68}%"></span>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    if (templateId === "thermostat-2x2") {
+      return `
+        <div class="scenario-template scenario-template--thermostat">
+          <div class="scenario-template__corner-row">
+            ${renderSmallFeatureIcon("A", "is-top-left")}
+            ${renderSmallFeatureIcon("P", "is-top-right")}
+          </div>
+          <div class="scenario-template__thermostat-core">
+            ${renderControlIconChip("tempUp", "", "Increase Temperature")}
+            <strong>${escapeValue(String(previewState.temperature || 22))}°</strong>
+            ${renderControlIconChip("tempDown", "", "Decrease Temperature")}
+          </div>
+          <div class="scenario-template__mode-row">
+            ${["Cool", "Heat", "Fan", "Auto"].map((mode) => renderControlChip(mode, previewState.mode === mode ? "is-active" : "")).join("")}
+          </div>
+        </div>
+      `;
+    }
+
+    return `
+      <div class="scenario-template scenario-template--ptz">
+        <div class="scenario-template__corner-row">
+          ${renderSmallFeatureIcon("P", "is-top-left")}
+          ${renderSmallFeatureIcon("D", "is-top-right")}
+        </div>
+        <div class="scenario-template__ptz-grid">
+          <span></span>
+          ${renderControlIconChip("up", "", "Up")}
+          <span></span>
+          ${renderControlIconChip("left", "", "Left")}
+          ${renderControlIconChip("right", "", "Right")}
+          <span></span>
+          ${renderControlIconChip("down", "", "Down")}
+          <span></span>
+        </div>
+        <div class="scenario-template__zoom-row">
+          ${renderControlIconChip("zoomIn", "", "Zoom In")}
+          ${renderControlIconChip("zoomOut", "", "Zoom Out")}
+        </div>
+      </div>
+    `;
+  }
+
   function renderActionSection(targetKey, heading, required = false, extraMarkup = "") {
     return `
       <section class="settings-section scenario-config-section">
@@ -1048,11 +1446,13 @@
     }
 
     const config = scenarioState.currentButtonConfig;
+    const templateId = config.templateId || "custom-1x1";
     const validation = validateButtonConfig(config);
     scenarioState.configValidationErrors = scenarioState.configValidationErrors.length
       ? scenarioState.configValidationErrors
       : validation.errors;
 
+    if (templateId === "custom-1x1") {
     if (config.mode === "Toggle") {
       return `
         ${renderActionSection("toggleOn", "ON Actions", true)}
@@ -1078,7 +1478,169 @@
       `;
     }
 
-    return renderActionSection("normal", "Action Table", true);
+      return renderActionSection("normal", "Action Table", true);
+    }
+
+    const templateSections = {
+      "media-player-1x1": [
+        { key: "mediaPrevious", title: "Previous Action", required: true },
+        { key: "mediaPlayPause", title: "Play / Pause Action", required: true },
+        { key: "mediaNext", title: "Next Action", required: true },
+        { key: "mediaVolume", title: "Volume Action", required: true },
+      ],
+      "lighting-onoff-1x1": [
+        { key: "lightOn", title: "ON Action", required: true },
+        { key: "lightOff", title: "OFF Action", required: true },
+      ],
+      "curtain-control-1x1": [
+        { key: "curtainOpen", title: "Open Action", required: true },
+        { key: "curtainStop", title: "Stop Action", required: true },
+        { key: "curtainClose", title: "Close Action", required: true },
+      ],
+      "volume-control-1x1": [
+        { key: "volumeMute", title: "Mute Action", required: true },
+        { key: "volumeAdjust", title: "Volume Control Action", required: true },
+      ],
+      "door-control-1x1": [
+        { key: "doorLock", title: "Lock Action", required: true },
+        { key: "doorUnlock", title: "Unlock Action", required: true },
+      ],
+      "fan-control-1x1": [
+        { key: "fanPower", title: "Power Action", required: true },
+        { key: "fanSpeed1", title: "Speed 1 Action", required: true },
+        { key: "fanSpeed2", title: "Speed 2 Action", required: true },
+        { key: "fanSpeed3", title: "Speed 3 Action", required: true },
+      ],
+      "dimmer-vertical-1x2": [
+        { key: "dimmerPower", title: "Power Action", required: true },
+        { key: "dimmerBrightness", title: "Brightness Control Action", required: true },
+        { key: "dimmerColorTemp", title: "Color Temperature Control Action", required: true },
+      ],
+      "dimmer-horizontal-2x1": [
+        { key: "dimmerPower", title: "Power Action", required: true },
+        { key: "dimmerBrightness", title: "Brightness Control Action", required: true },
+        { key: "dimmerColorTemp", title: "Color Temperature Control Action", required: true },
+      ],
+      "thermostat-2x2": [
+        { key: "thermostatPower", title: "Power Action", required: true },
+        { key: "thermostatTempUp", title: "Temp + Action", required: true },
+        { key: "thermostatTempDown", title: "Temp - Action", required: true },
+        { key: "thermostatModeCool", title: "Cool Action", required: true },
+        { key: "thermostatModeHeat", title: "Heat Action", required: true },
+        { key: "thermostatModeFan", title: "Fan Action", required: true },
+        { key: "thermostatModeAuto", title: "Auto Action", required: true },
+      ],
+      "ptz-camera-2x2": [
+        { key: "ptzPower", title: "Power Action", required: true },
+        { key: "ptzUp", title: "Up Action", required: true },
+        { key: "ptzDown", title: "Down Action", required: true },
+        { key: "ptzLeft", title: "Left Action", required: true },
+        { key: "ptzRight", title: "Right Action", required: true },
+        { key: "ptzZoomIn", title: "Zoom In Action", required: true },
+        { key: "ptzZoomOut", title: "Zoom Out Action", required: true },
+      ],
+    };
+
+    const extraControls =
+      templateId === "dimmer-vertical-1x2" || templateId === "dimmer-horizontal-2x1"
+        ? `
+          <section class="settings-section scenario-config-section">
+            <h3>Default Selected Control</h3>
+            <div class="scenario-mode-switch">
+              ${["brightness", "colorTemp"]
+                .map(
+                  (target) => `
+                    <button
+                      class="scenario-mode-option ${config.previewState.selectedDimmerTarget === target ? "is-selected" : ""}"
+                      type="button"
+                      data-config-preview-target="${target}"
+                    >
+                      ${target === "brightness" ? "Brightness" : "Color Temperature"}
+                    </button>
+                  `
+                )
+                .join("")}
+            </div>
+          </section>
+        `
+        : templateId === "thermostat-2x2"
+          ? `
+            <section class="settings-section scenario-config-section">
+              <h3>Mock Preview State</h3>
+              <div class="scenario-template-settings-grid">
+                <label class="form-field">
+                  <span>Temperature</span>
+                  <input id="scenarioTemplateTempInput" type="number" value="${escapeValue(String(config.previewState.temperature || 22))}" />
+                </label>
+                <label class="form-field">
+                  <span>Default Mode</span>
+                  <select id="scenarioTemplateModeSelect">
+                    ${["Cool", "Heat", "Fan", "Auto"]
+                      .map((mode) => `<option value="${mode}" ${config.previewState.mode === mode ? "selected" : ""}>${mode}</option>`)
+                      .join("")}
+                  </select>
+                </label>
+              </div>
+            </section>
+          `
+          : "";
+
+    return `
+      ${extraControls}
+      ${templateSections[templateId].map((section) => renderActionSection(section.key, section.title, section.required)).join("")}
+    `;
+  }
+
+  function renderIconPickerModal() {
+    if (!iconPickerContent) {
+      return;
+    }
+
+    iconPickerContent.innerHTML = `
+      <div class="modal-window__header scenario-modal-header">
+        <div>
+          <h2 id="scenarioIconPickerTitle">Select Icon</h2>
+        </div>
+        <div class="scenario-modal-header__actions">
+          <button class="modal-btn modal-btn--ghost" type="button" id="scenarioIconPickerCloseButton">Close</button>
+        </div>
+      </div>
+
+      <div class="modal-form">
+        <section class="settings-section scenario-config-section">
+          <h3>Preset Icons</h3>
+          <div class="scenario-icon-grid scenario-icon-grid--picker">
+            ${iconCatalog
+              .map(
+                (icon) => `
+                  <button
+                    class="scenario-icon-option ${scenarioState.currentButtonConfig?.icon === icon ? "is-selected" : ""}"
+                    type="button"
+                    data-icon-picker-value="${icon}"
+                  >
+                    ${renderIconMarkup(icon, "scenario-icon-option__graphic")}
+                  </button>
+                `
+              )
+              .join("")}
+          </div>
+        </section>
+
+        <section class="settings-section scenario-config-section">
+          <h3>Upload Icon</h3>
+          <label class="scenario-upload-field">
+            <input id="scenarioIconUploadInput" type="file" accept="image/*" />
+            <span>Choose icon file</span>
+            <small>${escapeValue(scenarioState.uploadedIconName || "No file selected")}</small>
+          </label>
+          <div class="modal-window__actions">
+            <button class="modal-btn modal-btn--primary" type="button" id="scenarioUseUploadedIconButton" ${scenarioState.uploadedIconName ? "" : "disabled"}>Use Uploaded Icon</button>
+          </div>
+        </section>
+      </div>
+    `;
+
+    bindIconPickerInteractions();
   }
 
   function renderButtonConfigModal() {
@@ -1088,6 +1650,7 @@
 
     const config = scenarioState.currentButtonConfig;
     const previewLabel = config.label || "Button Label";
+    const isCustomTemplate = config.templateId === "custom-1x1";
 
     buttonConfigContent.innerHTML = `
       <div class="modal-window__header scenario-modal-header">
@@ -1100,80 +1663,82 @@
         </div>
       </div>
 
-      <div class="modal-form scenario-config-layout">
-        <section class="settings-section scenario-config-section">
+      <div class="modal-form scenario-config-flow">
+        <section class="settings-section scenario-config-section scenario-config-section--hero">
           <h3>Preview</h3>
-          <div class="scenario-config-preview">
-            <button class="pad-button scenario-config-preview__button" type="button">
+          <div class="scenario-config-preview scenario-config-preview--hero">
+            <div class="pad-button scenario-config-preview__button scenario-config-preview__button--large">
               <span class="pad-button__status ${validateButtonConfig(config).isValid ? "is-on" : "is-alert"}"></span>
-              <span class="pad-button__icon">${escapeValue(config.icon)}</span>
-              <span class="pad-button__name">${escapeValue(previewLabel)}</span>
-            </button>
+              ${
+                isCustomTemplate
+                  ? `
+                    <button class="scenario-config-icon-trigger scenario-config-icon-trigger--inside" type="button" id="scenarioConfigIconTrigger" aria-label="Select icon">
+                      ${renderIconMarkup(config.icon, "pad-button__icon scenario-config-icon-trigger__value")}
+                    </button>
+                    <label class="scenario-config-label-field scenario-config-label-field--inside" for="scenarioConfigLabelInput">
+                      <input
+                        id="scenarioConfigLabelInput"
+                        type="text"
+                        maxlength="10"
+                        placeholder="Enter button label"
+                        value="${escapeValue(config.label)}"
+                      />
+                      <small>${escapeValue(String((config.label || "").length))}/10</small>
+                    </label>
+                  `
+                  : renderTemplateBody({
+                      buttonTemplateType: config.templateId,
+                      icon: config.icon,
+                      label: previewLabel,
+                      previewState: config.previewState,
+                    }, "config")
+              }
+            </div>
           </div>
         </section>
-
-        <section class="settings-section scenario-config-section">
-          <h3>Icon</h3>
-          <div class="scenario-icon-grid">
-            ${iconCatalog
-              .map(
-                (icon) => `
-                  <button
-                    class="scenario-icon-option ${config.icon === icon ? "is-selected" : ""}"
-                    type="button"
-                    data-config-icon="${icon}"
-                  >
-                    ${icon}
-                  </button>
-                `
-              )
-              .join("")}
-          </div>
-        </section>
-
-        <section class="settings-section scenario-config-section">
-          <h3>Label</h3>
-          <label class="form-field">
-            <span>Button Label</span>
-            <input id="scenarioConfigLabelInput" type="text" placeholder="Enter button label" value="${escapeValue(config.label)}" />
-          </label>
-        </section>
-
-        <section class="settings-section scenario-config-section">
-          <h3>Execution Mode</h3>
-          <div class="scenario-mode-switch" role="radiogroup" aria-label="Execution Mode">
-            ${["Normal", "Toggle", "Repeat"]
-              .map(
-                (mode) => `
-                  <button
-                    class="scenario-mode-option ${config.mode === mode ? "is-selected" : ""}"
-                    type="button"
-                    role="radio"
-                    aria-checked="${config.mode === mode}"
-                    data-config-mode="${mode}"
-                  >
-                    ${mode}
-                  </button>
-                `
-              )
-              .join("")}
-          </div>
-        </section>
-
-        ${renderButtonConfigBody()}
 
         ${
-          scenarioState.configValidationErrors.length
+          isCustomTemplate
             ? `
-              <section class="settings-section scenario-config-errors">
-                <h3>Validation</h3>
-                <ul>
-                  ${scenarioState.configValidationErrors.map((error) => `<li>${escapeValue(error)}</li>`).join("")}
-                </ul>
+              <section class="settings-section scenario-config-section scenario-config-section--mode">
+                <h3>Execution Mode</h3>
+                <div class="scenario-mode-switch" role="radiogroup" aria-label="Execution Mode">
+                  ${["Normal", "Toggle", "Repeat"]
+                    .map(
+                      (mode) => `
+                        <button
+                          class="scenario-mode-option ${config.mode === mode ? "is-selected" : ""}"
+                          type="button"
+                          role="radio"
+                          aria-checked="${config.mode === mode}"
+                          data-config-mode="${mode}"
+                        >
+                          ${mode}
+                        </button>
+                      `
+                    )
+                    .join("")}
+                </div>
               </section>
             `
             : ""
         }
+
+        <section class="scenario-config-actions-stack">
+          ${renderButtonConfigBody()}
+          ${
+            scenarioState.configValidationErrors.length
+              ? `
+                <section class="settings-section scenario-config-errors">
+                  <h3>Validation</h3>
+                  <ul>
+                    ${scenarioState.configValidationErrors.map((error) => `<li>${escapeValue(error)}</li>`).join("")}
+                  </ul>
+                </section>
+              `
+              : ""
+          }
+        </section>
       </div>
     `;
 
@@ -1261,17 +1826,12 @@
   function bindButtonConfigModalInteractions() {
     const labelInput = document.getElementById("scenarioConfigLabelInput");
     const repeatIntervalInput = document.getElementById("scenarioRepeatIntervalInput");
+    const tempInput = document.getElementById("scenarioTemplateTempInput");
+    const modeSelect = document.getElementById("scenarioTemplateModeSelect");
 
     document.getElementById("scenarioConfigCloseButton")?.addEventListener("click", requestCloseButtonConfig);
     document.getElementById("scenarioConfigSaveButton")?.addEventListener("click", saveButtonConfig);
-
-    buttonConfigContent.querySelectorAll("[data-config-icon]").forEach((iconButton) => {
-      iconButton.addEventListener("click", () => {
-        scenarioState.currentButtonConfig.icon = iconButton.getAttribute("data-config-icon") || "B";
-        scenarioState.isConfigDirty = true;
-        renderButtonConfigModal();
-      });
-    });
+    document.getElementById("scenarioConfigIconTrigger")?.addEventListener("click", openIconPicker);
 
     buttonConfigContent.querySelectorAll("[data-config-mode]").forEach((modeButton) => {
       modeButton.addEventListener("click", () => {
@@ -1289,6 +1849,15 @@
       });
     });
 
+    buttonConfigContent.querySelectorAll("[data-config-preview-target]").forEach((targetButton) => {
+      targetButton.addEventListener("click", () => {
+        scenarioState.currentButtonConfig.previewState.selectedDimmerTarget =
+          targetButton.getAttribute("data-config-preview-target") || "brightness";
+        scenarioState.isConfigDirty = true;
+        renderButtonConfigModal();
+      });
+    });
+
     buttonConfigContent.querySelectorAll("[data-config-delete-action]").forEach((deleteButton) => {
       deleteButton.addEventListener("click", () => {
         const [targetKey, indexText] = String(deleteButton.getAttribute("data-config-delete-action") || "").split(":");
@@ -1297,18 +1866,52 @@
     });
 
     labelInput?.addEventListener("input", () => {
-      scenarioState.currentButtonConfig.label = labelInput.value;
+      scenarioState.currentButtonConfig.label = labelInput.value.slice(0, 10);
       scenarioState.isConfigDirty = true;
       const previewName = buttonConfigContent.querySelector(".scenario-config-preview__button .pad-button__name");
+      const count = buttonConfigContent.querySelector(".scenario-config-label-field small");
 
       if (previewName) {
-        previewName.textContent = labelInput.value || "Button Label";
+        previewName.textContent = scenarioState.currentButtonConfig.label || "Button Label";
+      }
+
+      if (count) {
+        count.textContent = `${scenarioState.currentButtonConfig.label.length}/10`;
       }
     });
 
     repeatIntervalInput?.addEventListener("input", () => {
       scenarioState.currentButtonConfig.repeatInterval = repeatIntervalInput.value;
       scenarioState.isConfigDirty = true;
+    });
+
+    tempInput?.addEventListener("input", () => {
+      scenarioState.currentButtonConfig.previewState.temperature = Number(tempInput.value) || 22;
+      scenarioState.isConfigDirty = true;
+    });
+
+    modeSelect?.addEventListener("change", () => {
+      scenarioState.currentButtonConfig.previewState.mode = modeSelect.value;
+      scenarioState.isConfigDirty = true;
+    });
+  }
+
+  function bindIconPickerInteractions() {
+    document.getElementById("scenarioIconPickerCloseButton")?.addEventListener("click", closeIconPicker);
+    document.getElementById("scenarioUseUploadedIconButton")?.addEventListener("click", () => {
+      applyConfigIcon("UP");
+    });
+
+    iconPickerContent.querySelectorAll("[data-icon-picker-value]").forEach((iconButton) => {
+      iconButton.addEventListener("click", () => {
+        applyConfigIcon(iconButton.getAttribute("data-icon-picker-value") || "B");
+      });
+    });
+
+    document.getElementById("scenarioIconUploadInput")?.addEventListener("change", (event) => {
+      const file = event.target.files?.[0];
+      scenarioState.uploadedIconName = file ? file.name : "";
+      renderIconPickerModal();
     });
   }
 
@@ -1682,8 +2285,18 @@
       closeActionPicker();
     }
   });
+  iconPickerModal?.addEventListener("click", (event) => {
+    if (event.target === iconPickerModal) {
+      closeIconPicker();
+    }
+  });
   document.addEventListener("keydown", (event) => {
     if (event.key !== "Escape") {
+      return;
+    }
+
+    if (scenarioState.isIconPickerOpen) {
+      closeIconPicker();
       return;
     }
 
