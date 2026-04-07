@@ -72,6 +72,21 @@ const deviceReviewContent = document.getElementById("deviceReviewContent");
 const displayPanel = document.getElementById("displayPanel");
 const networkPanel = document.getElementById("networkPanel");
 const adminPanel = document.getElementById("adminPanel");
+const developerToolsPanel = document.getElementById("developerToolsPanel");
+const developerToolDiscoveryTab = document.getElementById("developerToolDiscoveryTab");
+const developerToolConsoleTab = document.getElementById("developerToolConsoleTab");
+const developerDiscoveryView = document.getElementById("developerDiscoveryView");
+const developerConsoleView = document.getElementById("developerConsoleView");
+const startDiscoveryButton = document.getElementById("startDiscoveryButton");
+const discoveryTableBody = document.getElementById("discoveryTableBody");
+const discoverySummary = document.getElementById("discoverySummary");
+const debugConsoleHint = document.getElementById("debugConsoleHint");
+const debugConsoleOutput = document.getElementById("debugConsoleOutput");
+const debugConsoleForm = document.getElementById("debugConsoleForm");
+const debugConsoleInput = document.getElementById("debugConsoleInput");
+const discoveryDetailModal = document.getElementById("discoveryDetailModal");
+const discoveryDetailHeader = document.getElementById("discoveryDetailHeader");
+const discoveryDetailContent = document.getElementById("discoveryDetailContent");
 const padButtons = document.querySelectorAll(".pad-button");
 const lightBrightnessSlider = document.getElementById("lightBrightnessSlider");
 const padPagesViewport = document.getElementById("padPagesViewport");
@@ -764,7 +779,172 @@ const state = {
     firmwareFileName: "",
     pendingAction: "",
   },
+  developerTools: {
+    activeView: "discovery",
+    isScanning: false,
+    hasScanned: false,
+    results: [],
+    selectedDiscoveryId: "",
+    consoleInitialized: false,
+    consoleLines: [],
+  },
 };
+
+const discoveryMockDevices = [
+  {
+    id: "DISC-001",
+    modelName: "Panasonic PT-RZ990",
+    description: "4K laser projector for the main meeting room display wall.",
+    ip: "192.168.10.101",
+    mac: "00:1A:79:4B:10:21",
+    type: "Projector",
+    vendor: "Panasonic",
+    protocol: "TCP/IP",
+    firmware: "v3.2.1",
+    location: "Meeting Room A",
+    serialNumber: "PT-RZ990-A1024",
+    notes: "Primary presentation projector with network standby enabled.",
+  },
+  {
+    id: "DISC-002",
+    modelName: "Sony FW-85BZ40L",
+    description: "Commercial signage display used for lobby welcome content.",
+    ip: "192.168.10.102",
+    mac: "00:25:9C:1F:44:08",
+    type: "Display",
+    vendor: "Sony",
+    protocol: "HTTP",
+    firmware: "v1.8.5",
+    location: "Lobby",
+    serialNumber: "FW85BZ40L-3308",
+    notes: "HTTP control API available on the enterprise AV VLAN.",
+  },
+  {
+    id: "DISC-003",
+    modelName: "QSC Core 110f",
+    description: "Audio DSP handling room mixing, mute groups, and routing.",
+    ip: "192.168.10.103",
+    mac: "38:EA:A7:90:12:55",
+    type: "Audio DSP",
+    vendor: "QSC",
+    protocol: "Telnet",
+    firmware: "v9.8.0",
+    location: "AV Rack 01",
+    serialNumber: "CORE110F-99014",
+    notes: "Telnet control enabled; named controls mapped for room presets.",
+  },
+  {
+    id: "DISC-004",
+    modelName: "Extron DTP CrossPoint 108 4K",
+    description: "Matrix switcher for presentation routing and source switching.",
+    ip: "192.168.10.104",
+    mac: "00:05:A6:7D:61:92",
+    type: "Matrix Switcher",
+    vendor: "Extron",
+    protocol: "RS-232 / TCP",
+    firmware: "v2.14",
+    location: "AV Rack 01",
+    serialNumber: "DTPX1084K-1287",
+    notes: "Detected through LAN management interface with mirrored serial control.",
+  },
+  {
+    id: "DISC-005",
+    modelName: "Lumens VC-A71P",
+    description: "PTZ camera for presenter tracking and video conference presets.",
+    ip: "192.168.10.105",
+    mac: "84:18:3A:72:19:C0",
+    type: "PTZ Camera",
+    vendor: "Lumens",
+    protocol: "Telnet",
+    firmware: "v5.0.3",
+    location: "Meeting Room A",
+    serialNumber: "VCA71P-22051",
+    notes: "Camera responds to preset recall and VISCA-over-IP commands.",
+  },
+  {
+    id: "DISC-006",
+    modelName: "Lutron QSX Processor",
+    description: "Lighting processor controlling dimming and scene recall.",
+    ip: "192.168.10.106",
+    mac: "B8:27:EB:90:33:6A",
+    type: "Lighting Controller",
+    vendor: "Lutron",
+    protocol: "Telnet",
+    firmware: "v22.4",
+    location: "Electrical Closet",
+    serialNumber: "QSX-44783",
+    notes: "Room lighting scenes are available through integration session login.",
+  },
+  {
+    id: "DISC-007",
+    modelName: "Biamp TesiraFORTE X 400",
+    description: "Conference audio processor for AEC, USB bridge, and gain control.",
+    ip: "192.168.10.107",
+    mac: "44:D9:E7:53:80:10",
+    type: "Conference DSP",
+    vendor: "Biamp",
+    protocol: "TCP/IP",
+    firmware: "v4.3.2",
+    location: "Conference Room B",
+    serialNumber: "TFX400-88710",
+    notes: "Supports command subscription for feedback monitoring.",
+  },
+  {
+    id: "DISC-008",
+    modelName: "Shure MXA920",
+    description: "Ceiling array microphone discovered on Dante control network.",
+    ip: "192.168.10.108",
+    mac: "24:A4:3C:61:92:71",
+    type: "Microphone Array",
+    vendor: "Shure",
+    protocol: "HTTP / Socket",
+    firmware: "v6.1.0",
+    location: "Conference Room B",
+    serialNumber: "MXA920-11731",
+    notes: "Beam preset and mute telemetry endpoints are available.",
+  },
+  {
+    id: "DISC-009",
+    modelName: "Samsung QB75C",
+    description: "Breakout-area display for room booking and status signage.",
+    ip: "192.168.10.109",
+    mac: "9C:2E:7A:11:40:2B",
+    type: "Display",
+    vendor: "Samsung",
+    protocol: "HTTP",
+    firmware: "v1010.4",
+    location: "Breakout Zone",
+    serialNumber: "QB75C-55220",
+    notes: "MagicINFO service reachable and web control responds successfully.",
+  },
+  {
+    id: "DISC-010",
+    modelName: "Yealink RoomPanel Plus",
+    description: "Scheduling panel mounted outside the executive boardroom.",
+    ip: "192.168.10.110",
+    mac: "10:62:E5:7B:90:5D",
+    type: "Scheduling Panel",
+    vendor: "Yealink",
+    protocol: "HTTP",
+    firmware: "v1.4.9",
+    location: "Executive Boardroom",
+    serialNumber: "RPPLUS-77142",
+    notes: "Panel is online and advertising booking status via REST API.",
+  },
+];
+
+const debugConsoleHelpCommands = [
+  "projector.power on",
+  "projector.power off",
+  "display.input hdmi1",
+  "display.input hdmi2",
+  "audio.volume up",
+  "audio.volume down",
+  "audio.mute on",
+  "audio.mute off",
+  "camera.preset 1",
+  "system.status",
+];
 
 const macroVariableMocks = [
   { name: "param_1", value: "2" },
@@ -3056,6 +3236,7 @@ function updateContentStage(sectionTitle, isHome) {
   const isDisplay = sectionTitle === "Pad Display Setting";
   const isNetwork = sectionTitle === "Network";
   const isAdmin = sectionTitle === "Admin";
+  const isDeveloperTool = sectionTitle === "Developer Tool";
   homeDashboard.classList.toggle("is-hidden", !isHome);
   contentPlaceholder.classList.toggle(
     "is-hidden",
@@ -3086,11 +3267,13 @@ function updateContentStage(sectionTitle, isHome) {
       isDriverLibrary ||
       isDisplay ||
       isNetwork ||
-      isAdmin
+      isAdmin ||
+      isDeveloperTool
   );
   displayPanel.classList.toggle("is-hidden", !isDisplay);
   networkPanel.classList.toggle("is-hidden", !isNetwork);
   adminPanel.classList.toggle("is-hidden", !isAdmin);
+  developerToolsPanel.classList.toggle("is-hidden", !isDeveloperTool);
 
   if (isDeviceIntegration) {
     renderDeviceIntegration();
@@ -3146,9 +3329,250 @@ function updateContentStage(sectionTitle, isHome) {
     return;
   }
 
+  if (isDeveloperTool) {
+    renderDeveloperTools();
+    return;
+  }
+
   if (!isHome) {
     placeholderText.textContent = `${sectionTitle} content area reserved for future modules.`;
   }
+}
+
+function getDiscoveryById(discoveryId) {
+  return discoveryMockDevices.find((device) => device.id === discoveryId) || null;
+}
+
+function appendDebugConsoleLine(kind, text) {
+  state.developerTools.consoleLines.push({ kind, text });
+}
+
+function ensureDebugConsoleInitialized() {
+  if (state.developerTools.consoleInitialized) {
+    return;
+  }
+
+  appendDebugConsoleLine("system", "CYP Debug Console ready.");
+  appendDebugConsoleLine("system", "Use '?' to list available mock commands.");
+  state.developerTools.consoleInitialized = true;
+}
+
+function renderDebugConsole() {
+  if (!debugConsoleOutput || !debugConsoleHint) {
+    return;
+  }
+
+  ensureDebugConsoleInitialized();
+  debugConsoleHint.textContent = "Type ? for supported commands";
+  debugConsoleOutput.innerHTML = state.developerTools.consoleLines
+    .map((line) => `
+      <div class="debug-console-line debug-console-line--${escapeHtml(line.kind)}">
+        <span class="debug-console-line__label">${escapeHtml(line.kind.toUpperCase())}</span>
+        <span class="debug-console-line__text">${escapeHtml(line.text)}</span>
+      </div>
+    `)
+    .join("");
+  debugConsoleOutput.scrollTop = debugConsoleOutput.scrollHeight;
+}
+
+function getDebugConsoleResponse(command) {
+  const normalized = command.trim().toLowerCase();
+
+  if (normalized === "?") {
+    return debugConsoleHelpCommands.map((item, index) => `${index + 1}. ${item}`);
+  }
+
+  const responseMap = {
+    "projector.power on": "ACK: Main projector power-on command queued successfully.",
+    "projector.power off": "ACK: Main projector shutdown command queued successfully.",
+    "display.input hdmi1": "ACK: Display input switched to HDMI 1.",
+    "display.input hdmi2": "ACK: Display input switched to HDMI 2.",
+    "audio.volume up": "ACK: Audio DSP volume increased by 2 steps.",
+    "audio.volume down": "ACK: Audio DSP volume decreased by 2 steps.",
+    "audio.mute on": "ACK: Audio DSP mute enabled.",
+    "audio.mute off": "ACK: Audio DSP mute disabled.",
+    "camera.preset 1": "ACK: PTZ camera recalled preset 1.",
+    "system.status": "STATUS: 10 devices reachable, Ethernet active, control engine online.",
+  };
+
+  if (responseMap[normalized]) {
+    return [responseMap[normalized]];
+  }
+
+  return [`ERROR: Unknown command "${command}". Type ? for supported commands.`];
+}
+
+function submitDebugConsoleCommand(rawCommand) {
+  const command = rawCommand.trim();
+
+  if (!command) {
+    return;
+  }
+
+  appendDebugConsoleLine("input", `> ${command}`);
+  getDebugConsoleResponse(command).forEach((line) => {
+    appendDebugConsoleLine(line.startsWith("ERROR:") ? "error" : "system", line);
+  });
+  renderDebugConsole();
+}
+
+function renderDeveloperTools() {
+  if (
+    !discoveryTableBody ||
+    !discoverySummary ||
+    !startDiscoveryButton ||
+    !developerDiscoveryView ||
+    !developerConsoleView ||
+    !developerToolDiscoveryTab ||
+    !developerToolConsoleTab
+  ) {
+    return;
+  }
+
+  const discoveryState = state.developerTools;
+  const isDiscoveryView = discoveryState.activeView === "discovery";
+  developerDiscoveryView.classList.toggle("is-hidden", !isDiscoveryView);
+  developerConsoleView.classList.toggle("is-hidden", isDiscoveryView);
+  developerToolDiscoveryTab.classList.toggle("is-active", isDiscoveryView);
+  developerToolConsoleTab.classList.toggle("is-active", !isDiscoveryView);
+  developerToolDiscoveryTab.setAttribute("aria-selected", String(isDiscoveryView));
+  developerToolConsoleTab.setAttribute("aria-selected", String(!isDiscoveryView));
+  startDiscoveryButton.disabled = discoveryState.isScanning;
+  startDiscoveryButton.textContent = discoveryState.isScanning ? "Scanning..." : "Start Discovery";
+
+  if (!isDiscoveryView) {
+    renderDebugConsole();
+  }
+
+  if (!discoveryState.hasScanned) {
+    discoverySummary.textContent = "No devices discovered";
+    discoveryTableBody.innerHTML = `
+      <tr>
+        <td class="command-empty discovery-empty" colspan="4">
+          <p>Press Start Discovery to search for devices on the network.</p>
+        </td>
+      </tr>
+    `;
+    return;
+  }
+
+  discoverySummary.textContent = `${discoveryState.results.length} device${discoveryState.results.length === 1 ? "" : "s"} found`;
+
+  if (!discoveryState.results.length) {
+    discoveryTableBody.innerHTML = `
+      <tr>
+        <td class="command-empty discovery-empty" colspan="4">
+          <p>No devices found in the last discovery pass.</p>
+        </td>
+      </tr>
+    `;
+    return;
+  }
+
+  discoveryTableBody.innerHTML = discoveryState.results
+    .map((device) => `
+      <tr class="discovery-row" data-discovery-id="${device.id}" tabindex="0">
+        <td>
+          <div class="command-name">
+            <strong>${escapeHtml(device.modelName)}</strong>
+            <span>${escapeHtml(device.vendor)} · ${escapeHtml(device.type)}</span>
+          </div>
+        </td>
+        <td><div class="command-data">${escapeHtml(device.description)}</div></td>
+        <td><span class="command-id">${escapeHtml(device.ip)}</span></td>
+        <td><span class="command-id">${escapeHtml(device.mac)}</span></td>
+      </tr>
+    `)
+    .join("");
+}
+
+function startDeviceDiscovery() {
+  if (state.developerTools.isScanning) {
+    return;
+  }
+
+  state.developerTools.isScanning = true;
+  state.developerTools.hasScanned = true;
+  state.developerTools.results = [];
+  renderDeveloperTools();
+
+  window.setTimeout(() => {
+    state.developerTools.isScanning = false;
+    state.developerTools.results = discoveryMockDevices.map((device) => ({ ...device }));
+    renderDeveloperTools();
+    showToast(`Device discovery complete. ${state.developerTools.results.length} devices found.`);
+  }, 900);
+}
+
+function switchDeveloperToolView(nextView) {
+  state.developerTools.activeView = nextView === "console" ? "console" : "discovery";
+  renderDeveloperTools();
+
+  if (state.developerTools.activeView === "console" && debugConsoleInput) {
+    debugConsoleInput.focus();
+  }
+}
+
+function openDiscoveryDetail(discoveryId) {
+  const device = getDiscoveryById(discoveryId);
+
+  if (!device || !discoveryDetailHeader || !discoveryDetailContent || !discoveryDetailModal) {
+    return;
+  }
+
+  state.developerTools.selectedDiscoveryId = device.id;
+  discoveryDetailHeader.innerHTML = `
+    <span class="panel-card__eyebrow">${escapeHtml(device.id)}</span>
+    <h3>${escapeHtml(device.modelName)}</h3>
+    <p>${escapeHtml(device.description)}</p>
+  `;
+  discoveryDetailContent.innerHTML = `
+    <div class="info-grid">
+      <article class="info-item">
+        <span class="info-item__label">Vendor</span>
+        <strong class="info-item__value">${escapeHtml(device.vendor)}</strong>
+      </article>
+      <article class="info-item">
+        <span class="info-item__label">Device Type</span>
+        <strong class="info-item__value">${escapeHtml(device.type)}</strong>
+      </article>
+      <article class="info-item">
+        <span class="info-item__label">IP Address</span>
+        <strong class="info-item__value">${escapeHtml(device.ip)}</strong>
+      </article>
+      <article class="info-item">
+        <span class="info-item__label">MAC Address</span>
+        <strong class="info-item__value">${escapeHtml(device.mac)}</strong>
+      </article>
+      <article class="info-item">
+        <span class="info-item__label">Protocol</span>
+        <strong class="info-item__value">${escapeHtml(device.protocol)}</strong>
+      </article>
+      <article class="info-item">
+        <span class="info-item__label">Firmware</span>
+        <strong class="info-item__value">${escapeHtml(device.firmware)}</strong>
+      </article>
+      <article class="info-item">
+        <span class="info-item__label">Location</span>
+        <strong class="info-item__value">${escapeHtml(device.location)}</strong>
+      </article>
+      <article class="info-item">
+        <span class="info-item__label">Serial Number</span>
+        <strong class="info-item__value">${escapeHtml(device.serialNumber)}</strong>
+      </article>
+    </div>
+    <section class="panel-card discovery-detail-notes">
+      <div class="panel-card__header">
+        <div>
+          <span class="panel-card__eyebrow">Discovery Notes</span>
+          <h3>Integrator Notes</h3>
+        </div>
+      </div>
+      <p>${escapeHtml(device.notes)}</p>
+    </section>
+  `;
+
+  openModal(discoveryDetailModal);
 }
 
 function renderCommandManagement() {
@@ -4475,6 +4899,59 @@ if (confirmDeviceDeleteButton) {
   });
 }
 
+if (startDiscoveryButton) {
+  startDiscoveryButton.addEventListener("click", () => {
+    startDeviceDiscovery();
+  });
+}
+
+if (developerToolDiscoveryTab) {
+  developerToolDiscoveryTab.addEventListener("click", () => {
+    switchDeveloperToolView("discovery");
+  });
+}
+
+if (developerToolConsoleTab) {
+  developerToolConsoleTab.addEventListener("click", () => {
+    switchDeveloperToolView("console");
+  });
+}
+
+if (discoveryTableBody) {
+  discoveryTableBody.addEventListener("click", (event) => {
+    const row = event.target.closest("[data-discovery-id]");
+
+    if (!row) {
+      return;
+    }
+
+    openDiscoveryDetail(row.getAttribute("data-discovery-id") || "");
+  });
+
+  discoveryTableBody.addEventListener("keydown", (event) => {
+    const row = event.target.closest("[data-discovery-id]");
+
+    if (!row || (event.key !== "Enter" && event.key !== " ")) {
+      return;
+    }
+
+    event.preventDefault();
+    openDiscoveryDetail(row.getAttribute("data-discovery-id") || "");
+  });
+}
+
+if (debugConsoleForm) {
+  debugConsoleForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    submitDebugConsoleCommand(debugConsoleInput?.value || "");
+
+    if (debugConsoleInput) {
+      debugConsoleInput.value = "";
+      debugConsoleInput.focus();
+    }
+  });
+}
+
 if (macroBasicNameInput) {
   macroBasicNameInput.addEventListener("input", () => {
     if (!state.macroDraft) {
@@ -5044,7 +5521,7 @@ document.querySelectorAll("[data-close-modal]").forEach((button) => {
   });
 });
 
-[signinModal, settingsModal, wifiPasswordModal, commandEditorModal, macroDeleteModal, adminConfirmModal, macroInsertActionModal, macroReviewModal, importDriverModal, deviceDeleteModal, deviceReviewModal, document.getElementById("scenarioLayoutConfirmModal")].forEach((modal) => {
+[signinModal, settingsModal, wifiPasswordModal, commandEditorModal, macroDeleteModal, adminConfirmModal, macroInsertActionModal, macroReviewModal, importDriverModal, deviceDeleteModal, deviceReviewModal, discoveryDetailModal, document.getElementById("scenarioLayoutConfirmModal")].forEach((modal) => {
   modal.addEventListener("click", (event) => {
     if (event.target === modal) {
       if (modal === macroInsertActionModal) {
@@ -5076,6 +5553,7 @@ document.addEventListener("keydown", (event) => {
     closeModal(importDriverModal);
     closeModal(deviceDeleteModal);
     closeModal(deviceReviewModal);
+    closeModal(discoveryDetailModal);
     closeModal(document.getElementById("scenarioLayoutConfirmModal"));
     closeModal(commandEditorModal);
     closeModal(macroDeleteModal);
@@ -5089,6 +5567,7 @@ renderDriverLibrary();
 renderDeviceIntegration();
 renderCommandManagement();
 renderMacroManagement();
+renderDeveloperTools();
 syncCommandEditorInterfaceFields();
 updateContentStage("Home", true);
 updatePadPage(0);

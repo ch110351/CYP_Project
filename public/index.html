@@ -175,6 +175,9 @@
                 <a class="nav__child" href="#" data-section="Setting" data-title="Admin">
                   Admin
                 </a>
+                <a class="nav__child" href="#" data-section="Setting" data-title="Developer Tool">
+                  Developer Tool
+                </a>
               </div>
             </div>
           </nav>
@@ -1197,6 +1200,106 @@
                   </section>
                 </div>
               </section>
+
+              <section class="developer-tools-panel is-hidden" id="developerToolsPanel" aria-labelledby="developerToolsPanelTitle">
+                <div class="command-hero developer-tools-hero">
+                  <div class="command-hero__copy">
+                    <span class="panel-card__eyebrow">Developer Tool</span>
+                    <h2 id="developerToolsPanelTitle">Developer Tool</h2>
+                    <p>
+                      Switch between discovery and console tools for commissioning and diagnostics.
+                    </p>
+                  </div>
+                </div>
+
+                <div class="developer-tools-switch" role="tablist" aria-label="Developer tool switcher">
+                  <button
+                    class="developer-tools-switch__tab is-active"
+                    id="developerToolDiscoveryTab"
+                    type="button"
+                    data-developer-view="discovery"
+                    aria-selected="true"
+                  >
+                    Device Discovery
+                  </button>
+                  <button
+                    class="developer-tools-switch__tab"
+                    id="developerToolConsoleTab"
+                    type="button"
+                    data-developer-view="console"
+                    aria-selected="false"
+                  >
+                    Debug Console
+                  </button>
+                </div>
+
+                <section class="panel-card command-card developer-tool-view" id="developerDiscoveryView" aria-labelledby="discoveryTableTitle">
+                  <div class="panel-card__header">
+                    <div>
+                      <span class="panel-card__eyebrow">Discovery Tool</span>
+                      <h3 id="discoveryTableTitle">Device Discovery</h3>
+                    </div>
+                    <button class="modal-btn modal-btn--primary" id="startDiscoveryButton" type="button">
+                      Start Discovery
+                    </button>
+                  </div>
+
+                  <div class="panel-card__header">
+                    <div>
+                      <span class="panel-card__eyebrow">Discovery Result</span>
+                      <h3>Device Discovery Table</h3>
+                    </div>
+                    <div class="command-summary" id="discoverySummary">No devices discovered</div>
+                  </div>
+
+                  <div class="command-table-wrap">
+                    <table class="command-table discovery-table">
+                      <thead>
+                        <tr>
+                          <th scope="col">Model Name</th>
+                          <th scope="col">Description</th>
+                          <th scope="col">IP</th>
+                          <th scope="col">MAC</th>
+                        </tr>
+                      </thead>
+                      <tbody id="discoveryTableBody">
+                        <tr>
+                          <td class="command-empty discovery-empty" colspan="4">
+                            <p>Press Start Discovery to search for devices on the network.</p>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </section>
+
+                <section class="panel-card command-card developer-tool-view is-hidden" id="developerConsoleView" aria-labelledby="debugConsoleTitle">
+                  <div class="panel-card__header">
+                    <div>
+                      <span class="panel-card__eyebrow">Diagnostic Tool</span>
+                      <h3 id="debugConsoleTitle">Debug Console</h3>
+                    </div>
+                    <div class="command-summary" id="debugConsoleHint">Type `?` for supported commands</div>
+                  </div>
+
+                  <div class="debug-console-shell">
+                    <div class="debug-console-output" id="debugConsoleOutput" aria-live="polite"></div>
+                    <form class="debug-console-inputbar" id="debugConsoleForm">
+                      <span class="debug-console-inputbar__prompt">&gt;</span>
+                      <input
+                        class="debug-console-inputbar__field"
+                        id="debugConsoleInput"
+                        name="debugConsoleInput"
+                        type="text"
+                        autocomplete="off"
+                        spellcheck="false"
+                        placeholder="Enter debug command"
+                      />
+                      <button class="modal-btn modal-btn--primary" type="submit">Run</button>
+                    </form>
+                  </div>
+                </section>
+              </section>
             </div>
           </section>
         </main>
@@ -1584,6 +1687,22 @@
           <div class="device-review-content" id="deviceReviewContent"></div>
           <div class="modal-window__actions">
             <button class="modal-btn modal-btn--ghost" type="button" data-close-modal="deviceReviewModal">
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-backdrop is-hidden" id="discoveryDetailModal" aria-hidden="true">
+      <div class="modal-window modal-window--command-editor" role="dialog" aria-modal="true" aria-labelledby="discoveryDetailTitle">
+        <div class="modal-window__header">
+          <h2 id="discoveryDetailTitle">Discovered Device Detail</h2>
+        </div>
+        <div class="modal-form">
+          <div class="device-review-header" id="discoveryDetailHeader"></div>
+          <div class="device-review-content" id="discoveryDetailContent"></div>
+          <div class="modal-window__actions">
+            <button class="modal-btn modal-btn--ghost" type="button" data-close-modal="discoveryDetailModal">
               Close
             </button>
           </div>

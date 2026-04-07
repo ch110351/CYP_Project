@@ -1004,7 +1004,8 @@ a {
   gap: 16px;
 }
 
-.command-panel {
+.command-panel,
+.developer-tools-panel {
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -1208,6 +1209,146 @@ a {
 
 .command-table tbody tr:hover {
   background: rgba(0, 138, 171, 0.035);
+}
+
+.discovery-row {
+  cursor: pointer;
+  transition: background var(--transition), box-shadow var(--transition);
+}
+
+.discovery-row:focus-visible {
+  outline: 2px solid rgba(0, 138, 171, 0.28);
+  outline-offset: -2px;
+  background: rgba(0, 138, 171, 0.05);
+}
+
+.developer-tools-hero {
+  margin: 0;
+}
+
+.developer-tools-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.developer-tools-switch__tab {
+  min-height: 40px;
+  padding: 0 16px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--text-body);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition), border-color var(--transition);
+}
+
+.developer-tools-switch__tab.is-active {
+  background: rgba(0, 138, 171, 0.12);
+  color: var(--accent);
+  border-color: rgba(0, 138, 171, 0.24);
+}
+
+.developer-tool-view {
+  overflow: hidden;
+}
+
+.discovery-empty {
+  text-align: center;
+}
+
+.discovery-detail-notes {
+  margin-top: 16px;
+}
+
+.discovery-detail-notes p {
+  margin: 0;
+  color: var(--text-body);
+  line-height: 1.6;
+}
+
+.debug-console-shell {
+  margin: 16px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  overflow: hidden;
+  background: linear-gradient(180deg, #14222c, #0d161d);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.debug-console-output {
+  min-height: 360px;
+  max-height: 480px;
+  padding: 18px;
+  overflow: auto;
+  font-family: "Consolas", "Courier New", monospace;
+  font-size: 0.84rem;
+  line-height: 1.6;
+  color: #d8e7ef;
+}
+
+.debug-console-line {
+  display: grid;
+  grid-template-columns: 72px 1fr;
+  gap: 10px;
+  align-items: start;
+}
+
+.debug-console-line + .debug-console-line {
+  margin-top: 8px;
+}
+
+.debug-console-line__label {
+  color: #6fd3f0;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.debug-console-line--input .debug-console-line__label {
+  color: #ffd66e;
+}
+
+.debug-console-line--error .debug-console-line__label {
+  color: #ff9f9f;
+}
+
+.debug-console-inputbar {
+  padding: 14px 18px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 12px;
+  align-items: center;
+  background: rgba(7, 12, 16, 0.72);
+}
+
+.debug-console-inputbar__prompt {
+  color: #6fd3f0;
+  font-family: "Consolas", "Courier New", monospace;
+  font-weight: 700;
+}
+
+.debug-console-inputbar__field {
+  min-width: 0;
+  padding: 11px 14px;
+  border: 1px solid rgba(111, 211, 240, 0.2);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #f1f7fb;
+  font: inherit;
+  font-family: "Consolas", "Courier New", monospace;
+}
+
+.debug-console-inputbar__field::placeholder {
+  color: rgba(216, 231, 239, 0.5);
+}
+
+.debug-console-inputbar__field:focus {
+  outline: none;
+  border-color: rgba(111, 211, 240, 0.48);
+  box-shadow: 0 0 0 3px rgba(111, 211, 240, 0.12);
 }
 
 .macro-table tbody tr {
