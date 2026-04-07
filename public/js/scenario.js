@@ -95,7 +95,6 @@
 
   const scenarioState = {
     initialized: false,
-    selectedLayout: "2x4",
     selectedPage: 0,
     pages: [],
     isDirty: false,
@@ -139,6 +138,7 @@
 
     scenarioState.pages = Array.from({ length: 3 }, (_, pageIndex) => ({
       id: `page-${pageIndex + 1}`,
+      layoutId: "2x4",
       buttons: [],
     }));
     scenarioState.initialized = true;
@@ -272,12 +272,167 @@
     });
   }
 
-  function getLayoutConfig(layoutId = scenarioState.selectedLayout) {
-    return layoutCatalog.find((layout) => layout.id === layoutId) || layoutCatalog[layoutCatalog.length - 1];
+  function getLayoutConfig(layoutId = "") {
+    const fallbackLayoutId = scenarioState.pages[scenarioState.selectedPage]?.layoutId || layoutCatalog[layoutCatalog.length - 1].id;
+    const targetLayoutId = layoutId || fallbackLayoutId;
+    return layoutCatalog.find((layout) => layout.id === targetLayoutId) || layoutCatalog[layoutCatalog.length - 1];
+  }
+
+  function getPageLayoutConfig(pageIndex = scenarioState.selectedPage) {
+    const page = scenarioState.pages[pageIndex];
+    return getLayoutConfig(page?.layoutId || "");
+  }
+
+  function getCurrentPageLayoutId() {
+    return scenarioState.pages[scenarioState.selectedPage]?.layoutId || getLayoutConfig().id;
+  }
+
+  function getCurrentPageLayoutConfig() {
+    return getPageLayoutConfig(scenarioState.selectedPage);
   }
 
   function getCurrentPageState() {
     return scenarioState.pages[scenarioState.selectedPage];
+  }
+
+  function getGridCoordinates(index, layoutConfig = getCurrentPageLayoutConfig()) {
+    return {
+      row: Math.floor(index / layoutConfig.cols),
+      col: index % layoutConfig.cols,
+    };
+  }
+
+  function getGridIndex(row, col, layoutConfig = getCurrentPageLayoutConfig()) {
+    return row * layoutConfig.cols + col;
+  }
+
+  function getOccupiedSlots(anchorIndex, size, layoutConfig = getCurrentPageLayoutConfig()) {
+    const { row, col } = getGridCoordinates(anchorIndex, layoutConfig);
+    const span = getButtonSpan(size);
+    const occupiedSlots = [];
+
+    for (let rowOffset = 0; rowOffset < span.rows; rowOffset += 1) {
+      for (let colOffset = 0; colOffset < span.cols; colOffset += 1) {
+        const nextRow = row + rowOffset;
+        const nextCol = col + colOffset;
+
+        if (nextRow >= layoutConfig.rows || nextCol >= layoutConfig.cols) {
+          return [];
+        }
+
+        occupiedSlots.push(getGridIndex(nextRow, nextCol, layoutConfig));
+      }
+    }
+
+    return occupiedSlots;
+  }
+
+  function canPlaceButtonAt(pageIndex, anchorIndex, size, ignoreButtonId = "") {
+    const layoutConfig = getPageLayoutConfig(pageIndex);
+    const occupiedSlots = getOccupiedSlots(anchorIndex, size, layoutConfig);
+
+    if (!occupiedSlots.length) {
+      return { valid: false, occupiedSlots: [] };
+    }
+
+    const pageButtons = scenarioState.pages[pageIndex]?.buttons || [];
+    const hasCollision = pageButtons.some((button) => {
+      if (ignoreButtonId && button.id === ignoreButtonId) {
+        return false;
+      }
+
+      const buttonSlots = getOccupiedSlots(button.position, button.size, layoutConfig);
+      return buttonSlots.some((slot) => occupiedSlots.includes(slot));
+    });
+
+    return {
+      valid: !hasCollision,
+      occupiedSlots,
+    };
+  }
+
+  function getButtonAt(pageIndex, position) {
+    const layoutConfig = getPageLayoutConfig(pageIndex);
+
+    return (
+      scenarioState.pages[pageIndex]?.buttons.find((button) =>
+        getOccupiedSlots(button.position, button.size, layoutConfig).includes(position)
+      ) || null
+    );
+  }
+
+  function getIncompatibleButtonCount(pageIndex, layoutId) {
+    const layoutConfig = getLayoutConfig(layoutId);
+    const page = scenarioState.pages[pageIndex];
+
+    if (!page) {
+      return 0;
+    }
+
+    return page.buttons.filter((button) => !getOccupiedSlots(button.position, button.size, layoutConfig).length).length;
+  }
+
+  function pruneButtonsForLayout(pageIndex, layoutId) {
+    const page = scenarioState.pages[pageIndex];
+
+    if (!page) {
+      return;
+    }
+
+    const layoutConfig = getLayoutConfig(layoutId);
+    page.buttons = page.buttons
+      .filter((button) => getOccupiedSlots(button.position, button.size, layoutConfig).length)
+      .map((button) => ({
+        ...button,
+        page: pageIndex,
+      }));
+
+    if (scenarioState.selectedButtonId) {
+      const selectedStillExists = getButtonsAcrossPages().some((button) => button.id === scenarioState.selectedButtonId);
+
+      if (!selectedStillExists) {
+        scenarioState.selectedButtonId = "";
+      }
+    }
+  }
+
+  function applyLayout(layoutId) {
+    const currentPage = getCurrentPageState();
+
+    if (!currentPage) {
+      return;
+    }
+
+    currentPage.layoutId = layoutId;
+    pruneButtonsForLayout(scenarioState.selectedPage, layoutId);
+    scenarioState.pendingLayout = "";
+    markDirty();
+    renderScenario();
+  }
+
+  function requestLayoutChange(layoutId) {
+    if (layoutId === getCurrentPageLayoutId()) {
+      return;
+    }
+
+    const incompatibleCount = getIncompatibleButtonCount(scenarioState.selectedPage, layoutId);
+
+    if (!incompatibleCount) {
+      applyLayout(layoutId);
+      return;
+    }
+
+    scenarioState.pendingLayout = layoutId;
+
+    if (layoutConfirmMessage) {
+      layoutConfirmMessage.textContent = `Changing layout for Page ${scenarioState.selectedPage + 1} may remove incompatible buttons. ${incompatibleCount} button${incompatibleCount > 1 ? "s will" : " will"} be removed.`;
+    }
+
+    if (typeof openModal === "function") {
+      openModal(layoutConfirmModal);
+    } else {
+      layoutConfirmModal?.classList.remove("is-hidden");
+    }
   }
 
   function getButtonCatalogItem(size) {
@@ -366,62 +521,6 @@
     return { rows, cols };
   }
 
-  function getGridCoordinates(index, layoutConfig = getLayoutConfig()) {
-    return {
-      row: Math.floor(index / layoutConfig.cols),
-      col: index % layoutConfig.cols,
-    };
-  }
-
-  function getGridIndex(row, col, layoutConfig = getLayoutConfig()) {
-    return row * layoutConfig.cols + col;
-  }
-
-  function getOccupiedSlots(anchorIndex, size, layoutConfig = getLayoutConfig()) {
-    const { row, col } = getGridCoordinates(anchorIndex, layoutConfig);
-    const span = getButtonSpan(size);
-    const occupiedSlots = [];
-
-    for (let rowOffset = 0; rowOffset < span.rows; rowOffset += 1) {
-      for (let colOffset = 0; colOffset < span.cols; colOffset += 1) {
-        const nextRow = row + rowOffset;
-        const nextCol = col + colOffset;
-
-        if (nextRow >= layoutConfig.rows || nextCol >= layoutConfig.cols) {
-          return [];
-        }
-
-        occupiedSlots.push(getGridIndex(nextRow, nextCol, layoutConfig));
-      }
-    }
-
-    return occupiedSlots;
-  }
-
-  function canPlaceButtonAt(pageIndex, anchorIndex, size, ignoreButtonId = "") {
-    const layoutConfig = getLayoutConfig();
-    const occupiedSlots = getOccupiedSlots(anchorIndex, size, layoutConfig);
-
-    if (!occupiedSlots.length) {
-      return { valid: false, occupiedSlots: [] };
-    }
-
-    const pageButtons = scenarioState.pages[pageIndex]?.buttons || [];
-    const hasCollision = pageButtons.some((button) => {
-      if (ignoreButtonId && button.id === ignoreButtonId) {
-        return false;
-      }
-
-      const buttonSlots = getOccupiedSlots(button.position, button.size, layoutConfig);
-      return buttonSlots.some((slot) => occupiedSlots.includes(slot));
-    });
-
-    return {
-      valid: !hasCollision,
-      occupiedSlots,
-    };
-  }
-
   function getButtonsAcrossPages() {
     return scenarioState.pages.flatMap((page) => page.buttons);
   }
@@ -456,16 +555,6 @@
       mockControlState: getDefaultMockControlState(buttonTemplate.id),
       isValid: false,
     };
-  }
-
-  function getButtonAt(pageIndex, position) {
-    const layoutConfig = getLayoutConfig();
-
-    return (
-      scenarioState.pages[pageIndex]?.buttons.find((button) =>
-        getOccupiedSlots(button.position, button.size, layoutConfig).includes(position)
-      ) || null
-    );
   }
 
   function getButtonById(buttonId) {
@@ -509,69 +598,6 @@
 
   function markDirty() {
     scenarioState.isDirty = true;
-  }
-
-  function getIncompatibleButtonCount(layoutId) {
-    const layoutConfig = getLayoutConfig(layoutId);
-
-    return scenarioState.pages.reduce((count, page) => {
-      return count + page.buttons.filter((button) => !getOccupiedSlots(button.position, button.size, layoutConfig).length).length;
-    }, 0);
-  }
-
-  function pruneButtonsForLayout(layoutId) {
-    const layoutConfig = getLayoutConfig(layoutId);
-
-    scenarioState.pages = scenarioState.pages.map((page, pageIndex) => ({
-      ...page,
-      buttons: page.buttons
-        .filter((button) => getOccupiedSlots(button.position, button.size, layoutConfig).length)
-        .map((button) => ({
-          ...button,
-          page: pageIndex,
-        })),
-    }));
-
-    if (scenarioState.selectedButtonId) {
-      const selectedStillExists = getButtonsAcrossPages().some((button) => button.id === scenarioState.selectedButtonId);
-
-      if (!selectedStillExists) {
-        scenarioState.selectedButtonId = "";
-      }
-    }
-  }
-
-  function applyLayout(layoutId) {
-    scenarioState.selectedLayout = layoutId;
-    pruneButtonsForLayout(layoutId);
-    scenarioState.pendingLayout = "";
-    markDirty();
-    renderScenario();
-  }
-
-  function requestLayoutChange(layoutId) {
-    if (layoutId === scenarioState.selectedLayout) {
-      return;
-    }
-
-    const incompatibleCount = getIncompatibleButtonCount(layoutId);
-
-    if (!incompatibleCount) {
-      applyLayout(layoutId);
-      return;
-    }
-
-    scenarioState.pendingLayout = layoutId;
-
-    if (layoutConfirmMessage) {
-      layoutConfirmMessage.textContent = `Changing layout may remove incompatible buttons. ${incompatibleCount} button${incompatibleCount > 1 ? "s will" : " will"} be removed.`;
-    }
-
-    if (typeof openModal === "function") {
-      openModal(layoutConfirmModal);
-    } else {
-      layoutConfirmModal?.classList.remove("is-hidden");
-    }
   }
 
   function switchPage(pageIndex) {
@@ -845,10 +871,10 @@
   }
 
   function renderLayoutTab() {
-    const currentLayout = getLayoutConfig();
+    const currentLayout = getCurrentPageLayoutConfig();
 
     return `
-      <div class="scenario-resource-list" role="list" aria-label="Pad layout list">
+      <div class="scenario-resource-list scenario-layout-list" role="list" aria-label="Pad layout list">
         ${layoutCatalog
           .map(
             (layout) => `
@@ -928,7 +954,7 @@
 
   function renderPadSlots(pageIndex) {
     const currentPage = scenarioState.pages[pageIndex];
-    const layoutConfig = getLayoutConfig();
+    const layoutConfig = getPageLayoutConfig(pageIndex);
     const cells = Array.from({ length: layoutConfig.capacity }, (_, position) => {
       const { row, col } = getGridCoordinates(position, layoutConfig);
       const occupyingButton = getButtonAt(pageIndex, position);
@@ -979,7 +1005,6 @@
         >
           <span class="pad-button__status ${highlightInvalid || isInvalid ? "is-alert" : ""}"></span>
           ${renderTemplateBody(placedButton, "pad")}
-          ${isInvalid ? '<span class="scenario-pad-button__badge">Not Configured</span>' : ""}
         </button>
       `;
     });
@@ -1001,7 +1026,7 @@
   function renderScenario() {
     initializeScenarioState();
 
-    const layoutConfig = getLayoutConfig();
+    const layoutConfig = getCurrentPageLayoutConfig();
     const derivedState = getDerivedState();
     const totalButtons = getButtonsAcrossPages().length;
     const selectedButton = scenarioState.selectedButtonId ? getButtonById(scenarioState.selectedButtonId) : null;
@@ -1095,7 +1120,7 @@
             </div>
 
             <div class="scenario-preview-panel__meta">
-              <span>Current Layout: <strong>${layoutConfig.label}</strong></span>
+              <span>Page ${scenarioState.selectedPage + 1} Layout: <strong>${layoutConfig.label}</strong></span>
               <span>Slots: <strong>${layoutConfig.capacity}</strong></span>
               <span>Total Buttons: <strong>${totalButtons}</strong></span>
             </div>
