@@ -1011,6 +1011,12 @@ a {
   gap: 16px;
 }
 
+.event-trigger-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
 .macro-panel,
 .macro-list-view,
 .macro-editor-view {
@@ -1268,6 +1274,56 @@ a {
   color: var(--text-body);
   line-height: 1.6;
 }
+
+.event-trigger-shell {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.event-trigger-layout {
+  display: block;
+}
+
+.event-trigger-table {
+  min-width: 1120px;
+}
+
+.event-trigger-status {
+  min-height: 32px;
+  padding: 0 12px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.event-trigger-status.is-enabled {
+  background: rgba(49, 182, 125, 0.12);
+  color: #16784d;
+}
+
+.event-trigger-status.is-disabled {
+  background: rgba(133, 150, 168, 0.14);
+  color: #506070;
+}
+
+.event-trigger-inline-options {
+  margin-top: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+#eventTriggerTestHeader h3,
+#eventTriggerTestHeader p {
+  margin: 0;
+}
+
 
 .debug-console-shell {
   margin: 16px;

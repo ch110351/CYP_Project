@@ -632,6 +632,10 @@
                 <div id="automationContent"></div>
               </section>
 
+              <section class="event-trigger-panel is-hidden" id="eventTriggerPanel" aria-labelledby="eventTriggerPanelTitle">
+                <div id="eventTriggerContent"></div>
+              </section>
+
               <section class="scenario-panel is-hidden" id="scenarioPanel" aria-labelledby="scenarioPanelTitle">
                 <div id="scenarioContent"></div>
               </section>
@@ -1691,6 +1695,39 @@
             </button>
           </div>
         </div>
+      </div>
+    </div>
+    <div class="modal-backdrop is-hidden" id="eventTriggerTestModal" aria-hidden="true">
+      <div class="modal-window modal-window--command-editor" role="dialog" aria-modal="true" aria-labelledby="eventTriggerTestTitle">
+        <div class="modal-window__header">
+          <h2 id="eventTriggerTestTitle">Test Event Trigger</h2>
+        </div>
+        <form class="modal-form" id="eventTriggerTestForm">
+          <div class="settings-section">
+            <div id="eventTriggerTestHeader"></div>
+            <label class="form-field">
+              <span>Test Payload</span>
+              <textarea id="eventTriggerTestPayload" name="eventTriggerTestPayload" rows="8"></textarea>
+            </label>
+            <div class="panel-card">
+              <div class="panel-card__header">
+                <div>
+                  <span class="panel-card__eyebrow">Test Result</span>
+                  <h3>Trigger Evaluation</h3>
+                </div>
+              </div>
+              <div class="device-review-content" id="eventTriggerTestResult">
+                <p>Run a test to see whether the payload matches the trigger condition.</p>
+              </div>
+            </div>
+          </div>
+          <div class="modal-window__actions">
+            <button class="modal-btn modal-btn--ghost" type="button" data-close-modal="eventTriggerTestModal">
+              Close
+            </button>
+            <button class="modal-btn modal-btn--primary" type="submit">Run Test</button>
+          </div>
+        </form>
       </div>
     </div>
     <div class="modal-backdrop is-hidden" id="discoveryDetailModal" aria-hidden="true">

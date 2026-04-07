@@ -45,6 +45,8 @@ const macroReviewModal = document.getElementById("macroReviewModal");
 const macroReviewHeader = document.getElementById("macroReviewHeader");
 const macroReviewFlow = document.getElementById("macroReviewFlow");
 const automationPanel = document.getElementById("automationPanel");
+const eventTriggerPanel = document.getElementById("eventTriggerPanel");
+const eventTriggerContent = document.getElementById("eventTriggerContent");
 const scenarioPanel = document.getElementById("scenarioPanel");
 const driverLibraryPanel = document.getElementById("driverLibraryPanel");
 const importDriverButton = document.getElementById("importDriverButton");
@@ -87,6 +89,11 @@ const debugConsoleInput = document.getElementById("debugConsoleInput");
 const discoveryDetailModal = document.getElementById("discoveryDetailModal");
 const discoveryDetailHeader = document.getElementById("discoveryDetailHeader");
 const discoveryDetailContent = document.getElementById("discoveryDetailContent");
+const eventTriggerTestModal = document.getElementById("eventTriggerTestModal");
+const eventTriggerTestForm = document.getElementById("eventTriggerTestForm");
+const eventTriggerTestHeader = document.getElementById("eventTriggerTestHeader");
+const eventTriggerTestPayload = document.getElementById("eventTriggerTestPayload");
+const eventTriggerTestResult = document.getElementById("eventTriggerTestResult");
 const padButtons = document.querySelectorAll(".pad-button");
 const lightBrightnessSlider = document.getElementById("lightBrightnessSlider");
 const padPagesViewport = document.getElementById("padPagesViewport");
@@ -788,6 +795,13 @@ const state = {
     consoleInitialized: false,
     consoleLines: [],
   },
+  eventTrigger: {
+    view: "list",
+    editingId: "",
+    pendingTestId: "",
+    draft: null,
+    logs: [],
+  },
 };
 
 const discoveryMockDevices = [
@@ -945,6 +959,135 @@ const debugConsoleHelpCommands = [
   "camera.preset 1",
   "system.status",
 ];
+
+const eventTriggerMockRecords = [
+  {
+    id: "TRG-001",
+    name: "Occupancy Meeting Start",
+    description: "When occupancy sensor reports room occupied, run meeting startup macro.",
+    sourceCategory: "External",
+    interfaceType: "HTTP",
+    matchMode: "keyword",
+    pattern: "occupancy=occupied",
+    actionType: "Macro",
+    boundId: "MAC-001",
+    status: "Enabled",
+    cooldown: "30",
+    retryCount: "1",
+    allowDuplicate: false,
+    logEnabled: true,
+    samplePayload: "sensor=ceiling_pir;room=meeting_a;occupancy=occupied;confidence=0.98",
+    lastTriggeredAt: "2026-04-07 09:10",
+  },
+  {
+    id: "TRG-002",
+    name: "HTTP HDMI 1 Switch",
+    description: "Accept source switch request from third-party controller and route display to HDMI 1.",
+    sourceCategory: "External",
+    interfaceType: "HTTP",
+    matchMode: "exact",
+    pattern: "switch_to_hdmi1",
+    actionType: "Command",
+    boundId: "CMD-005",
+    status: "Enabled",
+    cooldown: "5",
+    retryCount: "0",
+    allowDuplicate: true,
+    logEnabled: true,
+    samplePayload: "switch_to_hdmi1",
+    lastTriggeredAt: "2026-04-07 08:42",
+  },
+  {
+    id: "TRG-003",
+    name: "Projector Warmup Complete",
+    description: "After projector reports warmup completion, continue source and screen sequence.",
+    sourceCategory: "External",
+    interfaceType: "Telnet",
+    matchMode: "keyword",
+    pattern: "warmup complete",
+    actionType: "Macro",
+    boundId: "MAC-003",
+    status: "Enabled",
+    cooldown: "20",
+    retryCount: "1",
+    allowDuplicate: false,
+    logEnabled: true,
+    samplePayload: "PJ1 status: warmup complete",
+    lastTriggeredAt: "2026-04-06 17:28",
+  },
+  {
+    id: "TRG-004",
+    name: "Schedule End Shutdown",
+    description: "Run full shutdown flow when internal schedule end event is emitted.",
+    sourceCategory: "Internal",
+    interfaceType: "Schedule Event",
+    matchMode: "prefix",
+    pattern: "schedule.end",
+    actionType: "Macro",
+    boundId: "MAC-002",
+    status: "Enabled",
+    cooldown: "60",
+    retryCount: "0",
+    allowDuplicate: false,
+    logEnabled: true,
+    samplePayload: "schedule.end:meeting_room_a:18:00",
+    lastTriggeredAt: "2026-04-06 18:00",
+  },
+  {
+    id: "TRG-005",
+    name: "Access Granted Wake Panel",
+    description: "Wake the room devices and recall default scene after badge access granted.",
+    sourceCategory: "External",
+    interfaceType: "TCP",
+    matchMode: "parameter",
+    pattern: "event=access_granted",
+    actionType: "Command",
+    boundId: "CMD-020",
+    status: "Disabled",
+    cooldown: "15",
+    retryCount: "1",
+    allowDuplicate: false,
+    logEnabled: true,
+    samplePayload: "controller=door_01;event=access_granted;room=executive_boardroom",
+    lastTriggeredAt: "2026-04-05 07:54",
+  },
+];
+
+const eventTriggerMockLogs = [
+  {
+    id: "EVTLOG-001",
+    triggerId: "TRG-001",
+    triggerName: "Occupancy Meeting Start",
+    source: "HTTP / External",
+    payload: "sensor=ceiling_pir;room=meeting_a;occupancy=occupied;confidence=0.98",
+    actionLabel: "Macro · Meeting Start",
+    result: "Matched and executed successfully",
+    timestamp: "2026-04-07 09:10",
+  },
+  {
+    id: "EVTLOG-002",
+    triggerId: "TRG-002",
+    triggerName: "HTTP HDMI 1 Switch",
+    source: "HTTP / External",
+    payload: "switch_to_hdmi1",
+    actionLabel: "Command · Display HDMI 1",
+    result: "Matched and executed successfully",
+    timestamp: "2026-04-07 08:42",
+  },
+  {
+    id: "EVTLOG-003",
+    triggerId: "TRG-003",
+    triggerName: "Projector Warmup Complete",
+    source: "Telnet / External",
+    payload: "PJ1 status: warmup complete",
+    actionLabel: "Macro · Projector Warmup Flow",
+    result: "Matched and executed successfully",
+    timestamp: "2026-04-06 17:28",
+  },
+];
+
+state.eventTriggers = eventTriggerMockRecords.map((trigger) => ({ ...trigger }));
+state.eventTrigger.logs = eventTriggerMockLogs.map((log) => ({ ...log }));
 
 const macroVariableMocks = [
   { name: "param_1", value: "2" },
@@ -3231,6 +3374,7 @@ function updateContentStage(sectionTitle, isHome) {
   const isCommandManagement = sectionTitle === "Command Management";
   const isMacroManagement = sectionTitle === "Macro Management";
   const isScheduling = sectionTitle === "Scheduling";
+  const isEventTrigger = sectionTitle === "Event Trigger";
   const isScenarioManagement = sectionTitle === "Scenario Management";
   const isDriverLibrary = sectionTitle === "Driver Library";
   const isDisplay = sectionTitle === "Pad Display Setting";
@@ -3245,6 +3389,7 @@ function updateContentStage(sectionTitle, isHome) {
       isCommandManagement ||
       isMacroManagement ||
       isScheduling ||
+      isEventTrigger ||
       isScenarioManagement ||
       isDriverLibrary ||
       isDisplay ||
@@ -3254,6 +3399,7 @@ function updateContentStage(sectionTitle, isHome) {
   commandPanel.classList.toggle("is-hidden", !isCommandManagement);
   macroPanel.classList.toggle("is-hidden", !isMacroManagement);
   automationPanel.classList.toggle("is-hidden", !isScheduling);
+  eventTriggerPanel.classList.toggle("is-hidden", !isEventTrigger);
   scenarioPanel.classList.toggle("is-hidden", !isScenarioManagement);
   driverLibraryPanel.classList.toggle("is-hidden", !isDriverLibrary);
   contentPlaceholder.classList.toggle(
@@ -3263,6 +3409,7 @@ function updateContentStage(sectionTitle, isHome) {
       isCommandManagement ||
       isMacroManagement ||
       isScheduling ||
+      isEventTrigger ||
       isScenarioManagement ||
       isDriverLibrary ||
       isDisplay ||
@@ -3299,6 +3446,11 @@ function updateContentStage(sectionTitle, isHome) {
     if (typeof window.renderAutomationModule === "function") {
       window.renderAutomationModule(sectionTitle);
     }
+    return;
+  }
+
+  if (isEventTrigger) {
+    renderEventTrigger();
     return;
   }
 
@@ -3573,6 +3725,521 @@ function openDiscoveryDetail(discoveryId) {
   `;
 
   openModal(discoveryDetailModal);
+}
+
+function getEventTriggerById(triggerId) {
+  return (state.eventTriggers || []).find((trigger) => trigger.id === triggerId) || null;
+}
+
+function getEventTriggerActionLabel(trigger) {
+  const sourceList = trigger.actionType === "Macro" ? state.macros : state.commands;
+  const boundItem = sourceList.find((item) => item.id === trigger.boundId);
+  return `${trigger.actionType} · ${boundItem?.name || "Unassigned"}`;
+}
+
+function generateEventTriggerId() {
+  const nextNumber = (state.eventTriggers || []).reduce((maxValue, trigger) => {
+    const matched = String(trigger.id || "").match(/(\d+)$/);
+    return Math.max(maxValue, matched ? Number(matched[1]) : 0);
+  }, 0) + 1;
+
+  return `TRG-${String(nextNumber).padStart(3, "0")}`;
+}
+
+function getEmptyEventTriggerDraft() {
+  return {
+    id: "",
+    name: "",
+    description: "",
+    sourceCategory: "External",
+    interfaceType: "HTTP",
+    matchMode: "exact",
+    pattern: "",
+    actionType: "Command",
+    boundId: "",
+    status: "Enabled",
+    cooldown: "10",
+    retryCount: "0",
+    allowDuplicate: false,
+    logEnabled: true,
+    samplePayload: "",
+    lastTriggeredAt: "Never",
+  };
+}
+
+function cloneEventTriggerDraft(trigger) {
+  return {
+    id: trigger.id,
+    name: trigger.name,
+    description: trigger.description,
+    sourceCategory: trigger.sourceCategory,
+    interfaceType: trigger.interfaceType,
+    matchMode: trigger.matchMode,
+    pattern: trigger.pattern,
+    actionType: trigger.actionType,
+    boundId: trigger.boundId,
+    status: trigger.status,
+    cooldown: trigger.cooldown,
+    retryCount: trigger.retryCount,
+    allowDuplicate: Boolean(trigger.allowDuplicate),
+    logEnabled: trigger.logEnabled !== false,
+    samplePayload: trigger.samplePayload || "",
+    lastTriggeredAt: trigger.lastTriggeredAt || "Never",
+  };
+}
+
+function ensureEventTriggerDraftBinding(triggerDraft) {
+  const sourceList = triggerDraft.actionType === "Macro" ? state.macros : state.commands;
+
+  if (!sourceList.some((item) => item.id === triggerDraft.boundId)) {
+    triggerDraft.boundId = sourceList[0]?.id || "";
+  }
+}
+
+function openEventTriggerEditor(triggerId = "") {
+  const trigger = triggerId ? getEventTriggerById(triggerId) : null;
+  state.eventTrigger.view = "editor";
+  state.eventTrigger.editingId = trigger?.id || "";
+  state.eventTrigger.draft = trigger ? cloneEventTriggerDraft(trigger) : getEmptyEventTriggerDraft();
+  ensureEventTriggerDraftBinding(state.eventTrigger.draft);
+  renderEventTrigger();
+}
+
+function closeEventTriggerEditor() {
+  state.eventTrigger.view = "list";
+  state.eventTrigger.editingId = "";
+  state.eventTrigger.draft = null;
+  renderEventTrigger();
+}
+
+function deleteEventTrigger(triggerId) {
+  const trigger = getEventTriggerById(triggerId);
+
+  if (!trigger) {
+    return;
+  }
+
+  state.eventTriggers = state.eventTriggers.filter((item) => item.id !== triggerId);
+  state.eventTrigger.logs = state.eventTrigger.logs.filter((log) => log.triggerId !== triggerId);
+  renderEventTrigger();
+  showToast(`${trigger.name} deleted.`);
+}
+
+function toggleEventTriggerStatus(triggerId) {
+  state.eventTriggers = state.eventTriggers.map((trigger) =>
+    trigger.id === triggerId
+      ? { ...trigger, status: trigger.status === "Enabled" ? "Disabled" : "Enabled" }
+      : trigger
+  );
+  renderEventTrigger();
+}
+
+function getEventTriggerMatchSummary(trigger) {
+  const matchLabels = {
+    exact: "Exact Match",
+    keyword: "Keyword Match",
+    prefix: "Prefix Match",
+    parameter: "Parameter Match",
+  };
+
+  return `${matchLabels[trigger.matchMode] || trigger.matchMode} · ${trigger.pattern || "No pattern"}`;
+}
+
+function validateEventTriggerDraft(draft) {
+  if (!draft.name.trim()) {
+    showToast("Please enter a trigger name.");
+    return false;
+  }
+
+  if (!draft.pattern.trim()) {
+    showToast("Please enter an event pattern.");
+    return false;
+  }
+
+  if (!draft.boundId) {
+    showToast(`Please choose a ${draft.actionType}.`);
+    return false;
+  }
+
+  return true;
+}
+
+function saveEventTriggerDraft() {
+  const draft = state.eventTrigger.draft;
+
+  if (!draft || !validateEventTriggerDraft(draft)) {
+    return;
+  }
+
+  const nextTrigger = {
+    ...draft,
+    id: draft.id || generateEventTriggerId(),
+    name: draft.name.trim(),
+    description: draft.description.trim(),
+    pattern: draft.pattern.trim(),
+    samplePayload: draft.samplePayload.trim(),
+  };
+
+  if (draft.id) {
+    state.eventTriggers = state.eventTriggers.map((trigger) => (trigger.id === draft.id ? nextTrigger : trigger));
+    showToast(`${nextTrigger.name} updated.`);
+  } else {
+    state.eventTriggers.unshift(nextTrigger);
+    showToast(`${nextTrigger.name} created.`);
+  }
+
+  closeEventTriggerEditor();
+}
+
+function evaluateEventTrigger(trigger, payload) {
+  const normalizedPayload = String(payload || "");
+  const normalizedSource = normalizedPayload.toLowerCase();
+  const normalizedPattern = String(trigger.pattern || "").toLowerCase();
+  let matched = false;
+
+  if (trigger.matchMode === "exact") {
+    matched = normalizedSource.trim() === normalizedPattern.trim();
+  } else if (trigger.matchMode === "keyword") {
+    matched = normalizedSource.includes(normalizedPattern);
+  } else if (trigger.matchMode === "prefix") {
+    matched = normalizedSource.trim().startsWith(normalizedPattern);
+  } else if (trigger.matchMode === "parameter") {
+    const [key, value] = normalizedPattern.split("=");
+    matched = key && value ? normalizedSource.includes(`${key.trim()}=${value.trim()}`) : false;
+  }
+
+  const actionLabel = getEventTriggerActionLabel(trigger);
+  return {
+    matched,
+    actionLabel,
+    message: matched
+      ? `Payload matched trigger condition. ${actionLabel} will be executed.`
+      : "Payload did not match the configured trigger condition.",
+  };
+}
+
+function addEventTriggerLog(trigger, payload, resultText) {
+  state.eventTrigger.logs.unshift({
+    id: `EVTLOG-${String(state.eventTrigger.logs.length + 1).padStart(3, "0")}`,
+    triggerId: trigger.id,
+    triggerName: trigger.name,
+    source: `${trigger.interfaceType} / ${trigger.sourceCategory}`,
+    payload,
+    actionLabel: getEventTriggerActionLabel(trigger),
+    result: resultText,
+    timestamp: new Date().toLocaleString("sv-SE").replace("T", " ").slice(0, 16),
+  });
+
+  state.eventTrigger.logs = state.eventTrigger.logs.slice(0, 12);
+}
+
+function openEventTriggerTestModal(triggerId) {
+  const trigger = getEventTriggerById(triggerId);
+
+  if (!trigger || !eventTriggerTestModal || !eventTriggerTestHeader || !eventTriggerTestPayload || !eventTriggerTestResult) {
+    return;
+  }
+
+  state.eventTrigger.pendingTestId = trigger.id;
+  eventTriggerTestHeader.innerHTML = `
+    <span class="panel-card__eyebrow">${escapeHtml(trigger.id)}</span>
+    <h3>${escapeHtml(trigger.name)}</h3>
+    <p>${escapeHtml(trigger.description || "No description")}</p>
+  `;
+  eventTriggerTestPayload.value = trigger.samplePayload || "";
+  eventTriggerTestResult.innerHTML = `
+    <p>Run a test to validate the payload against <strong>${escapeHtml(getEventTriggerMatchSummary(trigger))}</strong>.</p>
+  `;
+  openModal(eventTriggerTestModal);
+}
+
+function runEventTriggerTest() {
+  const trigger = getEventTriggerById(state.eventTrigger.pendingTestId);
+
+  if (!trigger || !eventTriggerTestPayload || !eventTriggerTestResult) {
+    return;
+  }
+
+  const payload = eventTriggerTestPayload.value.trim();
+  const evaluation = evaluateEventTrigger(trigger, payload);
+  const timestamp = new Date().toLocaleString("sv-SE").replace("T", " ").slice(0, 16);
+
+  if (evaluation.matched) {
+    trigger.lastTriggeredAt = timestamp;
+  }
+
+  const resultText = evaluation.matched ? "Matched and executed successfully" : "No action executed";
+
+  if (trigger.logEnabled) {
+    addEventTriggerLog(trigger, payload, resultText);
+  }
+
+  eventTriggerTestResult.innerHTML = `
+    <div class="info-grid">
+      <article class="info-item">
+        <span class="info-item__label">Match Result</span>
+        <strong class="info-item__value">${evaluation.matched ? "Matched" : "Not Matched"}</strong>
+      </article>
+      <article class="info-item">
+        <span class="info-item__label">Action</span>
+        <strong class="info-item__value">${escapeHtml(evaluation.actionLabel)}</strong>
+      </article>
+      <article class="info-item">
+        <span class="info-item__label">Match Rule</span>
+        <strong class="info-item__value">${escapeHtml(getEventTriggerMatchSummary(trigger))}</strong>
+      </article>
+      <article class="info-item">
+        <span class="info-item__label">Executed At</span>
+        <strong class="info-item__value">${escapeHtml(timestamp)}</strong>
+      </article>
+    </div>
+    <p>${escapeHtml(evaluation.message)}</p>
+  `;
+
+  renderEventTrigger();
+  showToast(evaluation.matched ? `Trigger test passed: ${trigger.name}` : `Trigger test did not match: ${trigger.name}`);
+}
+
+function renderEventTriggerList() {
+  const triggerRows = (state.eventTriggers || [])
+    .map((trigger) => `
+      <tr>
+        <td>
+          <div class="command-name">
+            <strong>${escapeHtml(trigger.name)}</strong>
+            <span>${escapeHtml(trigger.id)} · ${escapeHtml(trigger.description || "No description")}</span>
+          </div>
+        </td>
+        <td><span class="command-pill">${escapeHtml(trigger.sourceCategory)}</span></td>
+        <td>${escapeHtml(trigger.interfaceType)}</td>
+        <td><div class="command-data">${escapeHtml(getEventTriggerMatchSummary(trigger))}</div></td>
+        <td>${escapeHtml(getEventTriggerActionLabel(trigger))}</td>
+        <td><span class="event-trigger-status is-${trigger.status.toLowerCase()}">${escapeHtml(trigger.status)}</span></td>
+        <td>${escapeHtml(trigger.lastTriggeredAt || "Never")}</td>
+        <td>
+          <div class="command-actions">
+            <button class="command-action-btn" type="button" data-event-trigger-action="edit" data-event-trigger-id="${trigger.id}" aria-label="Edit trigger" title="Edit">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4l10-10-4-4L4 16v4Zm13-13 2 2M4 20h16" /></svg>
+            </button>
+            <button class="command-action-btn" type="button" data-event-trigger-action="test" data-event-trigger-id="${trigger.id}" aria-label="Test trigger" title="Test">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 6 10 6-10 6zM5 5v14" /></svg>
+            </button>
+            <button class="command-action-btn" type="button" data-event-trigger-action="toggle" data-event-trigger-id="${trigger.id}" aria-label="Enable or disable trigger" title="Enable / Disable">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 12h10M12 7l5 5-5 5" /></svg>
+            </button>
+            <button class="command-action-btn command-action-btn--danger" type="button" data-event-trigger-action="delete" data-event-trigger-id="${trigger.id}" aria-label="Delete trigger" title="Delete">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14M9 7V4h6v3M8 10v7M12 10v7M16 10v7M7 7l1 13h8l1-13" /></svg>
+            </button>
+          </div>
+        </td>
+      </tr>
+    `)
+    .join("");
+
+  return `
+    <div class="event-trigger-shell">
+      <div class="command-hero">
+        <div class="command-hero__copy">
+          <span class="panel-card__eyebrow">Control Automation</span>
+          <h2 id="eventTriggerPanelTitle">Event Trigger</h2>
+          <p>Receive internal or external events and trigger commands or macros based on matching rules.</p>
+        </div>
+        <button class="modal-btn modal-btn--primary" type="button" data-event-trigger-toolbar="create">Create Trigger</button>
+      </div>
+
+      <div class="event-trigger-layout">
+        <section class="panel-card command-card">
+          <div class="panel-card__header">
+            <div>
+              <span class="panel-card__eyebrow">Trigger List</span>
+              <h3>Event Trigger List</h3>
+            </div>
+            <div class="command-summary">${state.eventTriggers.length} triggers</div>
+          </div>
+          <div class="command-table-wrap">
+            <table class="command-table event-trigger-table">
+              <thead>
+                <tr>
+                  <th>Trigger Name</th>
+                  <th>Source</th>
+                  <th>Interface</th>
+                  <th>Match Rule</th>
+                  <th>Bound Action</th>
+                  <th>Status</th>
+                  <th>Last Trigger Time</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${triggerRows || `
+                  <tr>
+                    <td class="command-empty" colspan="8"><p>No triggers yet.</p></td>
+                  </tr>
+                `}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+    </div>
+  `;
+}
+
+function renderEventTriggerEditor() {
+  const draft = state.eventTrigger.draft || getEmptyEventTriggerDraft();
+  ensureEventTriggerDraftBinding(draft);
+  const boundOptions = (draft.actionType === "Macro" ? state.macros : state.commands)
+    .map((item) => `<option value="${item.id}" ${draft.boundId === item.id ? "selected" : ""}>${escapeHtml(item.name)}</option>`)
+    .join("");
+
+  return `
+    <div class="event-trigger-shell">
+      <div class="command-hero">
+        <div class="command-hero__copy">
+          <button class="modal-btn modal-btn--ghost" type="button" data-event-trigger-toolbar="back">Back</button>
+          <span class="panel-card__eyebrow">Control Automation</span>
+          <h2 id="eventTriggerPanelTitle">${draft.id ? "Edit Trigger" : "Create Trigger"}</h2>
+          <p>Define the source, matching rule, and command or macro action for this trigger.</p>
+        </div>
+        <div class="macro-editor-topbar__actions">
+          <button class="modal-btn modal-btn--ghost" type="button" data-event-trigger-toolbar="test-draft">Test Trigger</button>
+          <button class="modal-btn modal-btn--primary" type="button" data-event-trigger-toolbar="save">Save Trigger</button>
+        </div>
+      </div>
+
+      <div class="automation-form-shell">
+        <section class="panel-card automation-form-main">
+          <div class="panel-card__header">
+            <div>
+              <span class="panel-card__eyebrow">Trigger Definition</span>
+              <h3>Trigger Setup</h3>
+            </div>
+          </div>
+          <div class="network-form-grid">
+            <label class="form-field">
+              <span>Trigger Name</span>
+              <input type="text" data-event-trigger-field="name" value="${escapeHtml(draft.name)}" />
+            </label>
+            <label class="form-field">
+              <span>Status</span>
+              <select data-event-trigger-field="status">
+                <option value="Enabled" ${draft.status === "Enabled" ? "selected" : ""}>Enabled</option>
+                <option value="Disabled" ${draft.status === "Disabled" ? "selected" : ""}>Disabled</option>
+              </select>
+            </label>
+            <label class="form-field form-field--full">
+              <span>Description</span>
+              <textarea rows="3" data-event-trigger-field="description">${escapeHtml(draft.description)}</textarea>
+            </label>
+            <label class="form-field">
+              <span>Source Category</span>
+              <select data-event-trigger-field="sourceCategory">
+                <option value="Internal" ${draft.sourceCategory === "Internal" ? "selected" : ""}>Internal</option>
+                <option value="External" ${draft.sourceCategory === "External" ? "selected" : ""}>External</option>
+              </select>
+            </label>
+            <label class="form-field">
+              <span>Interface</span>
+              <select data-event-trigger-field="interfaceType">
+                <option value="System Event" ${draft.interfaceType === "System Event" ? "selected" : ""}>System Event</option>
+                <option value="Schedule Event" ${draft.interfaceType === "Schedule Event" ? "selected" : ""}>Schedule Event</option>
+                <option value="UI Event" ${draft.interfaceType === "UI Event" ? "selected" : ""}>UI Event</option>
+                <option value="HTTP" ${draft.interfaceType === "HTTP" ? "selected" : ""}>HTTP</option>
+                <option value="TCP" ${draft.interfaceType === "TCP" ? "selected" : ""}>TCP</option>
+                <option value="Telnet" ${draft.interfaceType === "Telnet" ? "selected" : ""}>Telnet</option>
+                <option value="RS-232" ${draft.interfaceType === "RS-232" ? "selected" : ""}>RS-232</option>
+              </select>
+            </label>
+            <label class="form-field">
+              <span>Match Mode</span>
+              <select data-event-trigger-field="matchMode">
+                <option value="exact" ${draft.matchMode === "exact" ? "selected" : ""}>Exact Match</option>
+                <option value="keyword" ${draft.matchMode === "keyword" ? "selected" : ""}>Keyword Match</option>
+                <option value="prefix" ${draft.matchMode === "prefix" ? "selected" : ""}>Prefix Match</option>
+                <option value="parameter" ${draft.matchMode === "parameter" ? "selected" : ""}>Parameter Match</option>
+              </select>
+            </label>
+            <label class="form-field form-field--full">
+              <span>Event Pattern</span>
+              <input type="text" data-event-trigger-field="pattern" value="${escapeHtml(draft.pattern)}" placeholder="Example: occupancy=occupied" />
+            </label>
+            <label class="form-field">
+              <span>Action Type</span>
+              <select data-event-trigger-field="actionType">
+                <option value="Command" ${draft.actionType === "Command" ? "selected" : ""}>Command</option>
+                <option value="Macro" ${draft.actionType === "Macro" ? "selected" : ""}>Macro</option>
+              </select>
+            </label>
+            <label class="form-field">
+              <span>Bound ${escapeHtml(draft.actionType)}</span>
+              <select data-event-trigger-field="boundId">
+                ${boundOptions}
+              </select>
+            </label>
+            <label class="form-field">
+              <span>Cooldown (sec)</span>
+              <input type="number" min="0" data-event-trigger-field="cooldown" value="${escapeHtml(draft.cooldown)}" />
+            </label>
+            <label class="form-field">
+              <span>Retry Count</span>
+              <input type="number" min="0" data-event-trigger-field="retryCount" value="${escapeHtml(draft.retryCount)}" />
+            </label>
+            <label class="form-field form-field--full">
+              <span>Sample Payload</span>
+              <textarea rows="4" data-event-trigger-field="samplePayload">${escapeHtml(draft.samplePayload)}</textarea>
+            </label>
+          </div>
+          <div class="event-trigger-inline-options">
+            <label class="checkbox-field">
+              <input type="checkbox" data-event-trigger-flag="allowDuplicate" ${draft.allowDuplicate ? "checked" : ""} />
+              <span>Allow duplicate trigger execution</span>
+            </label>
+            <label class="checkbox-field">
+              <input type="checkbox" data-event-trigger-flag="logEnabled" ${draft.logEnabled ? "checked" : ""} />
+              <span>Record trigger log</span>
+            </label>
+          </div>
+        </section>
+
+        <aside class="panel-card automation-preview-panel">
+          <div class="panel-card__header">
+            <div>
+              <span class="panel-card__eyebrow">Preview</span>
+              <h3>Execution Preview</h3>
+            </div>
+          </div>
+          <div class="automation-preview-stack">
+            <div class="automation-preview-card">
+              <span>Source</span>
+              <strong>${escapeHtml(draft.sourceCategory)} · ${escapeHtml(draft.interfaceType)}</strong>
+            </div>
+            <div class="automation-preview-card">
+              <span>Match Rule</span>
+              <strong>${escapeHtml(getEventTriggerMatchSummary(draft))}</strong>
+            </div>
+            <div class="automation-preview-card">
+              <span>Action</span>
+              <strong>${escapeHtml(getEventTriggerActionLabel(draft))}</strong>
+            </div>
+            <div class="automation-preview-card">
+              <span>Scenario Example</span>
+              <strong>${escapeHtml(draft.samplePayload || "Use the sample payload to test this trigger.")}</strong>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  `;
+}
+
+function renderEventTrigger() {
+  if (!eventTriggerContent) {
+    return;
+  }
+
+  eventTriggerContent.innerHTML = state.eventTrigger.view === "editor"
+    ? renderEventTriggerEditor()
+    : renderEventTriggerList();
 }
 
 function renderCommandManagement() {
@@ -4940,6 +5607,111 @@ if (discoveryTableBody) {
   });
 }
 
+if (eventTriggerContent) {
+  eventTriggerContent.addEventListener("click", (event) => {
+    const toolbarButton = event.target.closest("[data-event-trigger-toolbar]");
+    const actionButton = event.target.closest("[data-event-trigger-action]");
+
+    if (toolbarButton) {
+      const action = toolbarButton.getAttribute("data-event-trigger-toolbar") || "";
+
+      if (action === "create") {
+        openEventTriggerEditor();
+        return;
+      }
+
+      if (action === "back") {
+        closeEventTriggerEditor();
+        return;
+      }
+
+      if (action === "save") {
+        saveEventTriggerDraft();
+        return;
+      }
+
+      if (action === "test-draft") {
+        if (state.eventTrigger.draft?.id) {
+          openEventTriggerTestModal(state.eventTrigger.draft.id);
+          return;
+        }
+
+        showToast("Save the trigger first before running the test flow.");
+        return;
+      }
+    }
+
+    if (!actionButton) {
+      return;
+    }
+
+    const action = actionButton.getAttribute("data-event-trigger-action") || "";
+    const triggerId = actionButton.getAttribute("data-event-trigger-id") || "";
+
+    if (!triggerId) {
+      return;
+    }
+
+    if (action === "edit") {
+      openEventTriggerEditor(triggerId);
+      return;
+    }
+
+    if (action === "test") {
+      openEventTriggerTestModal(triggerId);
+      return;
+    }
+
+    if (action === "toggle") {
+      toggleEventTriggerStatus(triggerId);
+      return;
+    }
+
+    if (action === "delete") {
+      deleteEventTrigger(triggerId);
+    }
+  });
+
+  eventTriggerContent.addEventListener("input", (event) => {
+    if (!state.eventTrigger.draft) {
+      return;
+    }
+
+    const field = event.target.getAttribute("data-event-trigger-field");
+
+    if (!field) {
+      return;
+    }
+
+    state.eventTrigger.draft[field] = event.target.value;
+  });
+
+  eventTriggerContent.addEventListener("change", (event) => {
+    if (!state.eventTrigger.draft) {
+      return;
+    }
+
+    const field = event.target.getAttribute("data-event-trigger-field");
+    const flag = event.target.getAttribute("data-event-trigger-flag");
+
+    if (field) {
+      state.eventTrigger.draft[field] = event.target.value;
+
+      if (field === "actionType") {
+        ensureEventTriggerDraftBinding(state.eventTrigger.draft);
+      }
+
+      renderEventTrigger();
+      return;
+    }
+
+    if (flag) {
+      state.eventTrigger.draft[flag] = event.target.checked;
+      renderEventTrigger();
+    }
+  });
+}
+
 if (debugConsoleForm) {
   debugConsoleForm.addEventListener("submit", (event) => {
     event.preventDefault();
@@ -4949,6 +5721,13 @@ if (debugConsoleForm) {
       debugConsoleInput.value = "";
       debugConsoleInput.focus();
     }
+  });
+}
+
+if (eventTriggerTestForm) {
+  eventTriggerTestForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    runEventTriggerTest();
   });
 }
 
@@ -5521,7 +6300,7 @@ document.querySelectorAll("[data-close-modal]").forEach((button) => {
   });
 });
 
-[signinModal, settingsModal, wifiPasswordModal, commandEditorModal, macroDeleteModal, adminConfirmModal, macroInsertActionModal, macroReviewModal, importDriverModal, deviceDeleteModal, deviceReviewModal, discoveryDetailModal, document.getElementById("scenarioLayoutConfirmModal")].forEach((modal) => {
+[signinModal, settingsModal, wifiPasswordModal, commandEditorModal, macroDeleteModal, adminConfirmModal, macroInsertActionModal, macroReviewModal, importDriverModal, deviceDeleteModal, deviceReviewModal, eventTriggerTestModal, discoveryDetailModal, document.getElementById("scenarioLayoutConfirmModal")].forEach((modal) => {
   modal.addEventListener("click", (event) => {
     if (event.target === modal) {
       if (modal === macroInsertActionModal) {
@@ -5553,6 +6332,7 @@ document.addEventListener("keydown", (event) => {
     closeModal(importDriverModal);
     closeModal(deviceDeleteModal);
     closeModal(deviceReviewModal);
+    closeModal(eventTriggerTestModal);
     closeModal(discoveryDetailModal);
     closeModal(document.getElementById("scenarioLayoutConfirmModal"));
     closeModal(commandEditorModal);
@@ -5567,6 +6347,7 @@ renderDriverLibrary();
 renderDeviceIntegration();
 renderCommandManagement();
 renderMacroManagement();
+renderEventTrigger();
 renderDeveloperTools();
 syncCommandEditorInterfaceFields();
 updateContentStage("Home", true);
