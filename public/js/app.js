@@ -4,6 +4,7 @@ const navParents = document.querySelectorAll(".nav__parent");
 const navChildren = document.querySelectorAll(".nav__child");
 const navGroups = document.querySelectorAll(".nav-group");
 const pageTitle = document.getElementById("pageTitle");
+const contentCanvas = document.querySelector(".content-canvas");
 const languageSelect = document.getElementById("languageSelect");
 const settingsButton = document.getElementById("settingsButton");
 const userMenuTrigger = document.getElementById("userMenuTrigger");
@@ -195,6 +196,7 @@ const state = {
   isLoggedIn: false,
   language: languageSelect.value,
   toastTimer: null,
+  currentSectionTitle: "Home",
   currentPadPage: 0,
   padDragStartX: 0,
   padDragDeltaX: 0,
@@ -242,6 +244,15 @@ const state = {
     accumulator[key] = "";
     return accumulator;
   }, {}),
+  annotations: loadAnnotations(),
+  annotationDraftId: "",
+  activeAnnotationPageKey: getAnnotationPageKey("Home"),
+  annotationDrag: {
+    noteId: "",
+    pointerId: null,
+    offsetX: 0,
+    offsetY: 0,
+  },
   pendingWifiSSID: null,
   commands: [
     {
@@ -821,6 +832,230 @@ const state = {
     logs: [],
   },
 };
+
+function loadAnnotations() {
+  try {
+    const storedValue = window.localStorage.getItem("wireframe-annotations");
+    const parsedValue = storedValue ? JSON.parse(storedValue) : {};
+    return parsedValue && typeof parsedValue === "object" ? parsedValue : {};
+  } catch (error) {
+    return {};
+  }
+}
+
+function saveAnnotations() {
+  window.localStorage.setItem("wireframe-annotations", JSON.stringify(state.annotations));
+}
+
+function getAnnotationPageKey(title = state.currentSectionTitle) {
+  return `section::${title}`;
+}
+
+function sanitizeAnnotationNote(note, fallbackPosition = { x: 24, y: 24 }) {
+  return {
+    id: String(note?.id || `note-${Date.now()}`),
+    text: typeof note?.text === "string" ? note.text : "",
+    x: Number.isFinite(note?.x) ? note.x : fallbackPosition.x,
+    y: Number.isFinite(note?.y) ? note.y : fallbackPosition.y,
+    createdAt: note?.createdAt || new Date().toISOString(),
+  };
+}
+
+function getAnnotationsForPage(pageKey = state.activeAnnotationPageKey) {
+  if (!Array.isArray(state.annotations[pageKey])) {
+    state.annotations[pageKey] = [];
+  }
+
+  return state.annotations[pageKey];
+}
+
+function clampAnnotationPosition(note, canvasRect = contentCanvas?.getBoundingClientRect()) {
+  if (!contentCanvas || !canvasRect) {
+    return note;
+  }
+
+  const noteWidth = 220;
+  const noteHeight = 220;
+  const maxX = Math.max(12, contentCanvas.scrollWidth - noteWidth - 12);
+  const maxY = Math.max(12, contentCanvas.scrollHeight - noteHeight - 12);
+
+  note.x = Math.min(Math.max(12, note.x), maxX);
+  note.y = Math.min(Math.max(76, note.y), maxY);
+  return note;
+}
+
+function deleteAnnotation(noteId) {
+  const notes = getAnnotationsForPage();
+  const nextNotes = notes.filter((note) => note.id !== noteId);
+  state.annotations[state.activeAnnotationPageKey] = nextNotes;
+  saveAnnotations();
+  renderAnnotations();
+}
+
+function updateAnnotationText(noteId, text) {
+  const note = getAnnotationsForPage().find((item) => item.id === noteId);
+
+  if (!note) {
+    return;
+  }
+
+  note.text = text;
+  saveAnnotations();
+}
+
+function setActiveAnnotationPage(title = state.currentSectionTitle) {
+  state.activeAnnotationPageKey = getAnnotationPageKey(title);
+  getAnnotationsForPage(state.activeAnnotationPageKey);
+  renderAnnotations();
+}
+
+function buildAnnotationElement(note) {
+  const noteElement = document.createElement("article");
+  noteElement.className = "wireframe-note";
+  noteElement.dataset.noteId = note.id;
+  noteElement.style.left = `${note.x}px`;
+  noteElement.style.top = `${note.y}px`;
+
+  noteElement.innerHTML = `
+    <div class="wireframe-note__header">
+      <span class="wireframe-note__title">Note</span>
+      <button class="wireframe-note__delete" type="button" aria-label="Delete note">&times;</button>
+    </div>
+    <textarea class="wireframe-note__textarea" placeholder="Enter note..."></textarea>
+  `;
+
+  const textarea = noteElement.querySelector(".wireframe-note__textarea");
+  const deleteButton = noteElement.querySelector(".wireframe-note__delete");
+  const header = noteElement.querySelector(".wireframe-note__header");
+
+  if (textarea) {
+    textarea.value = note.text;
+    textarea.addEventListener("input", () => {
+      updateAnnotationText(note.id, textarea.value);
+    });
+  }
+
+  if (deleteButton) {
+    deleteButton.addEventListener("pointerdown", (event) => {
+      event.stopPropagation();
+    });
+
+    deleteButton.addEventListener("click", () => {
+      deleteAnnotation(note.id);
+    });
+  }
+
+  if (header) {
+    header.addEventListener("pointerdown", (event) => {
+      const currentNote = getAnnotationsForPage().find((item) => item.id === note.id);
+
+      if (!currentNote) {
+        return;
+      }
+
+      state.annotationDrag.noteId = currentNote.id;
+      state.annotationDrag.pointerId = event.pointerId;
+      state.annotationDrag.offsetX = event.clientX - currentNote.x;
+      state.annotationDrag.offsetY = event.clientY - currentNote.y;
+      noteElement.classList.add("is-dragging");
+      header.setPointerCapture(event.pointerId);
+      event.preventDefault();
+    });
+
+    header.addEventListener("pointermove", (event) => {
+      if (
+        state.annotationDrag.noteId !== note.id ||
+        state.annotationDrag.pointerId !== event.pointerId
+      ) {
+        return;
+      }
+
+      const currentNote = getAnnotationsForPage().find((item) => item.id === note.id);
+      const canvasRect = contentCanvas?.getBoundingClientRect();
+
+      if (!currentNote || !canvasRect) {
+        return;
+      }
+
+      currentNote.x = event.clientX - canvasRect.left + contentCanvas.scrollLeft - state.annotationDrag.offsetX;
+      currentNote.y = event.clientY - canvasRect.top + contentCanvas.scrollTop - state.annotationDrag.offsetY;
+      clampAnnotationPosition(currentNote, canvasRect);
+      noteElement.style.left = `${currentNote.x}px`;
+      noteElement.style.top = `${currentNote.y}px`;
+    });
+
+    const stopDrag = (event) => {
+      if (
+        state.annotationDrag.noteId !== note.id ||
+        state.annotationDrag.pointerId !== event.pointerId
+      ) {
+        return;
+      }
+
+      noteElement.classList.remove("is-dragging");
+      state.annotationDrag.noteId = "";
+      state.annotationDrag.pointerId = null;
+      saveAnnotations();
+    };
+
+    header.addEventListener("pointerup", stopDrag);
+    header.addEventListener("pointercancel", stopDrag);
+  }
+
+  return noteElement;
+}
+
+function renderAnnotations() {
+  if (!contentCanvas) {
+    return;
+  }
+
+  let layer = contentCanvas.querySelector(".wireframe-notes-layer");
+
+  if (!layer) {
+    layer = document.createElement("div");
+    layer.className = "wireframe-notes-layer";
+    contentCanvas.appendChild(layer);
+  }
+
+  layer.innerHTML = "";
+
+  getAnnotationsForPage()
+    .map((note) => sanitizeAnnotationNote(note))
+    .forEach((note) => {
+      clampAnnotationPosition(note);
+      layer.appendChild(buildAnnotationElement(note));
+    });
+}
+
+function createAnnotationAtPosition(clientX, clientY) {
+  if (!contentCanvas) {
+    return;
+  }
+
+  const canvasRect = contentCanvas.getBoundingClientRect();
+  const note = sanitizeAnnotationNote(
+    {
+      id: `note-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      text: "",
+      x: clientX - canvasRect.left + contentCanvas.scrollLeft - 110,
+      y: clientY - canvasRect.top + contentCanvas.scrollTop - 28,
+      createdAt: new Date().toISOString(),
+    },
+    { x: 24, y: 84 }
+  );
+
+  clampAnnotationPosition(note, canvasRect);
+  getAnnotationsForPage().push(note);
+  state.annotationDraftId = note.id;
+  saveAnnotations();
+  renderAnnotations();
+
+  window.requestAnimationFrame(() => {
+    const textarea = contentCanvas.querySelector(`[data-note-id="${note.id}"] .wireframe-note__textarea`);
+    textarea?.focus();
+  });
+}
 
 const discoveryMockDevices = [
   {
@@ -4817,11 +5052,14 @@ function navigateToSection(title, isHome = false, options = {}) {
   }
 
   pageTitle.textContent = title;
+  state.currentSectionTitle = title;
   updateContentStage(title, isHome);
 
   if (options.syncRoute !== false && typeof window.syncAppRouteForSection === "function") {
     window.syncAppRouteForSection(title);
   }
+
+  setActiveAnnotationPage(title);
 }
 
 navToggle.addEventListener("click", () => {
@@ -6426,6 +6664,20 @@ if (wifiPasswordForm) {
   });
 }
 
+if (contentCanvas) {
+  contentCanvas.addEventListener("contextmenu", (event) => {
+    if (
+      event.target.closest(".wireframe-note") ||
+      event.target.closest("input, textarea, select, button, [contenteditable='true']")
+    ) {
+      return;
+    }
+
+    event.preventDefault();
+    createAnnotationAtPosition(event.clientX, event.clientY);
+  });
+}
+
 document.querySelectorAll("[data-close-modal]").forEach((button) => {
   button.addEventListener("click", () => {
     const modalId = button.getAttribute("data-close-modal");
@@ -6494,4 +6746,5 @@ renderIconManagementPanel();
 renderDeveloperTools();
 syncCommandEditorInterfaceFields();
 updateContentStage("Home", true);
+setActiveAnnotationPage("Home");
 updatePadPage(0);

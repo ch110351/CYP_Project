@@ -407,6 +407,7 @@ a {
 .content-canvas {
   min-height: calc(100vh - var(--topbar-height) - 28px);
   padding: 20px 22px;
+  position: relative;
   border: 1px solid var(--line);
   border-radius: var(--radius-lg);
   background:
@@ -453,6 +454,81 @@ a {
 
 .content-stage {
   padding-top: 16px;
+}
+
+.wireframe-notes-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  pointer-events: none;
+}
+
+.wireframe-note {
+  position: absolute;
+  width: 220px;
+  min-height: 220px;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(122, 92, 0, 0.28);
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(255, 233, 122, 0.82), rgba(255, 216, 76, 0.78));
+  color: #111111;
+  box-shadow: 0 14px 28px rgba(86, 67, 0, 0.22);
+  pointer-events: auto;
+}
+
+.wireframe-note.is-dragging {
+  box-shadow: 0 18px 30px rgba(86, 67, 0, 0.3);
+}
+
+.wireframe-note__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px 8px;
+  cursor: grab;
+  user-select: none;
+}
+
+.wireframe-note__title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.wireframe-note__delete {
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 999px;
+  background: rgba(17, 17, 17, 0.1);
+  color: #111111;
+  font-size: 1.05rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.wireframe-note__textarea {
+  flex: 1;
+  min-height: 164px;
+  padding: 0 12px 12px;
+  border: none;
+  background: transparent;
+  color: #111111;
+  font: inherit;
+  font-size: 0.95rem;
+  line-height: 1.45;
+  resize: none;
+}
+
+.wireframe-note__textarea:focus {
+  outline: none;
+}
+
+.wireframe-note__textarea::placeholder {
+  color: rgba(17, 17, 17, 0.58);
 }
 
 .content-stage > * + * {
