@@ -175,6 +175,9 @@
                 <a class="nav__child" href="#" data-section="Setting" data-title="Admin">
                   Admin
                 </a>
+                <a class="nav__child" href="#" data-section="Setting" data-title="Icon Management">
+                  Icon Management
+                </a>
                 <a class="nav__child" href="#" data-section="Setting" data-title="Developer Tool">
                   Developer Tool
                 </a>
@@ -1203,6 +1206,31 @@
                     </div>
                   </section>
                 </div>
+              </section>
+
+              <section class="icon-management-panel is-hidden" id="iconManagementPanel" aria-labelledby="iconManagementPanelTitle">
+                <div class="command-hero">
+                  <div class="command-hero__copy">
+                    <span class="panel-card__eyebrow">Theme & Assets</span>
+                    <h2 id="iconManagementPanelTitle">Icon Management</h2>
+                    <p>Manage uploaded icons for scenario buttons and reusable UI assets.</p>
+                  </div>
+                  <div class="icon-management-toolbar">
+                    <div class="command-summary" id="iconCountSummary">0/100</div>
+                    <button class="modal-btn modal-btn--primary" id="uploadIconButton" type="button">Upload Icon</button>
+                    <input id="iconUploadInput" type="file" accept="image/*" hidden />
+                  </div>
+                </div>
+
+                <section class="panel-card icon-library-card" aria-labelledby="iconLibraryTitle">
+                  <div class="panel-card__header">
+                    <div>
+                      <span class="panel-card__eyebrow">Icon Library</span>
+                      <h3 id="iconLibraryTitle">Uploaded Icon List</h3>
+                    </div>
+                  </div>
+                  <div class="icon-library-grid" id="iconLibraryGrid"></div>
+                </section>
               </section>
 
               <section class="developer-tools-panel is-hidden" id="developerToolsPanel" aria-labelledby="developerToolsPanelTitle">

@@ -74,6 +74,11 @@ const deviceReviewContent = document.getElementById("deviceReviewContent");
 const displayPanel = document.getElementById("displayPanel");
 const networkPanel = document.getElementById("networkPanel");
 const adminPanel = document.getElementById("adminPanel");
+const iconManagementPanel = document.getElementById("iconManagementPanel");
+const iconCountSummary = document.getElementById("iconCountSummary");
+const uploadIconButton = document.getElementById("uploadIconButton");
+const iconUploadInput = document.getElementById("iconUploadInput");
+const iconLibraryGrid = document.getElementById("iconLibraryGrid");
 const developerToolsPanel = document.getElementById("developerToolsPanel");
 const developerToolDiscoveryTab = document.getElementById("developerToolDiscoveryTab");
 const developerToolConsoleTab = document.getElementById("developerToolConsoleTab");
@@ -785,6 +790,19 @@ const state = {
     firmwareMode: "ota",
     firmwareFileName: "",
     pendingAction: "",
+  },
+  iconManagement: {
+    maxIcons: 100,
+    icons: [
+      { id: "ICON-001", name: "Display", type: "symbol", value: "tv" },
+      { id: "ICON-002", name: "Lighting", type: "symbol", value: "lightbulb" },
+      { id: "ICON-003", name: "Air", type: "symbol", value: "air" },
+      { id: "ICON-004", name: "Volume", type: "symbol", value: "volume_up" },
+      { id: "ICON-005", name: "Curtain", type: "symbol", value: "curtains" },
+      { id: "ICON-006", name: "Camera", type: "symbol", value: "videocam" },
+      { id: "ICON-007", name: "Door", type: "symbol", value: "door_front" },
+      { id: "ICON-008", name: "CYP Logo", type: "image", value: "/assets/cyp-logo.png" },
+    ],
   },
   developerTools: {
     activeView: "discovery",
@@ -3380,6 +3398,7 @@ function updateContentStage(sectionTitle, isHome) {
   const isDisplay = sectionTitle === "Pad Display Setting";
   const isNetwork = sectionTitle === "Network";
   const isAdmin = sectionTitle === "Admin";
+  const isIconManagement = sectionTitle === "Icon Management";
   const isDeveloperTool = sectionTitle === "Developer Tool";
   homeDashboard.classList.toggle("is-hidden", !isHome);
   contentPlaceholder.classList.toggle(
@@ -3415,11 +3434,13 @@ function updateContentStage(sectionTitle, isHome) {
       isDisplay ||
       isNetwork ||
       isAdmin ||
+      isIconManagement ||
       isDeveloperTool
   );
   displayPanel.classList.toggle("is-hidden", !isDisplay);
   networkPanel.classList.toggle("is-hidden", !isNetwork);
   adminPanel.classList.toggle("is-hidden", !isAdmin);
+  iconManagementPanel.classList.toggle("is-hidden", !isIconManagement);
   developerToolsPanel.classList.toggle("is-hidden", !isDeveloperTool);
 
   if (isDeviceIntegration) {
@@ -3478,6 +3499,11 @@ function updateContentStage(sectionTitle, isHome) {
 
   if (isAdmin) {
     renderAdminPanel();
+    return;
+  }
+
+  if (isIconManagement) {
+    renderIconManagementPanel();
     return;
   }
 
@@ -4413,6 +4439,72 @@ function renderAdminPanel() {
   firmwareSummary.textContent = state.admin.firmwareMode === "manual" && state.admin.firmwareFileName
     ? `v0.2.6 / Manual ${state.admin.firmwareFileName}`
     : "v0.2.6 / OTA Ready";
+}
+
+function renderIconPreview(icon) {
+  if (icon.type === "image") {
+    return `<img src="${escapeHtml(icon.value)}" alt="${escapeHtml(icon.name)}" class="icon-library-item__image" />`;
+  }
+
+  return `<span class="material-symbols-outlined icon-library-item__symbol" aria-hidden="true">${escapeHtml(icon.value)}</span>`;
+}
+
+function renderIconManagementPanel() {
+  if (!iconLibraryGrid || !iconCountSummary) {
+    return;
+  }
+
+  const { icons, maxIcons } = state.iconManagement;
+  iconCountSummary.textContent = `${icons.length}/${maxIcons}`;
+
+  if (!icons.length) {
+    iconLibraryGrid.innerHTML = `
+      <div class="macro-flow-empty">
+        <strong>No icons uploaded yet.</strong>
+      </div>
+    `;
+    return;
+  }
+
+  iconLibraryGrid.innerHTML = icons
+    .map((icon) => `
+      <article class="icon-library-item">
+        <div class="icon-library-item__preview">
+          ${renderIconPreview(icon)}
+        </div>
+        <div class="icon-library-item__copy">
+          <strong>${escapeHtml(icon.name)}</strong>
+          <span>${escapeHtml(icon.id)}</span>
+        </div>
+        <button class="command-action-btn command-action-btn--danger" type="button" data-icon-delete="${icon.id}" aria-label="Delete icon" title="Delete">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M5 7h14M9 7V4h6v3M8 10v7M12 10v7M16 10v7M7 7l1 13h8l1-13" />
+          </svg>
+        </button>
+      </article>
+    `)
+    .join("");
+}
+
+function generateIconId() {
+  const nextNumber = state.iconManagement.icons.reduce((maxValue, icon) => {
+    const matched = String(icon.id || "").match(/(\d+)$/);
+    return Math.max(maxValue, matched ? Number(matched[1]) : 0);
+  }, 0) + 1;
+
+  return `ICON-${String(nextNumber).padStart(3, "0")}`;
+}
+
+function deleteIcon(iconId) {
+  const icon = state.iconManagement.icons.find((item) => item.id === iconId);
+
+  if (!icon) {
+    return;
+  }
+
+  state.iconManagement.icons = state.iconManagement.icons.filter((item) => item.id !== iconId);
+  renderIconManagementPanel();
+  showToast(`${icon.name} deleted.`);
 }
 
 function triggerDownload(filename, content, type) {
@@ -5731,6 +5823,56 @@ if (eventTriggerTestForm) {
   });
 }
 
+if (iconLibraryGrid) {
+  iconLibraryGrid.addEventListener("click", (event) => {
+    const deleteButton = event.target.closest("[data-icon-delete]");
+
+    if (!deleteButton) {
+      return;
+    }
+
+    deleteIcon(deleteButton.getAttribute("data-icon-delete") || "");
+  });
+}
+
+if (uploadIconButton) {
+  uploadIconButton.addEventListener("click", () => {
+    if (state.iconManagement.icons.length >= state.iconManagement.maxIcons) {
+      showToast("Icon library is full.");
+      return;
+    }
+
+    iconUploadInput?.click();
+  });
+}
+
+if (iconUploadInput) {
+  iconUploadInput.addEventListener("change", () => {
+    const file = iconUploadInput.files?.[0];
+
+    if (!file) {
+      return;
+    }
+
+    if (state.iconManagement.icons.length >= state.iconManagement.maxIcons) {
+      showToast("Icon library is full.");
+      iconUploadInput.value = "";
+      return;
+    }
+
+    const objectUrl = URL.createObjectURL(file);
+    state.iconManagement.icons.unshift({
+      id: generateIconId(),
+      name: file.name.replace(/\.[^.]+$/, ""),
+      type: "image",
+      value: objectUrl,
+    });
+    renderIconManagementPanel();
+    showToast(`${file.name} uploaded.`);
+    iconUploadInput.value = "";
+  });
+}
+
 if (macroBasicNameInput) {
   macroBasicNameInput.addEventListener("input", () => {
     if (!state.macroDraft) {
@@ -6348,6 +6490,7 @@ renderDeviceIntegration();
 renderCommandManagement();
 renderMacroManagement();
 renderEventTrigger();
+renderIconManagementPanel();
 renderDeveloperTools();
 syncCommandEditorInterfaceFields();
 updateContentStage("Home", true);
