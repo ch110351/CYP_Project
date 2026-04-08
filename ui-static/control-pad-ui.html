@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Control Pad UI</title>
+    <link rel="stylesheet" href="./css/ui-static.css" />
+  </head>
+  <body>
+    <div class="shell">
+      <header class="topbar">
+        <div class="brand-box"><img src="./assets/cyp-logo.png" alt="CYP logo" /></div>
+        <div class="topbar-note">Static page for UI drawing</div>
+      </header>
+      <div class="workspace">
+        <aside class="sidebar">
+          <div class="nav-group">
+            <p class="nav-title">Dashboard</p>
+            <a class="nav-link is-active" href="./control-pad-ui.html">Control Pad UI</a>
+          </div>
+        </aside>
+        <main class="main">
+          <section class="canvas">
+            <span class="eyebrow">Quick Control</span>
+            <h1 class="page-title">Control Pad UI</h1>
+            <div class="page-hero">
+              <div>
+                <p>Tablet style runtime control page for room operation, favorites, and page switching.</p>
+              </div>
+              <div class="actions"><span class="btn">Preview Theme</span><span class="btn btn-primary">Publish Layout</span></div>
+            </div>
+            <div class="split" style="margin-top:18px">
+              <section class="page-card">
+                <div class="panel-header"><span class="eyebrow">Page Tabs</span><h2 class="panel-title">Control Pages</h2></div>
+                <div class="tag-row">
+                  <span class="tag">Display</span>
+                  <span class="tag">Source</span>
+                  <span class="tag">Audio</span>
+                  <span class="tag">Camera</span>
+                  <span class="tag">Room Mode</span>
+                </div>
+                <div class="placeholder-screen">
+                  <div class="mini-grid">
+                    <div class="summary-card"><span>Button 01</span><strong>Power On</strong></div>
+                    <div class="summary-card"><span>Button 02</span><strong>HDMI 1</strong></div>
+                    <div class="summary-card"><span>Button 03</span><strong>Volume +</strong></div>
+                    <div class="summary-card"><span>Button 04</span><strong>Mute</strong></div>
+                    <div class="summary-card"><span>Button 05</span><strong>Scene A</strong></div>
+                    <div class="summary-card"><span>Button 06</span><strong>Shutdown</strong></div>
+                  </div>
+                </div>
+              </section>
+              <section class="page-card">
+                <div class="panel-header"><span class="eyebrow">Runtime Status</span><h2 class="panel-title">System Feedback</h2></div>
+                <div class="summary-grid">
+                  <div class="summary-card"><span>Active Room</span><strong>Meeting Room A</strong></div>
+                  <div class="summary-card"><span>Source</span><strong>Wireless Share</strong></div>
+                  <div class="summary-card"><span>Volume</span><strong>62%</strong></div>
+                  <div class="summary-card"><span>Occupancy</span><strong>Online</strong></div>
+                </div>
+              </section>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>

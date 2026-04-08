@@ -948,15 +948,18 @@ function buildAnnotationElement(note) {
   if (header) {
     header.addEventListener("pointerdown", (event) => {
       const currentNote = getAnnotationsForPage().find((item) => item.id === note.id);
+      const canvasRect = contentCanvas?.getBoundingClientRect();
 
-      if (!currentNote) {
+      if (!currentNote || !canvasRect) {
         return;
       }
 
       state.annotationDrag.noteId = currentNote.id;
       state.annotationDrag.pointerId = event.pointerId;
-      state.annotationDrag.offsetX = event.clientX - currentNote.x;
-      state.annotationDrag.offsetY = event.clientY - currentNote.y;
+      state.annotationDrag.offsetX =
+        event.clientX - canvasRect.left + contentCanvas.scrollLeft - currentNote.x;
+      state.annotationDrag.offsetY =
+        event.clientY - canvasRect.top + contentCanvas.scrollTop - currentNote.y;
       noteElement.classList.add("is-dragging");
       header.setPointerCapture(event.pointerId);
       event.preventDefault();

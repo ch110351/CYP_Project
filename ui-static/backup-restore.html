@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Backup Restore</title>
+    <link rel="stylesheet" href="./css/ui-static.css" />
+  </head>
+  <body>
+    <div class="shell">
+      <header class="topbar">
+        <div class="brand-box"><img src="./assets/cyp-logo.png" alt="CYP logo" /></div>
+        <div class="topbar-note">Static page for UI drawing</div>
+      </header>
+      <div class="workspace">
+        <aside class="sidebar">
+          <div class="nav-group">
+            <p class="nav-title">Setting</p>
+            <a class="nav-link is-active" href="./backup-restore.html">Backup / Restore</a>
+          </div>
+        </aside>
+        <main class="main">
+          <section class="canvas">
+            <span class="eyebrow">System Management</span>
+            <h1 class="page-title">Backup / Restore</h1>
+            <div class="split" style="margin-top:18px">
+              <section class="page-card">
+                <div class="panel-header"><span class="eyebrow">Backup</span><h2 class="panel-title">Export Configuration</h2></div>
+                <div class="list">
+                  <div class="list-item"><strong>System Config</strong><div class="muted">Devices, commands, macros, scenes</div></div>
+                  <div class="list-item"><strong>User Data</strong><div class="muted">Roles, permissions, audit trail selection</div></div>
+                  <div class="list-item"><strong>Media Assets</strong><div class="muted">Icons and wallpapers</div></div>
+                </div>
+              </section>
+              <section class="page-card">
+                <div class="panel-header"><span class="eyebrow">Restore</span><h2 class="panel-title">Import Package</h2></div>
+                <div class="notice">Restore flow should surface package version, device model compatibility, and overwrite scope before confirmation.</div>
+                <div class="tag-row"><span class="tag">Version Check</span><span class="tag">Dry Validate</span><span class="tag">Rollback Point</span></div>
+              </section>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>

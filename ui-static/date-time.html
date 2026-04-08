@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Date and Time</title>
+    <link rel="stylesheet" href="./css/ui-static.css" />
+  </head>
+  <body>
+    <div class="shell">
+      <header class="topbar">
+        <div class="brand-box"><img src="./assets/cyp-logo.png" alt="CYP logo" /></div>
+        <div class="topbar-note">Static page for UI drawing</div>
+      </header>
+      <div class="workspace">
+        <aside class="sidebar">
+          <div class="nav-group">
+            <p class="nav-title">Setting</p>
+            <a class="nav-link is-active" href="./date-time.html">Date &amp; Time</a>
+          </div>
+        </aside>
+        <main class="main">
+          <section class="canvas">
+            <span class="eyebrow">System Management</span>
+            <h1 class="page-title">Date and Time</h1>
+            <div class="form-shell" style="margin-top:18px">
+              <section class="page-card form-panel">
+                <div class="panel-header"><span class="eyebrow">Clock</span><h2 class="panel-title">Time Source</h2></div>
+                <div class="form-grid">
+                  <label class="field"><span>Mode</span><select><option selected>NTP</option><option>Manual</option></select></label>
+                  <label class="field"><span>Format</span><select><option selected>24 Hour</option><option>12 Hour</option></select></label>
+                  <label class="field"><span>NTP Server</span><input type="text" value="pool.ntp.org" /></label>
+                  <label class="field"><span>Timezone</span><select><option selected>GMT+8 Taipei</option></select></label>
+                </div>
+              </section>
+              <section class="page-card preview-panel">
+                <div class="panel-header"><span class="eyebrow">Preview</span><h2 class="panel-title">Current Display</h2></div>
+                <div class="preview-card"><span>Date</span><strong>2026-04-08</strong></div>
+                <div class="preview-card"><span>Time</span><strong>14:48:25</strong></div>
+                <div class="preview-card"><span>Source</span><strong>NTP Synchronized</strong></div>
+              </section>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>

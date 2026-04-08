@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Firmware Upgrade</title>
+    <link rel="stylesheet" href="./css/ui-static.css" />
+  </head>
+  <body>
+    <div class="shell">
+      <header class="topbar">
+        <div class="brand-box"><img src="./assets/cyp-logo.png" alt="CYP logo" /></div>
+        <div class="topbar-note">Static page for UI drawing</div>
+      </header>
+      <div class="workspace">
+        <aside class="sidebar">
+          <div class="nav-group">
+            <p class="nav-title">Setting</p>
+            <a class="nav-link is-active" href="./firmware-upgrade.html">FW Upgrade</a>
+          </div>
+        </aside>
+        <main class="main">
+          <section class="canvas">
+            <span class="eyebrow">System Management</span>
+            <h1 class="page-title">Firmware Upgrade</h1>
+            <div class="split" style="margin-top:18px">
+              <section class="page-card">
+                <div class="panel-header"><span class="eyebrow">OTA</span><h2 class="panel-title">Online Upgrade</h2></div>
+                <div class="preview-card"><span>Current Version</span><strong>v0.2.6</strong></div>
+                <div class="preview-card"><span>Available Version</span><strong>v0.3.0</strong></div>
+                <div class="preview-card"><span>Change Scope</span><strong>Security patch / UI stability / network fixes</strong></div>
+              </section>
+              <section class="page-card">
+                <div class="panel-header"><span class="eyebrow">Local</span><h2 class="panel-title">Manual Package</h2></div>
+                <div class="notice">Local package flow should include checksum, model match, power warning, and rollback messaging.</div>
+                <div class="tag-row"><span class="tag">Checksum</span><span class="tag">Model Match</span><span class="tag">Estimated 6 min</span></div>
+              </section>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>

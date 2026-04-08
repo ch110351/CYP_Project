@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Button Editor</title>
+    <link rel="stylesheet" href="./css/ui-static.css" />
+  </head>
+  <body>
+    <div class="shell">
+      <header class="topbar">
+        <div class="brand-box"><img src="./assets/cyp-logo.png" alt="CYP logo" /></div>
+        <div class="topbar-note">Static page for UI drawing</div>
+      </header>
+      <div class="workspace">
+        <aside class="sidebar">
+          <div class="nav-group">
+            <p class="nav-title">Scenes</p>
+            <a class="nav-link is-active" href="./button-editor.html">Button Editor</a>
+          </div>
+        </aside>
+        <main class="main">
+          <section class="canvas">
+            <span class="eyebrow">Scene Management</span>
+            <h1 class="page-title">Button Editor</h1>
+            <div class="form-shell" style="margin-top:18px">
+              <section class="page-card form-panel">
+                <div class="panel-header"><span class="eyebrow">Visual</span><h2 class="panel-title">Button Properties</h2></div>
+                <div class="form-grid">
+                  <label class="field"><span>Label</span><input type="text" value="Presentation Mode" /></label>
+                  <label class="field"><span>Icon</span><select><option selected>Projector</option><option>Volume</option></select></label>
+                  <label class="field"><span>Execute Behavior</span><select><option>Normal</option><option>Repeat</option><option selected>Toggle</option></select></label>
+                  <label class="field"><span>Feedback Style</span><select><option selected>Active Fill</option><option>Outline</option></select></label>
+                  <label class="field full"><span>Macro / Command Binding</span><textarea>Tap -> Macro: Room_Presentation_On
+Hold -> Command: Volume_Mute_Toggle</textarea></label>
+                </div>
+              </section>
+              <section class="page-card preview-panel">
+                <div class="panel-header"><span class="eyebrow">Preview</span><h2 class="panel-title">Selected Button</h2></div>
+                <div class="placeholder-screen">
+                  <div class="summary-card"><span>State</span><strong>Selected / Active</strong></div>
+                  <div class="summary-card" style="margin-top:12px"><span>Microcopy</span><strong>Presentation Mode</strong></div>
+                </div>
+              </section>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>

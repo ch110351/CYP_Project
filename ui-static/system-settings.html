@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>System Settings</title>
+    <link rel="stylesheet" href="./css/ui-static.css" />
+  </head>
+  <body>
+    <div class="shell">
+      <header class="topbar">
+        <div class="brand-box"><img src="./assets/cyp-logo.png" alt="CYP logo" /></div>
+        <div class="topbar-note">Static page for UI drawing</div>
+      </header>
+      <div class="workspace">
+        <aside class="sidebar">
+          <div class="nav-group">
+            <p class="nav-title">Setting</p>
+            <a class="nav-link is-active" href="./system-settings.html">System Settings</a>
+          </div>
+        </aside>
+        <main class="main">
+          <section class="canvas">
+            <span class="eyebrow">System Management</span>
+            <h1 class="page-title">System Settings</h1>
+            <div class="split" style="margin-top:18px">
+              <section class="page-card">
+                <div class="panel-header"><span class="eyebrow">Session</span><h2 class="panel-title">Login / Timeout</h2></div>
+                <div class="form-grid">
+                  <label class="field"><span>Auto Logout</span><select><option selected>30 Minutes</option></select></label>
+                  <label class="field"><span>Default Role</span><select><option>Viewer</option><option selected>Operator</option></select></label>
+                  <label class="field full"><span>Access Control</span><textarea>Admin: full control
+Operator: execute and edit scenes
+Viewer: monitor only</textarea></label>
+                </div>
+              </section>
+              <section class="page-card">
+                <div class="panel-header"><span class="eyebrow">Policies</span><h2 class="panel-title">Security Summary</h2></div>
+                <div class="list">
+                  <div class="list-item"><strong>Password Policy</strong><div class="muted">Minimum 8 chars and forced reset every 90 days</div></div>
+                  <div class="list-item"><strong>Failed Login Lock</strong><div class="muted">5 attempts then 10-minute lockout</div></div>
+                  <div class="list-item"><strong>Audit Trail</strong><div class="muted">All admin changes logged with timestamp</div></div>
+                </div>
+              </section>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>
