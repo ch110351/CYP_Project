@@ -2,3 +2,5 @@ node_modules/
 npm-debug.log*
 .DS_Store
 \[PRD\]Android Controller Pad- v0.2.docx
+web/
+.codex/environments/environment.toml

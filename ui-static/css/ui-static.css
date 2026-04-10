@@ -1,3 +1,5 @@
+@import url("../../public/css/base.css");
+
 :root {
   --bg-app: #f4f7f8;
   --bg-accent: #e8f3f5;
@@ -31,7 +33,9 @@ body {
     radial-gradient(circle at top right, rgba(255, 198, 41, 0.16), transparent 18%),
     linear-gradient(180deg, var(--bg-accent) 0%, var(--bg-app) 28%, #f7fbfc 100%);
   color: var(--text-strong);
-  font-family: Arial, sans-serif;
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-base);
 }
 a { color: inherit; text-decoration: none; }
 button, input, select, textarea { font: inherit; }
@@ -575,4 +579,122 @@ button, input, select, textarea { font: inherit; }
     grid-template-columns: 1fr;
   }
   .table { min-width: 760px; }
+}
+
+/* Wireframe palette alignment */
+:root {
+  --bg-app: #ffffff;
+  --bg-accent: #f5f5f5;
+  --bg-topbar: rgba(255, 255, 255, 0.98);
+  --bg-sidebar: #008aab;
+  --bg-soft: #f5f5f5;
+  --line: rgba(112, 112, 112, 0.28);
+  --line-strong: rgba(56, 63, 70, 0.35);
+  --text-strong: #383f46;
+  --text-body: #6c6c6c;
+  --text-dim: #707070;
+  --accent: #008aab;
+  --accent-strong: #087091;
+  --accent-soft: rgba(127, 193, 206, 0.22);
+  --brand-highlight: #7fc1ce;
+  --warning: #b92454;
+  --danger: #b92454;
+  --shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+}
+
+body {
+  background: linear-gradient(180deg, var(--bg-accent) 0%, var(--bg-app) 28%, #ffffff 100%);
+}
+
+.topbar {
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.06);
+}
+
+.topbar::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 8px;
+  background: linear-gradient(90deg, #00839e 0%, #1292aa 27.2%, #2aa7ba 72.3%, #33afc0 100%);
+}
+
+.brand-box {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(245, 245, 245, 0.94));
+  box-shadow: inset 0 1px 0 rgba(127, 193, 206, 0.4);
+}
+
+.sidebar {
+  border-right: 1px solid rgba(0, 0, 0, 0.04);
+  background: var(--bg-sidebar);
+}
+
+.nav-title {
+  color: rgba(255, 255, 255, 0.74);
+}
+
+.nav-link {
+  color: #ffffff;
+}
+
+.nav-link:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.nav-link.is-active {
+  color: #ffffff;
+  border-color: transparent;
+  background: rgba(255, 255, 255, 0.04);
+  box-shadow:
+    inset 7px 0 0 var(--brand-highlight),
+    0 3px 6px rgba(0, 0, 0, 0.12);
+}
+
+.canvas {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.99), rgba(245, 245, 245, 0.98)),
+    repeating-linear-gradient(0deg, transparent, transparent 34px, rgba(127, 193, 206, 0.05) 34px, rgba(127, 193, 206, 0.05) 35px);
+}
+
+.page-hero,
+.panel,
+.page-card,
+.preview-card,
+.link-card,
+.metric-card,
+.placeholder-screen,
+.modal-window-static {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.99), rgba(245, 245, 245, 0.97));
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
+}
+
+.btn-primary {
+  background: linear-gradient(180deg, #008aab, #087091);
+}
+
+.field input,
+.field select,
+.field textarea {
+  background: #f5f5f5;
+}
+
+.table th {
+  background: #e5f2f5;
+}
+
+.type-command,
+.type-macro,
+.status-enabled {
+  background: rgba(127, 193, 206, 0.22);
+  color: var(--accent-strong);
+}
+
+.trigger {
+  background: rgba(229, 242, 245, 0.95);
+  color: var(--accent-strong);
+}
+
+.day-chip.is-selected,
+.tag {
+  border-color: rgba(0, 138, 171, 0.3);
 }
