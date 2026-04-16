@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>iOS Components Review</title>
+    <link rel="stylesheet" href="./css/ui-ios-review.css" />
+  </head>
+  <body>
+    <div class="ios-shell">
+      <header class="ios-topbar">
+        <div class="ios-brand">
+          <img src="./assets/cyp-logo.png" alt="CYP logo" />
+          <div class="ios-brand-text">
+            <strong>CYP iOS Style Review</strong>
+            <span>Static component board</span>
+          </div>
+        </div>
+        <nav class="ios-topnav">
+          <a class="is-active" href="#foundations">Foundations</a>
+          <a href="#components">Components</a>
+          <a href="#forms">Forms</a>
+          <a href="#preview">Pad Preview</a>
+        </nav>
+        <div class="ios-topbar-actions">
+          <span class="icon-chip">EN</span>
+          <span class="icon-chip">...</span>
+        </div>
+      </header>
+
+      <div class="ios-workspace">
+        <aside class="ios-sidebar">
+          <div class="ios-sidebar-card">
+            <p class="ios-sidebar-title">Review Scope</p>
+            <a class="ios-nav-link is-active" href="#hero"><span>Overview</span><span>01</span></a>
+            <a class="ios-nav-link" href="#foundations"><span>Palette</span><span>02</span></a>
+            <a class="ios-nav-link" href="#components"><span>Components</span><span>03</span></a>
+            <a class="ios-nav-link" href="#forms"><span>Forms + Table</span><span>04</span></a>
+            <a class="ios-nav-link" href="#preview"><span>Pad Preview</span><span>05</span></a>
+            <a class="ios-nav-link" href="#modal"><span>Modal</span><span>06</span></a>
+          </div>
+        </aside>
+
+        <main class="ios-main">
+          <div class="ios-canvas">
+            <section class="hero-card" id="hero">
+              <span class="eyebrow">IOS_Design.md</span>
+              <h1>Apple-inspired materials for the CYP web GUI.</h1>
+              <p>
+                This review page isolates the base visual language before any production
+                page migration. The goal is to check tone, spacing, component silhouette,
+                and interaction styling in plain HTML and CSS first.
+              </p>
+              <div class="hero-actions">
+                <button class="ios-btn ios-btn-primary">Primary Action</button>
+                <button class="ios-btn ios-btn-outline">Learn More</button>
+                <button class="ios-btn ios-btn-dark">Secondary Dark</button>
+              </div>
+            </section>
+
+            <section class="section-block" id="foundations">
+              <div class="section-head">
+                <h2>Foundations</h2>
+                <p>Palette, typography tone, and elevation rules derived from iOS-style guidance.</p>
+              </div>
+              <div class="component-grid">
+                <article class="component-card is-wide stack-16">
+                  <div>
+                    <h3>Core Palette</h3>
+                    <p>Binary light and dark surfaces with Apple Blue as the only accent.</p>
+                  </div>
+                  <div class="palette-row">
+                    <div class="swatch" style="background:#000000;">
+                      <strong>Pure Black</strong>
+                      <span>#000000</span>
+                    </div>
+                    <div class="swatch light" style="background:#f5f5f7;">
+                      <strong>Light Gray</strong>
+                      <span>#f5f5f7</span>
+                    </div>
+                    <div class="swatch" style="background:#1d1d1f;">
+                      <strong>Near Black</strong>
+                      <span>#1d1d1f</span>
+                    </div>
+                    <div class="swatch" style="background:#0071e3;">
+                      <strong>Apple Blue</strong>
+                      <span>#0071e3</span>
+                    </div>
+                  </div>
+                </article>
+
+                <article class="component-card stack-16">
+                  <div>
+                    <h3>Typography</h3>
+                    <p>Display stays tight and direct. Body remains compact and readable.</p>
+                  </div>
+                  <div class="stack-12">
+                    <div style="font-family:'SF Pro Display','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:2.5rem;font-weight:600;line-height:1.1;letter-spacing:-0.03em;">Section Heading</div>
+                    <div style="font-size:1.06rem;color:rgba(29,29,31,0.72);">Body text at 17px with calmer rhythm and restrained contrast.</div>
+                    <div style="font-size:0.88rem;color:rgba(29,29,31,0.48);">Caption / supporting detail</div>
+                  </div>
+                </article>
+              </div>
+            </section>
+
+            <section class="section-block" id="components">
+              <div class="section-head">
+                <h2>Core Components</h2>
+                <p>Buttons, chips, cards, and navigation specimens.</p>
+              </div>
+              <div class="component-grid">
+                <article class="component-card stack-16">
+                  <div>
+                    <h3>Buttons</h3>
+                    <p>Rounded actions with a single blue CTA lane.</p>
+                  </div>
+                  <div class="btn-row">
+                    <button class="ios-btn ios-btn-primary">Save Changes</button>
+                    <button class="ios-btn ios-btn-outline">Learn More</button>
+                    <button class="ios-btn ios-btn-dark">Open Console</button>
+                    <button class="ios-btn ios-btn-soft">Filter</button>
+                    <button class="ios-btn ios-btn-danger">Delete</button>
+                  </div>
+                </article>
+
+                <article class="component-card stack-16">
+                  <div>
+                    <h3>Status Chips</h3>
+                    <p>Quiet neutrals with color only where the state matters.</p>
+                  </div>
+                  <div class="chip-row">
+                    <span class="ios-chip is-online">Online</span>
+                    <span class="ios-chip is-warning">Maintenance</span>
+                    <span class="ios-chip is-danger">Offline</span>
+                    <span class="ios-chip is-active">Selected</span>
+                  </div>
+                </article>
+
+                <article class="component-card stack-16">
+                  <div>
+                    <h3>Summary Cards</h3>
+                    <p>Soft containers, no heavy borders, no dashboard chrome overload.</p>
+                  </div>
+                  <div class="stat-grid">
+                    <div class="stat-card"><span>Device Name</span><strong>Android Controller Pad</strong></div>
+                    <div class="stat-card"><span>Firmware</span><strong>v0.2.6</strong></div>
+                    <div class="stat-card"><span>Network</span><strong>Wi-Fi Connected</strong></div>
+                    <div class="stat-card"><span>Uptime</span><strong>14d 06h</strong></div>
+                  </div>
+                </article>
+
+                <article class="component-card is-wide stack-16">
+                  <div>
+                    <h3>Glass Top Bar + Sidebar Direction</h3>
+                    <p>
+                      The top bar keeps the translucent glass treatment, while page navigation
+                      stays quiet and rounded to fit the iOS-inspired tone.
+                    </p>
+                  </div>
+                  <div class="table-meta">Use this as the shell direction before migrating any real page layout.</div>
+                </article>
+              </div>
+            </section>
+
+            <section class="section-block" id="forms">
+              <div class="section-head">
+                <h2>Forms and Table</h2>
+                <p>Inputs should feel precise and minimal instead of enterprise-heavy.</p>
+              </div>
+              <div class="component-grid">
+                <article class="component-card is-wide stack-16">
+                  <div>
+                    <h3>Inputs</h3>
+                    <p>Muted surfaces, soft radius, and visible spacing between related controls.</p>
+                  </div>
+                  <div class="form-grid">
+                    <div class="field">
+                      <label for="device-name">Device Name</label>
+                      <input class="ios-input" id="device-name" value="Android Controller Pad" />
+                    </div>
+                    <div class="field">
+                      <label for="protocol">Protocol</label>
+                      <select class="ios-select" id="protocol">
+                        <option>TCP/IP</option>
+                        <option>RS-232</option>
+                        <option>IR</option>
+                      </select>
+                    </div>
+                    <div class="field">
+                      <label for="command">Command Payload</label>
+                      <textarea class="ios-textarea" id="command">POWER ON\r\nSOURCE HDMI 1</textarea>
+                    </div>
+                    <div class="range-field">
+                      <div class="range-meta">
+                        <span>Volume</span>
+                        <span>60%</span>
+                      </div>
+                      <input type="range" min="0" max="100" value="60" />
+                      <p class="field-note">The slider style should feel close to iOS media controls.</p>
+                    </div>
+                  </div>
+                </article>
+
+                <article class="component-card is-full stack-16">
+                  <div>
+                    <h3>Table Pattern</h3>
+                    <p>Cleaner rows, less border noise, actions as links or soft pills.</p>
+                  </div>
+                  <div class="table-shell">
+                    <table class="ios-table">
+                      <thead>
+                        <tr>
+                          <th>Name</th>
+                          <th>Type</th>
+                          <th>Status</th>
+                          <th>Last Sync</th>
+                          <th>Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>Conference Display A</td>
+                          <td>Display</td>
+                          <td><span class="ios-chip is-online">Online</span></td>
+                          <td>2 min ago</td>
+                          <td class="table-actions">
+                            <a class="mini-link" href="/">Inspect</a>
+                            <a class="mini-link" href="/">Edit</a>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>Matrix Switcher</td>
+                          <td>AV Router</td>
+                          <td><span class="ios-chip is-active">Selected</span></td>
+                          <td>10 min ago</td>
+                          <td class="table-actions">
+                            <a class="mini-link" href="/">Inspect</a>
+                            <a class="mini-link" href="/">Test</a>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>Room Audio DSP</td>
+                          <td>Audio</td>
+                          <td><span class="ios-chip is-warning">Pending</span></td>
+                          <td>1 hr ago</td>
+                          <td class="table-actions">
+                            <a class="mini-link" href="/">Inspect</a>
+                            <a class="mini-link" href="/">Retry</a>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </article>
+              </div>
+            </section>
+
+            <section class="section-block" id="preview">
+              <div class="section-head">
+                <h2>Pad Preview and Templates</h2>
+                <p>Tablet frame, button states, and layout specimens for the controller interface.</p>
+              </div>
+              <div class="preview-layout">
+                <article class="preview-panel stack-16">
+                  <div>
+                    <h3>Pad Preview</h3>
+                    <p>Keep the hardware frame as the functional boundary while the buttons adopt softer iOS materials.</p>
+                  </div>
+                  <div class="tablet-frame">
+                    <div class="tablet-screen">
+                      <div class="pad-header">
+                        <span>Main Room</span>
+                        <span>09:41</span>
+                      </div>
+                      <div class="pad-grid">
+                        <div class="pad-button is-selected">Source</div>
+                        <div class="pad-button">Display</div>
+                        <div class="pad-button">Audio</div>
+                        <div class="pad-button">Camera</div>
+                        <div class="pad-button is-alert">Alert</div>
+                        <div class="pad-button">Scene</div>
+                      </div>
+                      <div class="pad-footer">
+                        <div class="slider-shell"></div>
+                        <div class="chip-row">
+                          <span class="ios-chip is-active">Page 1</span>
+                          <span class="ios-chip">Page 2</span>
+                          <span class="ios-chip">Page 3</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+
+                <article class="preview-panel stack-16">
+                  <div>
+                    <h3>Template Layouts</h3>
+                    <p>These are static specimens for layout review before wiring into the real scenario builder.</p>
+                  </div>
+                  <div class="template-grid">
+                    <div class="template-card">
+                      <strong>Source Picker</strong>
+                      <span>3 x 2 control grid with one selected input.</span>
+                    </div>
+                    <div class="template-card">
+                      <strong>Volume Strip</strong>
+                      <span>Slider-first panel with mute and scene shortcuts.</span>
+                    </div>
+                    <div class="template-card">
+                      <strong>Toggle Sheet</strong>
+                      <span>Lighting, privacy, and room-mode actions.</span>
+                    </div>
+                  </div>
+                </article>
+              </div>
+            </section>
+
+            <section class="section-block" id="modal">
+              <div class="section-head">
+                <h2>Modal Pattern</h2>
+                <p>Centered, soft, and readable. The dialog should feel native to the iOS-style system.</p>
+              </div>
+              <div class="modal-stage">
+                <div class="modal-card">
+                  <h3>Delete Device</h3>
+                  <p>
+                    This action removes the device from the controller project and clears
+                    its current bindings from the preview layout.
+                  </p>
+                  <div class="modal-actions">
+                    <button class="ios-btn ios-btn-soft">Cancel</button>
+                    <button class="ios-btn ios-btn-danger">Delete</button>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>

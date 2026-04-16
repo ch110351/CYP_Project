@@ -232,9 +232,9 @@ const state = {
   },
   wifi: {
     enabled: true,
-    connectedSSID: "Cypress_Setup_5G",
+    connectedSSID: "Office_Setup_5G",
     networks: [
-      { ssid: "Cypress_Setup_5G", strength: "excellent", secure: true, saved: true },
+      { ssid: "Office_Setup_5G", strength: "excellent", secure: true, saved: true },
       { ssid: "MeetingRoom_AP", strength: "strong", secure: true, saved: false },
       { ssid: "Guest_Network", strength: "medium", secure: false, saved: false },
       { ssid: "Installer_Backup", strength: "weak", secure: true, saved: false },
@@ -812,7 +812,7 @@ const state = {
       { id: "ICON-005", name: "Curtain", type: "symbol", value: "curtains" },
       { id: "ICON-006", name: "Camera", type: "symbol", value: "videocam" },
       { id: "ICON-007", name: "Door", type: "symbol", value: "door_front" },
-      { id: "ICON-008", name: "CYP Logo", type: "image", value: "/assets/cyp-logo.png" },
+      { id: "ICON-008", name: "Scene", type: "symbol", value: "web_stories" },
     ],
   },
   developerTools: {
@@ -3768,7 +3768,7 @@ function ensureDebugConsoleInitialized() {
     return;
   }
 
-  appendDebugConsoleLine("system", "CYP Debug Console ready.");
+  appendDebugConsoleLine("system", "Debug Console ready.");
   appendDebugConsoleLine("system", "Use '?' to list available mock commands.");
   state.developerTools.consoleInitialized = true;
 }
@@ -6607,7 +6607,7 @@ if (wifiToggle) {
     }
 
     if (!state.wifi.connectedSSID) {
-      state.wifi.connectedSSID = "Cypress_Setup_5G";
+      state.wifi.connectedSSID = "Office_Setup_5G";
     }
 
     renderNetworkPanel();
