@@ -1,53 +1,58 @@
 import fs from "node:fs/promises";
+import { existsSync, readFileSync } from "node:fs";
 import { StitchToolClient } from "@google/stitch-sdk";
 
-const PROJECT_TITLE = "CYP Control System UI";
-const DESIGN_SYSTEM_NAME = "CYP Control Console Design System";
-const SHELL_SCREEN_TITLE = "CYP App Shell Direction";
+const PROJECT_TITLE = "iOS Design System Project";
+const DESIGN_SYSTEM_NAME = "CYP iOS Control Console Design System";
+const SHELL_SCREEN_TITLE = "CYP iOS App Shell Direction";
 const SUMMARY_PATH = "stitch-run-summary.md";
 
 const DOMAIN_NAV = "Home, Control, Device, Scenes, Setting";
 
 const MATRIX = [
-  { domain: "Index", pageKey: "INDEX", promptSource: "Promt_INDEX.md", promptMode: "direct", title: "CYP Index Overview" },
-  { domain: "Home", pageKey: "HOME", promptSource: "Promt_HOME.md", promptMode: "direct", title: "CYP Home Dashboard" },
-  { domain: "Control", pageKey: "COMMAND_MANAGEMENT", promptSource: "Promt_COMMAND_MANAGEMENT.md", promptMode: "direct", title: "CYP Command Management" },
-  { domain: "Control", pageKey: "COMMAND_EDITOR", promptSource: "Promt_COMMAND_EDITOR.md", promptMode: "direct", title: "CYP Command Editor" },
-  { domain: "Control", pageKey: "COMMAND_TEST", promptSource: "Promt_COMMAND_TEST.md", promptMode: "direct", title: "CYP Command Test" },
-  { domain: "Control", pageKey: "MACRO_MANAGEMENT", promptSource: "Promt_MACRO_MANAGEMENT.md", promptMode: "direct", title: "CYP Macro Management" },
-  { domain: "Control", pageKey: "MACRO_EDITOR", promptSource: "Promt_MACRO_EDITOR.md", promptMode: "direct", title: "CYP Macro Editor" },
-  { domain: "Control", pageKey: "SCHEDULING_LIST", promptSource: "Promt_SCHEDULING_LIST.md", promptMode: "direct", title: "CYP Scheduling List" },
-  { domain: "Control", pageKey: "SCHEDULING_CREATE", promptSource: "Promt_SCHEDULING_CREATE.md", promptMode: "direct", title: "CYP Scheduling Create" },
-  { domain: "Control", pageKey: "EVENT_TRIGGER", promptSource: "Promt_EVENT_TRIGGER.md", promptMode: "direct", title: "CYP Event Trigger" },
-  { domain: "Device", pageKey: "DEVICES_LIST", promptSource: "Promt_DEVICES_LIST.md", promptMode: "direct", title: "CYP Devices List" },
-  { domain: "Device", pageKey: "DEVICE_CREATE", promptSource: "Promt_DEVICE_CREATE.md", promptMode: "direct", title: "CYP Device Create" },
-  { domain: "Device", pageKey: "DRIVER_LIBRARY", promptSource: "Promt_DRIVER_LIBRARY.md", promptMode: "direct", title: "CYP Driver Library" },
-  { domain: "Device", pageKey: "DEVICE_DISCOVERY", promptSource: "Promt_DEVICE_DISCOVERY.md", promptMode: "direct", title: "CYP Device Discovery" },
-  { domain: "Scenes", pageKey: "SCENARIO_MANAGEMENT", promptSource: "Promt_SCENARIO_MANAGEMENT.md", promptMode: "direct", title: "CYP Scenario Management" },
-  { domain: "Scenes", pageKey: "BUTTON_EDITOR", promptSource: "Promt_BUTTON_EDITOR.md", promptMode: "direct", title: "CYP Button Editor" },
-  { domain: "Scenes", pageKey: "PANEL_LAYOUTS", promptSource: "Promt_PANEL_LAYOUTS.md", promptMode: "direct", title: "CYP Panel Layouts" },
-  { domain: "Scenes", pageKey: "PANEL_PREVIEW", promptSource: "Promt_PANEL_PREVIEW.md", promptMode: "direct", title: "CYP Panel Preview" },
-  { domain: "Setting", pageKey: "DEVICE_INFORMATION", promptSource: "Promt_DEVICE_INFORMATION.md", promptMode: "direct", title: "CYP Device Information" },
-  { domain: "Setting", pageKey: "SYSTEM_SETTINGS", promptSource: "Promt_SYSTEM_SETTINGS.md", promptMode: "direct", title: "CYP System Settings" },
-  { domain: "Setting", pageKey: "DATE_TIME", promptSource: "Promt_DATE_TIME.md", promptMode: "direct", title: "CYP Date and Time" },
-  { domain: "Setting", pageKey: "PAD_DISPLAY_SETTING", promptSource: "Promt_PAD_DISPLAY_SETTING.md", promptMode: "direct", title: "CYP Pad Display Setting" },
-  { domain: "Setting", pageKey: "THEME_ASSETS", promptSource: "Promt_THEME_ASSETS.md", promptMode: "direct", title: "CYP Theme and Assets" },
-  { domain: "Setting", pageKey: "BACKUP_RESTORE", promptSource: "Promt_BACKUP_RESTORE.md", promptMode: "direct", title: "CYP Backup and Restore" },
-  { domain: "Setting", pageKey: "LANGUAGE", promptSource: "Promt_LANGUAGE.md", promptMode: "direct", title: "CYP Language" },
-  { domain: "Setting", pageKey: "LOG_EXPORT", promptSource: "Promt_LOG_EXPORT.md", promptMode: "direct", title: "CYP Log Export" },
-  { domain: "Setting", pageKey: "FIRMWARE_UPGRADE", promptSource: "Promt_FIRMWARE_UPGRADE.md", promptMode: "direct", title: "CYP Firmware Upgrade" },
-  { domain: "Setting", pageKey: "NETWORK", promptSource: "Promt_NETWORK.md", promptMode: "direct", title: "CYP Network" },
-  { domain: "Setting", pageKey: "ADMIN", promptSource: "Promt_ADMIN.md", promptMode: "direct", title: "CYP Admin" },
-  { domain: "Setting", pageKey: "INITIAL_SETUP", promptSource: "Promt_INITIAL_SETUP.md", promptMode: "direct", title: "CYP Initial Setup" },
-  { domain: "Developer Tools", pageKey: "DEBUG_CONSOLE", promptSource: "Promt_DEBUG_CONSOLE.md", promptMode: "direct", title: "CYP Debug Console" },
-  { domain: "Developer Tools", pageKey: "DEVELOPER_DEVICE_DISCOVERY", promptSource: "Promt_DEVICE_DISCOVERY.md", promptMode: "derived", title: "CYP Developer Device Discovery" },
-  { domain: "UI Reference", pageKey: "DIALOGS_SHOWCASE", promptSource: "Promt_DIALOGS_SHOWCASE.md", promptMode: "direct", title: "CYP Dialogs Showcase" },
-  { domain: "UI Reference", pageKey: "STATES_SHOWCASE", promptSource: "Promt_STATES_SHOWCASE.md", promptMode: "direct", title: "CYP States Showcase" }
+  { domain: "Home", pageKey: "INDEX", promptSource: "Promt_INDEX.md", promptMode: "direct", title: "CYP iOS Index" },
+  { domain: "Home", pageKey: "HOME", promptSource: "Promt_HOME.md", promptMode: "direct", title: "CYP iOS Home Dashboard" },
+  { domain: "Home", pageKey: "CONTROL_PAD_UI", promptSource: "Promt_CONTROL_PAD_UI.md", promptMode: "direct", title: "CYP iOS Control Pad Runtime Preview" },
+  { domain: "Control", pageKey: "COMMAND_MANAGEMENT", promptSource: "Promt_COMMAND_MANAGEMENT.md", promptMode: "direct", title: "CYP iOS Command Management" },
+  { domain: "Control", pageKey: "COMMAND_EDITOR", promptSource: "Promt_COMMAND_EDITOR.md", promptMode: "direct", title: "CYP iOS Command Editor" },
+  { domain: "Control", pageKey: "COMMAND_TEST", promptSource: "Promt_COMMAND_TEST.md", promptMode: "direct", title: "CYP iOS Command Test" },
+  { domain: "Control", pageKey: "MACRO_MANAGEMENT", promptSource: "Promt_MACRO_MANAGEMENT.md", promptMode: "direct", title: "CYP iOS Macro Management" },
+  { domain: "Control", pageKey: "MACRO_EDITOR", promptSource: "Promt_MACRO_EDITOR.md", promptMode: "direct", title: "CYP iOS Macro Editor" },
+  { domain: "Control", pageKey: "SCHEDULING_LIST", promptSource: "Promt_SCHEDULING_LIST.md", promptMode: "direct", title: "CYP iOS Scheduling List" },
+  { domain: "Control", pageKey: "SCHEDULING_CREATE", promptSource: "Promt_SCHEDULING_CREATE.md", promptMode: "direct", title: "CYP iOS Scheduling Create" },
+  { domain: "Control", pageKey: "SCHEDULING_EDIT", promptSource: "Promt_SCHEDULING_CREATE.md", promptMode: "derived", title: "CYP iOS Scheduling Edit" },
+  { domain: "Control", pageKey: "EVENT_TRIGGER", promptSource: "Promt_EVENT_TRIGGER.md", promptMode: "direct", title: "CYP iOS Event Trigger" },
+  { domain: "Control", pageKey: "JOBS", promptSource: "Promt_SCHEDULING_LIST.md", promptMode: "derived", title: "CYP iOS Jobs Monitor" },
+  { domain: "Device", pageKey: "DEVICES_LIST", promptSource: "Promt_DEVICES_LIST.md", promptMode: "direct", title: "CYP iOS Devices List" },
+  { domain: "Device", pageKey: "DEVICE_CREATE", promptSource: "Promt_DEVICE_CREATE.md", promptMode: "direct", title: "CYP iOS Add Device" },
+  { domain: "Device", pageKey: "DRIVER_LIBRARY", promptSource: "Promt_DRIVER_LIBRARY.md", promptMode: "direct", title: "CYP iOS Driver Library" },
+  { domain: "Device", pageKey: "DEVICE_DISCOVERY", promptSource: "Promt_DEVICE_DISCOVERY.md", promptMode: "direct", title: "CYP iOS Device Discovery" },
+  { domain: "Scenes", pageKey: "SCENARIO_MANAGEMENT", promptSource: "Promt_SCENARIO_MANAGEMENT.md", promptMode: "direct", title: "CYP iOS Scenario Management" },
+  { domain: "Scenes", pageKey: "BUTTON_EDITOR", promptSource: "Promt_BUTTON_EDITOR.md", promptMode: "direct", title: "CYP iOS Button Editor" },
+  { domain: "Scenes", pageKey: "PANEL_LAYOUTS", promptSource: "Promt_PANEL_LAYOUTS.md", promptMode: "direct", title: "CYP iOS Panel Layouts" },
+  { domain: "Scenes", pageKey: "PANEL_PREVIEW", promptSource: "Promt_PANEL_PREVIEW.md", promptMode: "direct", title: "CYP iOS Panel Preview" },
+  { domain: "Setting", pageKey: "DEVICE_INFORMATION", promptSource: "Promt_DEVICE_INFORMATION.md", promptMode: "direct", title: "CYP iOS Device Information" },
+  { domain: "Setting", pageKey: "SYSTEM_SETTINGS", promptSource: "Promt_SYSTEM_SETTINGS.md", promptMode: "direct", title: "CYP iOS System Settings" },
+  { domain: "Setting", pageKey: "DATE_TIME", promptSource: "Promt_DATE_TIME.md", promptMode: "direct", title: "CYP iOS Date and Time" },
+  { domain: "Setting", pageKey: "PAD_DISPLAY_SETTING", promptSource: "Promt_PAD_DISPLAY_SETTING.md", promptMode: "direct", title: "CYP iOS Pad Display Setting" },
+  { domain: "Setting", pageKey: "THEME_ASSETS", promptSource: "Promt_THEME_ASSETS.md", promptMode: "direct", title: "CYP iOS Theme and Assets" },
+  { domain: "Setting", pageKey: "BACKUP_RESTORE", promptSource: "Promt_BACKUP_RESTORE.md", promptMode: "direct", title: "CYP iOS Backup and Restore" },
+  { domain: "Setting", pageKey: "LANGUAGE", promptSource: "Promt_LANGUAGE.md", promptMode: "direct", title: "CYP iOS Language" },
+  { domain: "Setting", pageKey: "LOG_EXPORT", promptSource: "Promt_LOG_EXPORT.md", promptMode: "direct", title: "CYP iOS Log Export" },
+  { domain: "Setting", pageKey: "FIRMWARE_UPGRADE", promptSource: "Promt_FIRMWARE_UPGRADE.md", promptMode: "direct", title: "CYP iOS Firmware Upgrade" },
+  { domain: "Setting", pageKey: "NETWORK", promptSource: "Promt_NETWORK.md", promptMode: "direct", title: "CYP iOS Network" },
+  { domain: "Setting", pageKey: "ADMIN", promptSource: "Promt_ADMIN.md", promptMode: "direct", title: "CYP iOS Admin" },
+  { domain: "Setting", pageKey: "INITIAL_SETUP", promptSource: "Promt_INITIAL_SETUP.md", promptMode: "direct", title: "CYP iOS Initial Setup" },
+  { domain: "Developer Tools", pageKey: "DEBUG_CONSOLE", promptSource: "Promt_DEBUG_CONSOLE.md", promptMode: "direct", title: "CYP iOS Debug Console" },
+  { domain: "Developer Tools", pageKey: "DEVELOPER_DEVICE_DISCOVERY", promptSource: "Promt_DEVICE_DISCOVERY.md", promptMode: "derived", title: "CYP iOS Developer Device Discovery" },
+  { domain: "UI Reference", pageKey: "DIALOGS_SHOWCASE", promptSource: "Promt_DIALOGS_SHOWCASE.md", promptMode: "direct", title: "CYP iOS Dialogs Showcase" },
+  { domain: "UI Reference", pageKey: "STATES_SHOWCASE", promptSource: "Promt_STATES_SHOWCASE.md", promptMode: "direct", title: "CYP iOS States Showcase" }
 ];
 
 const PAGE_REQUIREMENTS = {
   INDEX: "Create a sitemap-style overview of the CYP control-system product structure. Show the major domains Home, Control, Device, Scenes, Setting, Developer Tools, and UI Reference. Make it a design handoff overview page for the product, not a marketing landing page.",
   HOME: "Create the operational home dashboard for the controller pad. Emphasize pad/device information, online status, network status, connected devices, a prominent control pad preview, selected/on/alert button states, and slider-based control.",
+  CONTROL_PAD_UI: "Create a dedicated runtime control pad preview screen for the iOS-style control console. Emphasize actual pad runtime behavior, current page tabs, selected button states, on or alert indicators, slider controls, and realistic operator feedback.",
   COMMAND_MANAGEMENT: "Create a table-based command library management page with toolbar, summary, command table, and row actions for edit, duplicate, test, and delete.",
   COMMAND_EDITOR: "Create a command editor page for device command authoring. Include command name, interface, device, command data, parameter editing, value type, preview, and protocol-specific configuration.",
   COMMAND_TEST: "Create a command testing page with payload preview, execution result feedback, and test flow validation.",
@@ -55,7 +60,9 @@ const PAGE_REQUIREMENTS = {
   MACRO_EDITOR: "Create a split-view macro editor with action library, flow editor canvas, inspector panel, review behavior, and stateful editing.",
   SCHEDULING_LIST: "Create a schedule management page with schedule table, type, binding, trigger type, rule summary, next run, status, and run-now controls.",
   SCHEDULING_CREATE: "Create a scheduling builder page with trigger type setup, rule configuration, binding selection, preview summary, next run, and upcoming runs.",
+  SCHEDULING_EDIT: "Create a scheduling edit page based on the scheduling builder flow. Show existing rule state, editable trigger settings, binding summary, next run preview, and safe save or cancel behavior.",
   EVENT_TRIGGER: "Create an event trigger configuration page showing trigger definitions, event payload preview, and action binding setup.",
+  JOBS: "Create a jobs and execution monitor page derived from scheduling and automation runtime. Show recent runs, queued items, outcomes, next executions, and operational status signals.",
   DEVICES_LIST: "Create a devices list page for managed hardware inventory with filters, device status, type, and edit/review actions.",
   DEVICE_CREATE: "Create a device creation page with driver selection, connection settings, protocol, capability summary, and review before save.",
   DRIVER_LIBRARY: "Create a driver library page with search/filter toolbar, vendor/model list, driver detail, import flow, and create-device action.",
@@ -94,6 +101,67 @@ async function readText(path) {
   }
 }
 
+async function readExistingSummaryRows() {
+  const text = await readText(SUMMARY_PATH);
+  if (!text) return [];
+
+  const lines = text.split(/\r?\n/);
+  const rows = [];
+
+  for (const line of lines) {
+    if (!line.startsWith("|")) continue;
+    if (line.includes("| Domain |") || line.includes("|---|")) continue;
+    const cells = line
+      .split("|")
+      .slice(1, -1)
+      .map((cell) => cell.trim().replace(/<br>/g, "\n").replace(/\\\|/g, "|"));
+
+    if (cells.length < 10) continue;
+    rows.push({
+      domain: cells[0],
+      pageKey: cells[1],
+      promptSource: cells[2],
+      promptMode: cells[3],
+      title: cells[4],
+      screenId: cells[5],
+      screenshotUrl: cells[6],
+      htmlUrl: cells[7],
+      status: cells[8],
+      notes: cells[9]
+    });
+  }
+
+  return rows;
+}
+
+function upsertRow(rows, nextRow) {
+  const index = rows.findIndex((row) => row.title === nextRow.title);
+  if (index >= 0) {
+    rows[index] = nextRow;
+  } else {
+    rows.push(nextRow);
+  }
+}
+
+function resolveResumeIndex(existingRows) {
+  if (!existingRows.length) return 0;
+
+  const manualReviewRow = [...existingRows].reverse().find((row) => row.status === "manual review required");
+  if (manualReviewRow) {
+    const failedIndex = MATRIX.findIndex((page) => page.title === manualReviewRow.title);
+    if (failedIndex >= 0) return failedIndex;
+  }
+
+  const completedTitles = new Set(
+    existingRows
+      .filter((row) => row.status && row.status !== "manual review required")
+      .map((row) => row.title)
+  );
+
+  const nextIndex = MATRIX.findIndex((page) => !completedTitles.has(page.title));
+  return nextIndex >= 0 ? nextIndex : MATRIX.length;
+}
+
 async function writeSummary(meta, rows) {
   const header = [
     "# Stitch Run Summary",
@@ -118,13 +186,13 @@ async function writeSummary(meta, rows) {
 
 function buildShellPrompt(promptText, functionText, designText) {
   return [
-    "Create the master shell direction screen for the CYP control-system web GUI.",
+    "Create the master shell direction screen for the CYP iOS control-system web GUI.",
     "This is not a marketing page. It is a design-direction screen for all application pages.",
     `Use a desktop-first enterprise control console layout with top bar, left sidebar, and main content canvas.`,
     `Navigation domains must be: ${DOMAIN_NAV}.`,
     "The shell must define the visual and structural baseline for all following pages.",
-    "Keep white panels on a light background, blue-cyan control-system accents, clear enterprise spacing, and concise product-facing labels.",
-    "Do not use hero banners, decorative landing-page sections, or promotional copy.",
+    "Use the repo's current iOS-style system: light neutral surfaces, Apple-like blue accents, clean spacing, restrained depth, and polished operational panels.",
+    "Do not use hero banners, decorative landing-page sections, promotional copy, company logo treatments, or CYP wordmark inside the rendered UI.",
     "",
     "Prompt source context:",
     promptText,
@@ -139,19 +207,19 @@ function buildShellPrompt(promptText, functionText, designText) {
 
 function buildPagePrompt(page, promptText, functionText, designText) {
   const pageRequirement = PAGE_REQUIREMENTS[page.pageKey] || `Create the ${page.title} screen as a CYP control-system UI page.`;
-  const editorHint = ["CYP Macro Editor", "CYP Scenario Management", "CYP Button Editor", "CYP Panel Layouts", "CYP Panel Preview", "CYP Command Editor", "CYP Scheduling Create"].includes(page.title)
+  const editorHint = ["CYP iOS Macro Editor", "CYP iOS Scenario Management", "CYP iOS Button Editor", "CYP iOS Panel Layouts", "CYP iOS Panel Preview", "CYP iOS Command Editor", "CYP iOS Scheduling Create", "CYP iOS Scheduling Edit"].includes(page.title)
     ? "This page is a builder/editor page. Use split-view, inspector, preview, builder canvas, or configuration panels rather than generic dashboard cards."
     : "";
   return [
     `Create or refine the Stitch screen titled "${page.title}".`,
     `Domain: ${page.domain}.`,
     `Page key: ${page.pageKey}.`,
-    `Use the CYP design system already configured for the project.`,
+    `Use the CYP iOS design system already configured for the project.`,
     `App shell must stay consistent with the CYP console structure: top bar, left sidebar, and operational content canvas.`,
     pageRequirement,
     editorHint,
-    "Do not produce a marketing page, hero banner, landing page layout, or promotional copy.",
-    "Maintain the CYP control-console palette, spacing, rounded panels, and enterprise UI tone.",
+    "Do not produce a marketing page, hero banner, landing page layout, promotional copy, company logo treatment, or CYP wordmark in the rendered UI.",
+    "Maintain the repo's iOS control-console palette, spacing, rounded panels, split-view editor structure, and enterprise UI tone.",
     "",
     `Prompt source file (${page.promptSource}):`,
     promptText,
@@ -165,13 +233,15 @@ function buildPagePrompt(page, promptText, functionText, designText) {
 }
 
 async function main() {
-  const apiKey = process.env.STITCH_API_KEY;
+  const apiKey =
+    process.env.STITCH_API_KEY ||
+    (existsSync("google stitch API key.md") ? readFileSync("google stitch API key.md", "utf8").trim() : "");
   if (!apiKey) {
     throw new Error("STITCH_API_KEY is not set.");
   }
 
   const client = new StitchToolClient({ apiKey });
-  const rows = [];
+  const rows = await readExistingSummaryRows();
   const meta = {
     projectName: PROJECT_TITLE,
     designSystemName: DESIGN_SYSTEM_NAME,
@@ -180,7 +250,15 @@ async function main() {
   };
 
   const functionText = await readText("Function.md");
-  const designText = await readText("CYP_Design_MD.md");
+  const promptShellText = await readText("Prompt.md");
+  const designPieces = await Promise.all([
+    readText("Plan.md"),
+    readText("public/css/ios-theme.css"),
+    readText("public/css/base.css"),
+    readText("ui-static/ios-components-review.html"),
+    readText("ui-static/css/ui-ios-review.css")
+  ]);
+  const designText = designPieces.filter(Boolean).join("\n\n---\n\n");
   const indexPrompt = await readText("Promt_INDEX.md");
 
   try {
@@ -211,11 +289,11 @@ async function main() {
             bodyFont: "INTER",
             labelFont: "INTER",
             roundness: "ROUND_TWELVE",
-            customColor: "#008AAB",
-            overridePrimaryColor: "#008AAB",
-            overrideSecondaryColor: "#1226AA",
-            overrideTertiaryColor: "#FFC629",
-            overrideNeutralColor: "#F4F7F8",
+            customColor: "#0071E3",
+            overridePrimaryColor: "#0071E3",
+            overrideSecondaryColor: "#0A84FF",
+            overrideTertiaryColor: "#D1D1D6",
+            overrideNeutralColor: "#F5F5F7",
             designMd: designText
           }
         }
@@ -227,6 +305,8 @@ async function main() {
     }
     meta.designSystemAssetId = String(designSystemRecord.name || "").replace(/^assets\//, "");
 
+    const resumeIndex = resolveResumeIndex(rows);
+
     const screensResult = await client.callTool("list_screens", { projectId });
     const existingScreens = screensResult.screens || [];
 
@@ -236,7 +316,7 @@ async function main() {
         projectId,
         deviceType: "DESKTOP",
         modelId: "GEMINI_3_1_PRO",
-        prompt: buildShellPrompt(indexPrompt, functionText, designText)
+        prompt: buildShellPrompt([promptShellText, indexPrompt].filter(Boolean).join("\n\n"), functionText, designText)
       });
       shellScreen = shellGenerated.outputComponents?.find((c) => c.design?.screens?.[0])?.design?.screens?.[0];
     }
@@ -244,7 +324,7 @@ async function main() {
 
     await writeSummary(meta, rows);
 
-    for (const page of MATRIX) {
+    for (const page of MATRIX.slice(resumeIndex)) {
       const promptText = await readText(page.promptSource);
       const currentScreens = await client.callTool("list_screens", { projectId });
       const found = (currentScreens.screens || []).find((s) => s.title === page.title);
@@ -276,7 +356,7 @@ async function main() {
       } catch (error) {
         meta.lastCompletedPage = page.title;
         meta.haltReason = `Stopped at ${page.title}: ${error instanceof Error ? error.message : String(error)}`;
-        rows.push({
+        upsertRow(rows, {
           domain: page.domain,
           pageKey: page.pageKey,
           promptSource: page.promptSource,
@@ -292,7 +372,7 @@ async function main() {
         throw error;
       }
 
-      rows.push({
+      upsertRow(rows, {
         domain: page.domain,
         pageKey: page.pageKey,
         promptSource: page.promptSource,

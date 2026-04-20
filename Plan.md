@@ -1,30 +1,27 @@
-# Plan.md for Stitch MCP Redesign Automation
+# Plan.md for Stitch MCP iOS Redesign Automation
 
 ## 1. Goal and Completion Definition
 
-This document is the canonical execution spec for redesigning the entire CYP web GUI in Stitch MCP.
+This document is the canonical execution spec for redesigning the CYP web GUI into an iOS-style control console in Stitch MCP.
 
-The automation runner must use this file as an instruction contract, not as a general guideline. The runner must not invent page scope, page names, or design direction outside the sources defined below.
+The automation runner must treat this file as an execution contract. It must not invent page scope, page names, layout patterns, or visual direction outside the inputs listed in Section 2.
 
-### Primary Goal
+### Goal
 
-Use Stitch MCP to redesign the full CYP web GUI as a consistent enterprise control-system product, using:
+Create or update one Stitch project, one iOS design system, and one full screen set for the CYP site using the repo as source of truth.
 
-- [`CYP_Design_MD.md`](C:\Users\wesley.gu\OneDrive - CYPRESS TECHNOLOGY CO.,LTD\文件\GitHub\CYP_Project\CYP_Design_MD.md) as the design system source
-- [`Function.md`](C:\Users\wesley.gu\OneDrive - CYPRESS TECHNOLOGY CO.,LTD\文件\GitHub\CYP_Project\Function.md) as the sitemap and functional inventory
-- all `Promt_*.md` files in the repo root as the per-page prompt library
+### Completion Definition
 
-### Completion Criteria
+The run is complete only when all of the following are true:
 
-The automation run is complete only when all of the following are true:
-
-1. One Stitch project named `CYP Control System UI` exists and is used for the run.
-2. One design system named `CYP Control Console Design System` exists in that project.
-3. The current contents of `CYP_Design_MD.md` have been loaded into that design system.
-4. A global shell direction screen or equivalent first-pass shell definition has been generated before page generation begins.
-5. Every page listed in the page generation matrix below has a corresponding Stitch screen.
-6. Every generated screen has passed the validation rules in Section 5, or is marked `manual review required`.
-7. A machine-readable markdown run summary has been produced using the schema defined in this document.
+1. One Stitch project named `CYP iOS Control UI` exists and is used for the run.
+2. One design system named `CYP iOS Control Console Design System` exists in that project.
+3. The design system reflects the repo's current iOS style sources defined in Section 2.
+4. One global shell direction screen is created or updated before page generation begins.
+5. Every page in the page matrix in Section 4 has one corresponding Stitch screen.
+6. Existing matching screens are edited instead of duplicated when they are already present but structurally wrong.
+7. Every screen passes the validation checks in Section 5, or is marked `manual review required`.
+8. One markdown run summary is produced using the table schema in Section 5.
 
 ### Out of Scope
 
@@ -32,96 +29,101 @@ This automation stops at Stitch deliverables only:
 
 - Stitch project
 - Stitch design system
-- Stitch screens
+- generated or edited Stitch screens
 - screenshot links
 - HTML export links when available
 - run summary
 
-This automation does **not**:
+This automation does not:
 
-- modify `public/`
-- modify `ui-static/`
-- generate repo implementation code
-- sync Stitch output back into the application
-
----
+- write code back into `public/`
+- overwrite repo HTML or CSS
+- export to Figma
+- invent new product flows not listed in the repo sources
 
 ## 2. Inputs and Source-of-Truth Mapping
 
 ### Fixed Inputs
 
-The automation runner must use the following sources exactly:
+The automation runner must use these sources:
 
-- Design system input:
-  - [`CYP_Design_MD.md`](C:\Users\wesley.gu\OneDrive - CYPRESS TECHNOLOGY CO.,LTD\文件\GitHub\CYP_Project\CYP_Design_MD.md)
-- Sitemap and page requirements:
-  - [`Function.md`](C:\Users\wesley.gu\OneDrive - CYPRESS TECHNOLOGY CO.,LTD\文件\GitHub\CYP_Project\Function.md)
-- Page prompt inputs:
-  - every root-level `Promt_*.md` file
+- Product sitemap and page requirements:
+  - `Function.md`
+- Global shell and tone prompt:
+  - `Prompt.md`
+- Page prompt library:
+  - all root-level `Promt_*.md`
+- iOS design system implementation source:
+  - `public/css/ios-theme.css`
+  - `public/css/base.css`
+  - `ui-static/ios-components-review.html`
+  - `ui-static/css/ui-ios-review.css`
 - Existing visual references:
   - `web/*.svg`
-- Existing runtime/layout reference:
-  - current integrated app shell concept in the repo, especially `public/index.html`, `public/css/base.css`, `public/css/styles.css`, `public/css/automation-*.css`, and `public/css/scenario.css`
+- Existing runtime and shell reference:
+  - `public/index.html`
+  - `public/js/app.js`
+  - current integrated navigation and app-shell structure in `public/`
 
-### Normalization Rule
+### Normalization Rules
 
-- the page prompt library is the set of `Promt_*.md` files
+- `Prompt_PAGE.md` means the root-level `Promt_*.md` prompt set, because no standalone `Prompt_PAGE.md` exists in the repo.
+- `Prompt.md` is treated as the global shell prompt, not as a single page prompt.
+- No standalone `IOS_Design.md` is present in the repo. The iOS design source of truth is the implemented iOS theme and review files listed above.
 
 ### Source Priority
 
-When sources differ in level of detail, the runner must resolve them in this order:
+When sources differ in detail, resolve them in this order:
 
-1. `CYP_Design_MD.md` for visual system, tone, spacing, component language, and brand rules
-2. matching `Promt_*.md` for page objective and page-level composition
-3. `Function.md` for required content blocks and page semantics
-4. `web/*.svg` for layout intent, reference shape, and visual anchoring
-5. current runtime shell files for navigation and integrated-app structure
+1. `public/css/ios-theme.css`, `public/css/base.css`, `ui-static/ios-components-review.html`, `ui-static/css/ui-ios-review.css`
+2. matching `Promt_*.md`
+3. `Prompt.md`
+4. matching section in `Function.md`
+5. `web/*.svg`
+6. current app-shell structure in `public/index.html` and `public/js/app.js`
 
 ### Non-Invention Rule
 
 The runner must not:
 
-- create pages not implied by `Function.md` or `Promt_*.md`
-- rename domains arbitrarily
-- convert operational pages into marketing or landing layouts
-- change the design system away from the CYP control-console style
-
----
+- create pages outside `Function.md`, `Prompt.md`, and `Promt_*.md`
+- turn operational pages into marketing pages
+- reintroduce the old teal or aqua palette
+- reintroduce company logo treatment or `CYP` wordmark inside rendered page UI
+- break the app-shell model of top bar, sidebar, and content canvas
 
 ## 3. Automation Workflow
 
-### Phase A: Discovery and Reuse
+### Step 1. Project and Design System Setup
 
-1. List existing Stitch projects.
-2. Reuse the project named `CYP Control System UI` if it already exists.
-3. If it does not exist, create it.
-4. List design systems for the selected project.
-5. Reuse the design system named `CYP Control Console Design System` if it already exists.
-6. If it does not exist, create it.
-7. Update the selected design system so its `designMd` content matches the current `CYP_Design_MD.md`.
+1. Create or reuse one Stitch project named `CYP iOS Control UI`.
+2. Create or reuse one design system named `CYP iOS Control Console Design System`.
+3. Load the iOS design system sources from Section 2 into the Stitch design system.
+4. Treat the loaded design system as the only visual system for all generated screens in this run.
 
-### Phase B: Global Shell Direction
+### Step 2. Global Shell Generation
 
-Before any page-specific generation, create one shell-direction screen that establishes:
+Generate or update the shell direction first.
 
-- top bar
-- sidebar
-- navigation grouping
-- main content canvas behavior
-- white-panel-on-light-background layout style
-- enterprise control-console tone
+The shell definition must establish:
 
-This shell screen is used as the baseline composition reference for all subsequent screens.
+- top bar behavior
+- sidebar behavior
+- content canvas behavior
+- section header pattern
+- panel/card hierarchy
+- modal and toast style
+- iOS-style control-console tone
 
-Recommended screen title:
+Shell screen title:
 
-- `CYP App Shell Direction`
+- `CYP iOS App Shell Direction`
 
-This shell step must occur first. Page generation must not start without it.
+No page generation may begin before this shell screen exists.
 
-### Phase C: Page Generation Order
+### Step 3. Fixed Generation Order
 
-Generate or update screens in this fixed domain order:
+Generate screens in this exact order:
 
 1. `INDEX`
 2. `HOME`
@@ -132,53 +134,53 @@ Generate or update screens in this fixed domain order:
 7. `DEVELOPER TOOLS`
 8. `UI REFERENCE`
 
-Within each domain, pages must follow the page generation matrix order defined in Section 4.
+Within each domain, use the page order in Section 4.
 
-### Phase D: Per-Page Generation Logic
+### Step 4. Per-Page Prompt Assembly
+
+For every screen, assemble the Stitch prompt in this order:
+
+1. Page-specific objective from the matching `Promt_*.md`
+2. Structural requirements from the matching section in `Function.md`
+3. Shared shell and tone requirements from `Prompt.md`
+4. Global app-shell continuity from `CYP iOS App Shell Direction`
+5. Visual and token constraints from the iOS design sources in Section 2
+6. Explicit exclusions:
+   - no marketing hero
+   - no landing page framing
+   - no promotional copy
+   - no company logo
+   - no `CYP` wordmark in rendered UI
+   - no teal, cyan, or aqua brand drift
+
+### Step 5. Generate or Edit
 
 For each page in the matrix:
 
-1. Resolve the page title from the naming rule in Section 4.
-2. Resolve the matching prompt source file when present.
-3. Resolve the matching content requirements from `Function.md`.
-4. Assemble the final prompt using the composition rule in Section 4.
-5. Search existing project screens for a screen with the target title.
-6. If no matching screen exists, generate a new screen.
-7. If a matching screen exists:
-   - validate it against Section 5
-   - if valid, keep it and mark status `generated` if from current run or `reused` if unchanged
-   - if invalid or structurally off-target, edit the existing screen instead of generating a duplicate
+1. Resolve the target screen title.
+2. Resolve the prompt source file.
+3. Search the project for an existing screen with the same title.
+4. If no screen exists, generate it.
+5. If a screen exists, validate it using Section 5.
+6. If the existing screen fails validation, run an edit pass instead of creating a duplicate.
+7. Save the screen id, title, and artifact links into the run summary immediately after processing.
 
-### Phase E: Run Summary
+### Step 6. Page-Oriented Generation Rule
 
-After each page is processed, append one row to the run summary.
+Generation is page-oriented, not fragment-oriented.
 
-The summary must capture:
+Do not split a normal page into separate screens unless the source clearly describes a builder, editor, flow composer, runtime preview, or reference board.
 
-- domain
-- page key
-- prompt source
-- derived or direct prompt status
-- Stitch screen title
-- screen id
-- screenshot URL
-- HTML export URL if present
-- run status
+The following pages are builder/editor pages and must use split-view or multi-panel structure rather than generic dashboard cards:
 
-### Rerun Behavior
-
-The workflow must be rerunnable.
-
-On rerun, the runner must:
-
-- reuse the same project
-- reuse the same design system
-- reuse or edit matching screens by title
-- avoid uncontrolled duplicate screens
-
-Duplicates are only allowed if the runner explicitly marks the prior screen as superseded in the run summary. Default behavior is reuse-or-edit, not recreate.
-
----
+- `CYP iOS Command Editor`
+- `CYP iOS Macro Editor`
+- `CYP iOS Scenario Management`
+- `CYP iOS Button Editor`
+- `CYP iOS Panel Layouts`
+- `CYP iOS Panel Preview`
+- `CYP iOS Scheduling Create`
+- `CYP iOS Scheduling Edit`
 
 ## 4. Page Generation Matrix
 
@@ -186,222 +188,143 @@ Duplicates are only allowed if the runner explicitly marks the prior screen as s
 
 All Stitch screens must use this title format:
 
-- `CYP {Page Name}`
+- `CYP iOS {Page Name}`
 
-Use the exact titles listed below when a page is explicitly defined.
+### Page Matrix
 
-### Prompt Assembly Rule
+#### Home
 
-For every page, compose the final Stitch prompt in this order:
-
-1. Page-specific objective from the matching `Promt_*.md`
-2. Structural requirements from the matching section in `Function.md`
-3. Shared shell and tone requirements from this plan
-4. Visual and token constraints from `CYP_Design_MD.md`
-5. Explicit exclusions:
-   - no marketing hero
-   - no landing page framing
-   - no promotional copy
-   - no off-brand palette drift
-
-If a page does not have a dedicated `Promt_*.md` file but exists in `Function.md`, derive its prompt from:
-
-1. the corresponding `Function.md` section
-2. the nearest related `Promt_*.md` file by domain and page type
-3. the global shell and design system rules
-
-Mark those pages as `derived` in the run summary.
-
-### Domain: Index
-
-| Order | Page Key | Prompt Source | Stitch Screen Title | Prompt Mode |
+| Order | Page Key | Prompt Source | Stitch Screen Title | Mode |
 |---|---|---|---|---|
-| 1 | INDEX | `Promt_INDEX.md` | `CYP Index Overview` | direct |
+| 1 | INDEX | `Promt_INDEX.md` | `CYP iOS Index` | direct |
+| 2 | HOME | `Promt_HOME.md` | `CYP iOS Home Dashboard` | direct |
+| 3 | CONTROL_PAD_UI | `Promt_CONTROL_PAD_UI.md` | `CYP iOS Control Pad Runtime Preview` | direct |
 
-### Domain: Home
+#### Control
 
-| Order | Page Key | Prompt Source | Stitch Screen Title | Prompt Mode |
+| Order | Page Key | Prompt Source | Stitch Screen Title | Mode |
 |---|---|---|---|---|
-| 1 | HOME | `Promt_HOME.md` | `CYP Home Dashboard` | direct |
+| 1 | COMMAND_MANAGEMENT | `Promt_COMMAND_MANAGEMENT.md` | `CYP iOS Command Management` | direct |
+| 2 | COMMAND_EDITOR | `Promt_COMMAND_EDITOR.md` | `CYP iOS Command Editor` | direct |
+| 3 | COMMAND_TEST | `Promt_COMMAND_TEST.md` | `CYP iOS Command Test` | direct |
+| 4 | MACRO_MANAGEMENT | `Promt_MACRO_MANAGEMENT.md` | `CYP iOS Macro Management` | direct |
+| 5 | MACRO_EDITOR | `Promt_MACRO_EDITOR.md` | `CYP iOS Macro Editor` | direct |
+| 6 | SCHEDULING_LIST | `Promt_SCHEDULING_LIST.md` | `CYP iOS Scheduling List` | direct |
+| 7 | SCHEDULING_CREATE | `Promt_SCHEDULING_CREATE.md` | `CYP iOS Scheduling Create` | direct |
+| 8 | SCHEDULING_EDIT | `Promt_SCHEDULING_CREATE.md` | `CYP iOS Scheduling Edit` | derived |
+| 9 | EVENT_TRIGGER | `Promt_EVENT_TRIGGER.md` | `CYP iOS Event Trigger` | direct |
+| 10 | JOBS | `Promt_SCHEDULING_LIST.md` | `CYP iOS Jobs Monitor` | derived |
 
-### Domain: Control
+#### Device
 
-| Order | Page Key | Prompt Source | Stitch Screen Title | Prompt Mode |
+| Order | Page Key | Prompt Source | Stitch Screen Title | Mode |
 |---|---|---|---|---|
-| 1 | COMMAND_MANAGEMENT | `Promt_COMMAND_MANAGEMENT.md` | `CYP Command Management` | direct |
-| 2 | COMMAND_EDITOR | `Promt_COMMAND_EDITOR.md` | `CYP Command Editor` | direct |
-| 3 | COMMAND_TEST | `Promt_COMMAND_TEST.md` | `CYP Command Test` | direct |
-| 4 | MACRO_MANAGEMENT | `Promt_MACRO_MANAGEMENT.md` | `CYP Macro Management` | direct |
-| 5 | MACRO_EDITOR | `Promt_MACRO_EDITOR.md` | `CYP Macro Editor` | direct |
-| 6 | SCHEDULING_LIST | `Promt_SCHEDULING_LIST.md` | `CYP Scheduling List` | direct |
-| 7 | SCHEDULING_CREATE | `Promt_SCHEDULING_CREATE.md` | `CYP Scheduling Create` | direct |
-| 8 | EVENT_TRIGGER | `Promt_EVENT_TRIGGER.md` | `CYP Event Trigger` | direct |
+| 1 | DEVICES_LIST | `Promt_DEVICES_LIST.md` | `CYP iOS Devices List` | direct |
+| 2 | DEVICE_CREATE | `Promt_DEVICE_CREATE.md` | `CYP iOS Add Device` | direct |
+| 3 | DRIVER_LIBRARY | `Promt_DRIVER_LIBRARY.md` | `CYP iOS Driver Library` | direct |
+| 4 | DEVICE_DISCOVERY | `Promt_DEVICE_DISCOVERY.md` | `CYP iOS Device Discovery` | direct |
 
-### Domain: Device
+#### Scenes
 
-| Order | Page Key | Prompt Source | Stitch Screen Title | Prompt Mode |
+| Order | Page Key | Prompt Source | Stitch Screen Title | Mode |
 |---|---|---|---|---|
-| 1 | DEVICES_LIST | `Promt_DEVICES_LIST.md` | `CYP Devices List` | direct |
-| 2 | DEVICE_CREATE | `Promt_DEVICE_CREATE.md` | `CYP Device Create` | direct |
-| 3 | DRIVER_LIBRARY | `Promt_DRIVER_LIBRARY.md` | `CYP Driver Library` | direct |
-| 4 | DEVICE_DISCOVERY | `Promt_DEVICE_DISCOVERY.md` | `CYP Device Discovery` | direct |
+| 1 | SCENARIO_MANAGEMENT | `Promt_SCENARIO_MANAGEMENT.md` | `CYP iOS Scenario Management` | direct |
+| 2 | BUTTON_EDITOR | `Promt_BUTTON_EDITOR.md` | `CYP iOS Button Editor` | direct |
+| 3 | PANEL_LAYOUTS | `Promt_PANEL_LAYOUTS.md` | `CYP iOS Panel Layouts` | direct |
+| 4 | PANEL_PREVIEW | `Promt_PANEL_PREVIEW.md` | `CYP iOS Panel Preview` | direct |
 
-### Domain: Scenes
+#### Setting
 
-| Order | Page Key | Prompt Source | Stitch Screen Title | Prompt Mode |
+| Order | Page Key | Prompt Source | Stitch Screen Title | Mode |
 |---|---|---|---|---|
-| 1 | SCENARIO_MANAGEMENT | `Promt_SCENARIO_MANAGEMENT.md` | `CYP Scenario Management` | direct |
-| 2 | BUTTON_EDITOR | `Promt_BUTTON_EDITOR.md` | `CYP Button Editor` | direct |
-| 3 | PANEL_LAYOUTS | `Promt_PANEL_LAYOUTS.md` | `CYP Panel Layouts` | direct |
-| 4 | PANEL_PREVIEW | `Promt_PANEL_PREVIEW.md` | `CYP Panel Preview` | direct |
+| 1 | DEVICE_INFORMATION | `Promt_DEVICE_INFORMATION.md` | `CYP iOS Device Information` | direct |
+| 2 | SYSTEM_SETTINGS | `Promt_SYSTEM_SETTINGS.md` | `CYP iOS System Settings` | direct |
+| 3 | DATE_TIME | `Promt_DATE_TIME.md` | `CYP iOS Date and Time` | direct |
+| 4 | PAD_DISPLAY_SETTING | `Promt_PAD_DISPLAY_SETTING.md` | `CYP iOS Pad Display Setting` | direct |
+| 5 | THEME_ASSETS | `Promt_THEME_ASSETS.md` | `CYP iOS Theme and Assets` | direct |
+| 6 | BACKUP_RESTORE | `Promt_BACKUP_RESTORE.md` | `CYP iOS Backup and Restore` | direct |
+| 7 | LANGUAGE | `Promt_LANGUAGE.md` | `CYP iOS Language` | direct |
+| 8 | LOG_EXPORT | `Promt_LOG_EXPORT.md` | `CYP iOS Log Export` | direct |
+| 9 | FIRMWARE_UPGRADE | `Promt_FIRMWARE_UPGRADE.md` | `CYP iOS Firmware Upgrade` | direct |
+| 10 | NETWORK | `Promt_NETWORK.md` | `CYP iOS Network` | direct |
+| 11 | ADMIN | `Promt_ADMIN.md` | `CYP iOS Admin` | direct |
+| 12 | INITIAL_SETUP | `Promt_INITIAL_SETUP.md` | `CYP iOS Initial Setup` | direct |
 
-### Domain: Setting
+#### Developer Tools
 
-| Order | Page Key | Prompt Source | Stitch Screen Title | Prompt Mode |
+| Order | Page Key | Prompt Source | Stitch Screen Title | Mode |
 |---|---|---|---|---|
-| 1 | DEVICE_INFORMATION | `Promt_DEVICE_INFORMATION.md` | `CYP Device Information` | direct |
-| 2 | SYSTEM_SETTINGS | `Promt_SYSTEM_SETTINGS.md` | `CYP System Settings` | direct |
-| 3 | DATE_TIME | `Promt_DATE_TIME.md` | `CYP Date and Time` | direct |
-| 4 | PAD_DISPLAY_SETTING | `Promt_PAD_DISPLAY_SETTING.md` | `CYP Pad Display Setting` | direct |
-| 5 | THEME_ASSETS | `Promt_THEME_ASSETS.md` | `CYP Theme and Assets` | direct |
-| 6 | BACKUP_RESTORE | `Promt_BACKUP_RESTORE.md` | `CYP Backup and Restore` | direct |
-| 7 | LANGUAGE | `Promt_LANGUAGE.md` | `CYP Language` | direct |
-| 8 | LOG_EXPORT | `Promt_LOG_EXPORT.md` | `CYP Log Export` | direct |
-| 9 | FIRMWARE_UPGRADE | `Promt_FIRMWARE_UPGRADE.md` | `CYP Firmware Upgrade` | direct |
-| 10 | NETWORK | `Promt_NETWORK.md` | `CYP Network` | direct |
-| 11 | ADMIN | `Promt_ADMIN.md` | `CYP Admin` | direct |
-| 12 | INITIAL_SETUP | `Promt_INITIAL_SETUP.md` | `CYP Initial Setup` | direct |
+| 1 | DEBUG_CONSOLE | `Promt_DEBUG_CONSOLE.md` | `CYP iOS Debug Console` | direct |
+| 2 | DEVELOPER_DEVICE_DISCOVERY | `Promt_DEVICE_DISCOVERY.md` | `CYP iOS Developer Device Discovery` | derived |
 
-### Domain: Developer Tools
+#### UI Reference
 
-| Order | Page Key | Prompt Source | Stitch Screen Title | Prompt Mode |
+| Order | Page Key | Prompt Source | Stitch Screen Title | Mode |
 |---|---|---|---|---|
-| 1 | DEBUG_CONSOLE | `Promt_DEBUG_CONSOLE.md` | `CYP Debug Console` | direct |
-| 2 | DEVELOPER_DEVICE_DISCOVERY | `Promt_DEVICE_DISCOVERY.md` | `CYP Developer Device Discovery` | derived |
+| 1 | DIALOGS_SHOWCASE | `Promt_DIALOGS_SHOWCASE.md` | `CYP iOS Dialogs Showcase` | direct |
+| 2 | STATES_SHOWCASE | `Promt_STATES_SHOWCASE.md` | `CYP iOS States Showcase` | direct |
 
-Notes:
+### Derived Page Rule
 
-- `Function.md` defines `Developer Tools > Device Discovery`, but there is no dedicated developer-only discovery prompt.
-- Reuse `Promt_DEVICE_DISCOVERY.md` structure and derive a developer-tools variant with debugging emphasis.
+If a page exists in `Function.md` but has no dedicated prompt file, derive it from:
 
-### Domain: UI Reference
+1. the matching `Function.md` section
+2. the nearest same-domain `Promt_*.md`
+3. `Prompt.md`
+4. the iOS design system inputs
 
-| Order | Page Key | Prompt Source | Stitch Screen Title | Prompt Mode |
-|---|---|---|---|---|
-| 1 | DIALOGS_SHOWCASE | `Promt_DIALOGS_SHOWCASE.md` | `CYP Dialogs Showcase` | direct |
-| 2 | STATES_SHOWCASE | `Promt_STATES_SHOWCASE.md` | `CYP States Showcase` | direct |
-
-### Derived-Page Rule
-
-If later repo changes introduce additional pages in `Function.md` without a matching `Promt_*.md`, the runner must:
-
-1. add the page after the nearest same-domain page in generation order
-2. derive the page prompt from the exact `Function.md` subsection
-3. use the nearest prompt with matching page type
-4. mark status as `derived`
-
-### Builder / Editor Rule
-
-Pages that are builder/editor flows must not be reduced to generic dashboard cards.
-
-This specifically includes:
-
-- `CYP Macro Editor`
-- `CYP Scenario Management`
-- `CYP Button Editor`
-- `CYP Panel Layouts`
-- `CYP Panel Preview`
-- `CYP Command Editor`
-- `CYP Scheduling Create`
-
-These pages should favor:
-
-- split-view layouts
-- builder canvas patterns
-- inspector panels
-- configuration side panels
-- previews
-- stateful editing affordances
-
----
+Every derived screen must be marked `derived` in the run summary.
 
 ## 5. Validation and Rerun Rules
 
-### Required Validation Checks Per Screen
+### Validation Checks
 
-After each generation or edit pass, validate the screen against all of the following:
+For each generated or edited screen, validate all of the following:
 
-1. **Correct page title and domain**
-   - title matches the page matrix
-   - content belongs to the intended domain
-
-2. **Shell consistency**
-   - top bar is aligned with CYP app shell direction
-   - sidebar reflects CYP navigation groups
-   - main content area behaves like a control-system console
-
-3. **Functional fidelity**
-   - the screen includes the major blocks required by `Function.md`
-   - the composition reflects the page objective in the matching `Promt_*.md`
-
-4. **Visual consistency**
-   - uses CYP design-system palette and spacing
-   - remains white-panel enterprise UI
-   - does not drift into unrelated visual themes
-
-5. **No marketing treatment**
-   - no hero banner
-   - no landing-page framing
-   - no promotional copy
-   - no decorative product-marketing layout
-
-6. **Page-type correctness**
-   - management pages use tables, filters, summary cards, or action rails as appropriate
-   - editor pages use builders, inspectors, modal flows, or previews as appropriate
-   - settings pages use grouped configuration sections
-   - showcase pages emphasize states or modal variants rather than product narrative
+- correct screen title and domain
+- app shell consistency with the current CYP console structure
+- page function matches the intended purpose in `Function.md`
+- page composition reflects the matching `Promt_*.md`
+- visual style matches the repo's iOS design system
+- no marketing hero or landing-page treatment
+- no promotional copy
+- no company logo or `CYP` wordmark inside rendered page UI
+- no old teal, aqua, or cyan palette drift
+- no missing major blocks listed in `Function.md`
+- controls, tables, forms, previews, dialogs, and inspectors match the page type
+- builder/editor pages use split-view treatment where required
 
 ### Edit Loop
 
-Each page is allowed:
+Each screen is allowed:
 
-- 1 initial generation
+- 1 initial generation pass
 - up to 2 edit passes
 
-If the initial generation fails validation:
+If the screen still fails after 2 edit passes, mark it:
 
-1. write a correction prompt that states the exact failed checks
-2. edit the existing screen instead of generating a new one
+- `manual review required`
 
-If the second edit still fails:
+### Existing Screen Reuse Rule
 
-- stop editing that page
-- mark the page `manual review required`
-- continue the rest of the run
+On rerun, the runner must:
 
-### Duplicate-Control Rule
+- reuse the same Stitch project
+- reuse the same design system
+- search by exact screen title before generating
+- edit existing screens when they are off-target
+- avoid duplicate screens by default
 
-On rerun:
+The runner may only create a replacement screen when editing is impossible. If that happens, it must mark the old screen as superseded in the run summary.
 
-- first search by exact target title
-- if an exact-title screen exists, prefer edit/reuse
-- do not create a new screen just because the old one is imperfect
-- only create a replacement screen if the existing one is unusable and cannot be safely edited
+### Run Summary Artifact Schema
 
-If a replacement screen is created, the run summary must record:
+The run summary must be a markdown table with exactly these columns:
 
-- old screen id
-- new screen id
-- reason for replacement
-
-### Run Summary Schema
-
-The automation must emit one markdown table using this exact schema:
-
-| Domain | Page Key | Prompt Source | Prompt Mode | Stitch Screen Title | Screen ID | Screenshot URL | HTML URL | Status | Notes |
+| Domain | Page Key | Prompt Source | Prompt Mode | Stitch Screen Title | Screen ID | Screenshot Link | HTML Export Link | Status | Notes |
 |---|---|---|---|---|---|---|---|---|---|
 
-Allowed values for `Status`:
+Allowed `Status` values:
 
 - `generated`
 - `edited`
@@ -409,47 +332,14 @@ Allowed values for `Status`:
 - `derived`
 - `manual review required`
 
-### Project-Level Output Block
+### Acceptance Checks for This Plan
 
-The run summary must start with these project-level fields before the table:
+A valid automation run based on this file must be able to:
 
-- `Project Name`
-- `Project ID`
-- `Design System Name`
-- `Design System Asset ID`
-- `Shell Direction Screen ID`
-- `Run Date`
-
-### Acceptance Scenarios
-
-A valid implementation of this plan must be able to:
-
-1. discover the full screen list from `Function.md` and `Promt_*.md`
-2. create or update exactly one Stitch design system from `CYP_Design_MD.md`
-3. generate the full site screen set without inventing unlisted pages
-4. produce deterministic screen titles and grouped output records
-5. rerun safely without creating uncontrolled duplicates
-6. distinguish between pages created from direct prompt files and pages created from derived prompts
-
-### Spot Checks That Must Be Handled
-
-The runner must explicitly support these situations:
-
-- a page has both a direct `Function.md` definition and a matching `Promt_*.md`
-- a page exists in `Function.md` but no dedicated prompt file exists
-- an existing Stitch screen should be edited rather than regenerated
-- a generated screen drifts into dashboard or marketing style and must be corrected
-- builder/editor pages need split-view treatment instead of generic card grids
-
-### Default Correction Prompt Structure
-
-When an edit pass is needed, the correction prompt should follow this pattern:
-
-1. restate the target page title
-2. list failed validation items
-3. restate missing functional blocks from `Function.md`
-4. restate required layout mode from the matching `Promt_*.md`
-5. restate the design-system and exclusion rules
-
-This structure keeps the edit loop deterministic and reusable.
-
+- discover the full page set from `Function.md`, `Prompt.md`, and `Promt_*.md`
+- create or update exactly one iOS Stitch design system
+- generate the full screen set without inventing unlisted pages
+- produce deterministic screen titles
+- rerun safely without uncontrolled duplicates
+- distinguish direct pages from derived pages
+- catch and correct screens that drift back toward the old non-iOS visual language
