@@ -3609,6 +3609,18 @@ function renderUserMenu() {
   }
 }
 
+function updateNavigationVisibility() {
+  navGroups.forEach((group) => {
+    const shouldShow = state.isLoggedIn;
+    group.classList.toggle("is-hidden", !shouldShow);
+
+    if (!shouldShow) {
+      group.classList.remove("is-open", "is-active");
+      setGroupOpen(group, false);
+    }
+  });
+}
+
 function updatePadPage(pageIndex) {
   const maxPage = padPages.length - 1;
   const nextPage = Math.max(0, Math.min(pageIndex, maxPage));
@@ -5035,6 +5047,28 @@ function navigateToSection(title, isHome = false, options = {}) {
     return;
   }
 
+  if (!state.isLoggedIn && title !== "Home") {
+    clearNavActive();
+    const homeItem = Array.from(navItems).find((item) => (item.dataset.title || item.dataset.section) === "Home");
+
+    if (homeItem) {
+      homeItem.classList.add("is-active");
+    }
+
+    pageTitle.textContent = "Home";
+    state.currentSectionTitle = "Home";
+    updateContentStage("Home", true);
+
+    if (typeof window.syncAppRouteForSection === "function") {
+      window.syncAppRouteForSection("Home");
+    } else if (window.location.pathname !== "/") {
+      window.history.replaceState({}, "", "/");
+    }
+
+    setActiveAnnotationPage("Home");
+    return;
+  }
+
   const directItem = Array.from(navItems).find((item) => (item.dataset.title || item.dataset.section) === title);
   const childItem = Array.from(navChildren).find((item) => (item.dataset.title || item.dataset.section) === title);
 
@@ -5084,6 +5118,10 @@ navItems.forEach((item) => {
 
 navParents.forEach((parent) => {
   parent.addEventListener("click", () => {
+    if (!state.isLoggedIn) {
+      return;
+    }
+
     const group = parent.closest(".nav-group");
     const isOpen = group.classList.contains("is-open");
 
@@ -5313,6 +5351,8 @@ userDropdown.addEventListener("click", (event) => {
     signinForm.reset();
     settingsForm.reset();
     renderUserMenu();
+    updateNavigationVisibility();
+    navigateToSection("Home", true);
     showToast("Signed out successfully.");
   }
 });
@@ -5339,6 +5379,7 @@ signinForm.addEventListener("submit", (event) => {
 
   state.isLoggedIn = true;
   renderUserMenu();
+  updateNavigationVisibility();
   closeModal(signinModal);
   signinForm.reset();
   showToast("Sign in successful.");
@@ -6738,6 +6779,7 @@ document.addEventListener("keydown", (event) => {
 });
 
 renderUserMenu();
+updateNavigationVisibility();
 populateCommandParameterOptions();
 resetCommandEditorStateUpdateFields();
 renderDriverLibrary();
